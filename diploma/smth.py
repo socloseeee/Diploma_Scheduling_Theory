@@ -59,18 +59,18 @@ def crossover(parent1, parent2):
 def mutation(child, Pm):
     child_copy = deepcopy(child)
     child_genes = [e for e in child_copy]
-    f.write(f'Genes before: {" ".join([str(e) for e in child_genes])}')
+    f.write(f'Genes before | Гены до: {" ".join([str(e) for e in child_genes])}')
     gen = c(child_genes)
     while r(1, 100) < Pm:
         gen = c(child_genes)
-    f.write(f'\nGene: {gen}\n')
+    f.write(f'\nGene | Ген: {gen}\n')
     that_gen = deepcopy(gen)
     binary_gen = '00000000'
     for j in range(len(binary_gen)):
         binary_gen = binary_gen[:j] + str(gen % 2) + binary_gen[j + 1:]
         gen //= 2
     binary_gen = binary_gen[::-1]
-    f.write(f'Its binary form: {binary_gen}')
+    f.write(f'Its binary form | Его бинарная форма: {binary_gen}')
     binary_gen = list(binary_gen)
     index1 = r(0, len(binary_gen)-1)
     index2 = r(0, len(binary_gen)-1)
@@ -79,9 +79,9 @@ def mutation(child, Pm):
             index2 = r(0, len(binary_gen)-1)
     binary_gen[index1], binary_gen[index2] = binary_gen[index2], binary_gen[index1]
     binary_gen = "".join(binary_gen)
-    f.write(f'\nChanged bit: {binary_gen}\nNew number: {int(binary_gen, 2)}\n')
+    f.write(f'\nChanged bit | Изменённый бит: {binary_gen}\nNew number | Новый номер: {int(binary_gen, 2)}\n')
     child_copy = [genes if genes != that_gen else int(binary_gen, 2) for genes in child_copy]
-    f.write(f'Genes after: {" ".join([str(e) for e in child_copy])}\n')
+    f.write(f'Genes after | Гены после: {" ".join([str(e) for e in child_copy])}\n')
     return child_copy
 
 # Список цветов
@@ -103,7 +103,7 @@ def show(matrix) -> None:
         f.write("\n")
 
 # Отображаем данные
-def show_generation(txt_file, amount_of_generations, word):
+def show_generation(txt_file, amount_of_generations, word) -> None:
     with open(txt_file, 'r', encoding="utf-8") as file:
         chosen = 0
         while True:
@@ -214,10 +214,7 @@ for j in range(m):
             new_matrix[j].append(Fore.RED + str(matrix[j][i]) + Style.RESET_ALL)
             check = int(matrix[j][i])
 f.write('Schedule | Расписание:\n')
-for j in new_matrix:
-    for i in j:
-        f.write(f"{i}  ")
-    f.write("\n")
+show(new_matrix)
 min_elem_method = deepcopy(new_matrix)
 f.write('Result | Результат:\n')
 f.write(f'max{tuple(result)} = {max(result)}\n')
@@ -237,10 +234,7 @@ for j in range(m):
         if i != min_index:
             result_str[i] -= matrix[j][i]
     plotnikov_zverev_method[j][min_index] = Fore.RED + str(matrix[j][min_index]) + Style.RESET_ALL
-for j in plotnikov_zverev_method:
-    for i in j:
-        f.write(f"{i}  ")
-    f.write("\n")
+show(plotnikov_zverev_method)
 result_str = [0] * n
 
 f.write('Schedule | Расписание:\n')
@@ -273,10 +267,7 @@ for j in range(m):
         if i == min_sum_index:
             result_str1[i] += matrix[j][i]
     square_method[j][min_sum_index] = Fore.RED + str(matrix[j][min_sum_index]) + Style.RESET_ALL
-for j in square_method:
-    for i in j:
-        f.write(f"{i}  ")
-    f.write("\n")
+show(square_method)
 result_str1 = [0] * n
 new_matrix = [[0 for i in range(n)] for j in range(m)]
 f.write('Schedule | Расписание:\n')
