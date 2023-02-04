@@ -150,9 +150,9 @@ def show_generation(txt_file, amount_of_generations, word) -> None:
 
 # Открываем файл для записи:
 # method = "minimum_elem_method"
-# method = "Plotnikov_Zverev_method"
+method = "Plotnikov_Zverev_method"
 # method = "square_method"
-method = "barrier_method"
+# method = "barrier_method"
 txt_file = f'{method}_analysis.txt'
 f = open(txt_file, 'w', encoding="utf-8")
 
@@ -170,149 +170,94 @@ matrix = generate_matrix(m, n, T1, T2)
 matrix_sum = sorted([sum(elem) for elem in matrix], reverse=True)
 matrix = sorted(matrix, key=lambda x: sum(x), reverse=True)
 
+# Назначение метода в общую переменную
+if method == "minimum_elem_method":
 # Метод минимальных элементов
-new_matrix, result = [], [0] * n
-for j in range(m):
-    new_matrix.append([])
-    check = 0   # check - позволяет вычленять из двух одинаковых только первое левое значение
-    for i in range(n):
-        if matrix[j][i] != min(matrix[j]) or matrix[j][i] == check:
-            new_matrix[j].append(matrix[j][i])
-        else:
-            result[i] += matrix[j][i]
-            new_matrix[j].append(Fore.RED + str(matrix[j][i]) + Style.RESET_ALL)
-            check = int(matrix[j][i])
-min_elem_method = deepcopy(new_matrix)
-
-# Метод Плотникова-Зверева
-result_str = [0] * n
-new_matrix2 = []
-plotnikov_zverev_method = deepcopy(matrix)
-for j in range(m):
-    for i in range(n):
-        result_str[i] += matrix[j][i]
-    min_index = result_str.index(min(result_str))
-    for i in range(n):
-        if i != min_index:
-            result_str[i] -= matrix[j][i]
-    plotnikov_zverev_method[j][min_index] = Fore.RED + str(matrix[j][min_index]) + Style.RESET_ALL
-result_str = [0] * n
-
-for j in range(m):
-    for i in range(n):
-        result_str[i] += matrix[j][i]
-    min_index = result_str.index(min(result_str))
-    for i in range(n):
-        if i != min_index:
-            result_str[i] -= matrix[j][i]
-
-# Метод квадратов
-result_str1 = [0] * n
-new_matrix = [[0 for i in range(n)] for j in range(m)]
-square_method = deepcopy(matrix)
-for j in range(m):
-    min_sum = [0] * n
-    for i in range(n):
-        result_str1[i] += matrix[j][i]
-        min_sum[i] = sum([elem * elem for elem in result_str1])
-        result_str1[i] -= matrix[j][i]
-    min_sum_index = min_sum.index(min(min_sum))
-    for i in range(n):
-        if i == min_sum_index:
-            result_str1[i] += matrix[j][i]
-    square_method[j][min_sum_index] = Fore.RED + str(matrix[j][min_sum_index]) + Style.RESET_ALL
-result_str1 = [0] * n
-new_matrix = [[0 for i in range(n)] for j in range(m)]
-for j in range(m):
-    min_sum = [0] * n
-    for i in range(n):
-        result_str1[i] += matrix[j][i]
-        min_sum[i] = sum([elem * elem for elem in result_str1])
-        result_str1[i] -= matrix[j][i]
-    min_sum_index = min_sum.index(min(min_sum))
-    for i in range(n):
-        if i == min_sum_index:
-            result_str1[i] += matrix[j][i]
-
-# Метод барьера
-barrier = sum(result) / n
-
-result_str2 = [0] * n
-barrier_method = []
-flag = False
-for j in range(m):
-    if not flag:
-        barrier_method.append([])
-        check = 0  # check - позволяет вычленять из двух одинаковых только первое левое значение
-        for i in range(n):
-            if matrix[j][i] != min(matrix[j]) or matrix[j][i] == check:
-                barrier_method[j].append(Style.RESET_ALL + str(matrix[j][i]))
-            else:
-                result_str2[i] += matrix[j][i]
-                barrier_method[j].append(Fore.RED + str(matrix[j][i]) + Style.RESET_ALL)
-                check = int(matrix[j][i])
-                if result_str2[i] > barrier and not flag:
-                    flag = True
-                    barrier_method.append([])
-                    for s in range(n):
-                        barrier_method[-1].append('- ')
-    else:
-        for i in range(n):
-            result_str2[i] += matrix[j][i]
-        min_index = result_str2.index(min(result_str2))
-        for i in range(n):
-            if i != min_index:
-                result_str2[i] -= matrix[j][i]
-        barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) + Style.RESET_ALL for i in range(len(result_str2))])
-
-result_str2 = [0] * n
-new_matrix = []
-flag = False
-
-for j in range(m):
-    if not flag:
+    new_matrix, result = [], [0] * n
+    for j in range(m):
         new_matrix.append([])
-        check = 0  # check - позволяет вычленять из двух одинаковых только первое левое значение
+        check = 0   # check - позволяет вычленять из двух одинаковых только первое левое значение
         for i in range(n):
             if matrix[j][i] != min(matrix[j]) or matrix[j][i] == check:
                 new_matrix[j].append(matrix[j][i])
             else:
-                result_str2[i] += matrix[j][i]
+                result[i] += matrix[j][i]
                 new_matrix[j].append(Fore.RED + str(matrix[j][i]) + Style.RESET_ALL)
                 check = int(matrix[j][i])
-                if result_str2[i] > barrier and not flag:
-                    flag = True
-                    new_matrix.append([])
-                    for s in range(n):
-                        new_matrix[-1].append(Fore.BLUE + '- ' + Style.RESET_ALL)
-    else:
+    min_elem_method = deepcopy(new_matrix)
+    method = min_elem_method
+elif method == "Plotnikov_Zverev_method":
+# Метод Плотникова-Зверева
+    result_str = [0] * n
+    new_matrix2 = []
+    plotnikov_zverev_method = deepcopy(matrix)
+    for j in range(m):
         for i in range(n):
-            result_str2[i] += matrix[j][i]
-        min_index = result_str2.index(min(result_str2))
+            result_str[i] += matrix[j][i]
+        min_index = result_str.index(min(result_str))
         for i in range(n):
             if i != min_index:
-                result_str2[i] -= matrix[j][i]
-        new_matrix.append([Fore.RED + str(result_str2[i]).ljust(2) + Style.RESET_ALL if i == min_index else str(result_str2[i]).ljust(2) for i in range(len(result_str2))])
-
-# Результат работы всех методов
-if method == "minimum_elem_method":
-    chosen_method = min_elem_method
-elif method == "Plotnikov_Zverev_method":
-    chosen_method = plotnikov_zverev_method
+                result_str[i] -= matrix[j][i]
+        plotnikov_zverev_method[j][min_index] = Fore.RED + str(matrix[j][min_index]) + Style.RESET_ALL
+    method = plotnikov_zverev_method
 elif method == "square_method":
-    chosen_method = square_method
+# Метод квадратов
+    result_str1 = [0] * n
+    new_matrix = [[0 for i in range(n)] for j in range(m)]
+    square_method = deepcopy(matrix)
+    for j in range(m):
+        min_sum = [0] * n
+        for i in range(n):
+            result_str1[i] += matrix[j][i]
+            min_sum[i] = sum([elem * elem for elem in result_str1])
+            result_str1[i] -= matrix[j][i]
+        min_sum_index = min_sum.index(min(min_sum))
+        for i in range(n):
+            if i == min_sum_index:
+                result_str1[i] += matrix[j][i]
+        square_method[j][min_sum_index] = Fore.RED + str(matrix[j][min_sum_index]) + Style.RESET_ALL
+        method = square_method
 elif method == "barrier_method":
-    chosen_method = barrier_method
+# Метод барьера
+    barrier = sum(result) / n
+    result_str2 = [0] * n
+    barrier_method = []
+    flag = False
+    for j in range(m):
+        if not flag:
+            barrier_method.append([])
+            check = 0  # check - позволяет вычленять из двух одинаковых только первое левое значение
+            for i in range(n):
+                if matrix[j][i] != min(matrix[j]) or matrix[j][i] == check:
+                    barrier_method[j].append(Style.RESET_ALL + str(matrix[j][i]))
+                else:
+                    result_str2[i] += matrix[j][i]
+                    barrier_method[j].append(Fore.RED + str(matrix[j][i]) + Style.RESET_ALL)
+                    check = int(matrix[j][i])
+                    if result_str2[i] > barrier and not flag:
+                        flag = True
+                        barrier_method.append([])
+                        for s in range(n):
+                            barrier_method[-1].append('- ')
+        else:
+            for i in range(n):
+                result_str2[i] += matrix[j][i]
+            min_index = result_str2.index(min(result_str2))
+            for i in range(n):
+                if i != min_index:
+                    result_str2[i] -= matrix[j][i]
+            barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) + Style.RESET_ALL for i in range(len(result_str2))])
+    method = barrier_method
 
-# Генерация особей (50 детерминированно + 50 рандомно)
+# Генерация особей и последующее выполнение ГА
 repeat = int(input("Number of repetitions of GA cycles | Количество повторов цикла ГА > "))
 while repeat != 0:
     print(repeat)
     repeat -= 1
-    individuals = [generate_individ(chosen_method, n, 0) for _ in range(z//2)]
+    individuals = [generate_individ(method, n, 0) for _ in range(z//2)]
     [individuals.append(generate_individ(m, n, 1)) for _ in range(z//2)]
 
-# Особи нулевого поколения (родители для будущего поколения):
+    # Особи нулевого поколения (родители для будущего поколения):
     listMax = []
     newline = "\n"
     for i, individual in enumerate(individuals):
@@ -324,7 +269,6 @@ while repeat != 0:
     best_of_all_generations_result = best_result
 
     # Переменные для ГА и сам ГА:
-
     counter, gen_count = 0, 0
 
     while k != counter - 1:
@@ -404,30 +348,6 @@ while repeat != 0:
             counter = 0
     f.write(f"{100 - repeat} iteration | итерация: {best_result}")
     f.write("\n")
-
-
-# Сравнение расписания при начальном поколении и конечном:
-if chosen_method == min_elem_method:
-    word = "методе минимальных элементов"
-    chosen_load = result
-elif chosen_method == plotnikov_zverev_method:
-    word = "методе Плотникова-Зверева"
-    chosen_load = result_str
-elif chosen_method == square_method:
-    word = "методе квадратов"
-    chosen_load = result_str1
-else:
-    word = "методе барьеров"
-    chosen_load = result_str2
-proc = [i for i in range(255//n, 255 + 255//n, int(255//n))]
-last_gen_show = []
-for j, gen in enumerate(individuals[0]):
-    load_result = deepcopy(matrix[j])
-    for i in range(n):
-        if gen <= proc[i]:
-            load_result[i] = Fore.RED + str(matrix[j][i]) + Style.RESET_ALL
-            last_gen_show.append(load_result)
-            break
 
 f.close()
 
