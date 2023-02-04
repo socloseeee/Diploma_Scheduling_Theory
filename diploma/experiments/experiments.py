@@ -3,6 +3,8 @@ import copy
 from copy import deepcopy
 from random import choice as c, randint as r
 from colorama import Fore, init, Style, Back
+from tqdm import tqdm
+import time
 
 init(autoreset=True)
 
@@ -78,91 +80,21 @@ def mutation(child, Pm):
     child_copy = [genes if genes != that_gen else int(binary_gen, 2) for genes in child_copy]
     return child_copy
 
-# Отображаем данные
-def show_generation(txt_file, amount_of_generations, word) -> None:
-    with open(txt_file, 'r', encoding="utf-8") as file:
-        chosen = 0
-        while True:
-            file.seek(0)
-            while True:
-                num = input(
-                    '\nChoose what you want to display | Выберите что хотите отобразить:'
-                    '\nDisplay generation from GA | Вывести поколение из ГА(0)'
-                    '\nOrigin matrix | Искомый массив(1)'
-                    '\nSorted matrix | Отсортированный массив(2)'
-                    '\nMinimum element method | Метод минимальных элементов(3)'
-                    '\nPlotnikov-Zverev method | Метод Плотникова-Зверева(4)'
-                    '\nSquare method | Метод квадратов(5)'
-                    '\nBarrier method | Метод барьера(6)'
-                    '\nResult of all methods | Результат работы всех методов(7)'
-                    f'\nCompare schedule of init and final generation | Сравнить расписания при начальном поколении сформированном при {word} и конечном(8)'
-                    '\n>'
-                )
-                if num.isdigit() and 0 <= int(num) <= 8 or num == 'exit':
-                    if int(num) == 0:
-                        chosen = input('Choose generation to show (exit - to quit programm) > ')
-                        if chosen.isdigit() and 0 <= int(chosen) <= amount_of_generations or chosen == 'exit':
-                            chosen = f"{chosen} GENERATION | {chosen}-е ПОКОЛЕНИЕ >\n"
-                            finish = "#\n"
-                            break
-                        else:
-                            print('Incorrect input! | Неправильный ввод!')
-                        chosen_generation = f"{num} GENERATION | {num}-е ПОКОЛЕНИЕ >\n"
-                    elif int(num) == 1:
-                        chosen = f"Origin matrix | Искомый массив:\n"
-                        finish = "#\n"
-                    elif int(num) == 2:
-                        chosen = f"Sums of row elements | Суммы элементов строк:\n"
-                        finish = "##\n"
-                    elif int(num) == 3:
-                        chosen = f"Minimum element method | Метод минимальных элементов:\n"
-                        finish = "#\n"
-                    elif int(num) == 4:
-                        chosen = f"Plotnikov-Zverev method | Метод Плотникова-Зверева(обычный):\n"
-                        finish = "#\n"
-                    elif int(num) == 5:
-                        chosen = f"Square method | Метод квадратов:\n"
-                        finish = "#\n"
-                    elif int(num) == 6:
-                        chosen = f"Barrier method | Метод барьера:\n"
-                        finish = "#\n"
-                    elif int(num) == 7:
-                        chosen = f"Result of all methods | Результат работы всех методов:\n"
-                        finish = "#\n"
-                    elif int(num) == 8:
-                        chosen = f"Init generation | Начальное поколение при {word}:\n"
-                        finish = "#\n"
-                    break
-                else:
-                    print('Incorrect input! | Неправильный ввод!')
-                print()
-            if num == 'exit':
-                break
-            if chosen != 0:
-                generation_tree_data = file.readlines()
-                new_slice = generation_tree_data[generation_tree_data.index(chosen):]
-                this = new_slice[:new_slice.index(finish)]
-                print("".join(this))
-            else:
-                print(chosen)
-        print('Good Bye!')
+# Метод отображения
+def show(matrix) -> None:
+    for j in matrix:
+        for i in j:
+            f.write(f"{i}  ")
+        f.write("\n")
 
-
-# Открываем файл для записи:
-# method = "minimum_elem_method"
-method = "Plotnikov_Zverev_method"
-# method = "square_method"
-# method = "barrier_method"
-txt_file = f'{method}_analysis.txt'
-f = open(txt_file, 'w', encoding="utf-8")
 
 # Генерация массива и сортировка
 n = 5    # кол-во процессоров
-T1 = 10  # левая граница задания
-T2 = 20  # правая граница задания
+T1 = 20  # левая граница задания
+T2 = 30  # правая граница задания
 m = 10   # кол-во заданий
 z = 100   # кол-во особей
-k = 15   # кол-во поколений подряд при котором лучшая загрузка будет повторяться k-раз
+k = 30   # кол-во поколений подряд при котором лучшая загрузка будет повторяться k-раз
 Pk = 99  # вероятность кроссовера
 Pm = 99  # вероятность мутации
 
@@ -171,185 +103,201 @@ matrix_sum = sorted([sum(elem) for elem in matrix], reverse=True)
 matrix = sorted(matrix, key=lambda x: sum(x), reverse=True)
 
 # Назначение метода в общую переменную
-if method == "minimum_elem_method":
 # Метод минимальных элементов
-    new_matrix, result = [], [0] * n
-    for j in range(m):
-        new_matrix.append([])
-        check = 0   # check - позволяет вычленять из двух одинаковых только первое левое значение
+new_matrix, result = [], [0] * n
+for j in range(m):
+    new_matrix.append([])
+    check = 0   # check - позволяет вычленять из двух одинаковых только первое левое значение
+    for i in range(n):
+        if matrix[j][i] != min(matrix[j]) or matrix[j][i] == check:
+            new_matrix[j].append(matrix[j][i])
+        else:
+            result[i] += matrix[j][i]
+            new_matrix[j].append(Fore.RED + str(matrix[j][i]) + Style.RESET_ALL)
+            check = int(matrix[j][i])
+min_elem_method = deepcopy(new_matrix)
+# Метод Плотникова-Зверева
+result_str = [0] * n
+new_matrix2 = []
+plotnikov_zverev_method = deepcopy(matrix)
+for j in range(m):
+    for i in range(n):
+        result_str[i] += matrix[j][i]
+    min_index = result_str.index(min(result_str))
+    for i in range(n):
+        if i != min_index:
+            result_str[i] -= matrix[j][i]
+    plotnikov_zverev_method[j][min_index] = Fore.RED + str(matrix[j][min_index]) + Style.RESET_ALL
+# Метод квадратов
+result_str1 = [0] * n
+new_matrix = [[0 for i in range(n)] for j in range(m)]
+square_method = deepcopy(matrix)
+for j in range(m):
+    min_sum = [0] * n
+    for i in range(n):
+        result_str1[i] += matrix[j][i]
+        min_sum[i] = sum([elem * elem for elem in result_str1])
+        result_str1[i] -= matrix[j][i]
+    min_sum_index = min_sum.index(min(min_sum))
+    for i in range(n):
+        if i == min_sum_index:
+            result_str1[i] += matrix[j][i]
+    square_method[j][min_sum_index] = Fore.RED + str(matrix[j][min_sum_index]) + Style.RESET_ALL
+# Метод барьера
+barrier = sum(result) / n
+result_str2 = [0] * n
+barrier_method = []
+flag = False
+for j in range(m):
+    if not flag:
+        barrier_method.append([])
+        check = 0  # check - позволяет вычленять из двух одинаковых только первое левое значение
         for i in range(n):
             if matrix[j][i] != min(matrix[j]) or matrix[j][i] == check:
-                new_matrix[j].append(matrix[j][i])
+                barrier_method[j].append(Style.RESET_ALL + str(matrix[j][i]))
             else:
-                result[i] += matrix[j][i]
-                new_matrix[j].append(Fore.RED + str(matrix[j][i]) + Style.RESET_ALL)
+                result_str2[i] += matrix[j][i]
+                barrier_method[j].append(Fore.RED + str(matrix[j][i]) + Style.RESET_ALL)
                 check = int(matrix[j][i])
-    min_elem_method = deepcopy(new_matrix)
-    method = min_elem_method
-elif method == "Plotnikov_Zverev_method":
-# Метод Плотникова-Зверева
-    result_str = [0] * n
-    new_matrix2 = []
-    plotnikov_zverev_method = deepcopy(matrix)
-    for j in range(m):
+                if result_str2[i] > barrier and not flag:
+                    flag = True
+                    barrier_method.append([])
+                    for s in range(n):
+                        barrier_method[-1].append('- ')
+    else:
         for i in range(n):
-            result_str[i] += matrix[j][i]
-        min_index = result_str.index(min(result_str))
+            result_str2[i] += matrix[j][i]
+        min_index = result_str2.index(min(result_str2))
         for i in range(n):
             if i != min_index:
-                result_str[i] -= matrix[j][i]
-        plotnikov_zverev_method[j][min_index] = Fore.RED + str(matrix[j][min_index]) + Style.RESET_ALL
-    method = plotnikov_zverev_method
-elif method == "square_method":
-# Метод квадратов
-    result_str1 = [0] * n
-    new_matrix = [[0 for i in range(n)] for j in range(m)]
-    square_method = deepcopy(matrix)
-    for j in range(m):
-        min_sum = [0] * n
-        for i in range(n):
-            result_str1[i] += matrix[j][i]
-            min_sum[i] = sum([elem * elem for elem in result_str1])
-            result_str1[i] -= matrix[j][i]
-        min_sum_index = min_sum.index(min(min_sum))
-        for i in range(n):
-            if i == min_sum_index:
-                result_str1[i] += matrix[j][i]
-        square_method[j][min_sum_index] = Fore.RED + str(matrix[j][min_sum_index]) + Style.RESET_ALL
-        method = square_method
-elif method == "barrier_method":
-# Метод барьера
-    barrier = sum(result) / n
-    result_str2 = [0] * n
-    barrier_method = []
-    flag = False
-    for j in range(m):
-        if not flag:
-            barrier_method.append([])
-            check = 0  # check - позволяет вычленять из двух одинаковых только первое левое значение
-            for i in range(n):
-                if matrix[j][i] != min(matrix[j]) or matrix[j][i] == check:
-                    barrier_method[j].append(Style.RESET_ALL + str(matrix[j][i]))
-                else:
-                    result_str2[i] += matrix[j][i]
-                    barrier_method[j].append(Fore.RED + str(matrix[j][i]) + Style.RESET_ALL)
-                    check = int(matrix[j][i])
-                    if result_str2[i] > barrier and not flag:
-                        flag = True
-                        barrier_method.append([])
-                        for s in range(n):
-                            barrier_method[-1].append('- ')
-        else:
-            for i in range(n):
-                result_str2[i] += matrix[j][i]
-            min_index = result_str2.index(min(result_str2))
-            for i in range(n):
-                if i != min_index:
-                    result_str2[i] -= matrix[j][i]
-            barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) + Style.RESET_ALL for i in range(len(result_str2))])
-    method = barrier_method
+                result_str2[i] -= matrix[j][i]
+        barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) + Style.RESET_ALL for i in range(len(result_str2))])
 
-# Генерация особей и последующее выполнение ГА
+methods = [min_elem_method, plotnikov_zverev_method, square_method, barrier_method]
 repeat = int(input("Number of repetitions of GA cycles | Количество повторов цикла ГА > "))
-while repeat != 0:
-    print(repeat)
-    repeat -= 1
-    individuals = [generate_individ(method, n, 0) for _ in range(z//2)]
-    [individuals.append(generate_individ(m, n, 1)) for _ in range(z//2)]
+print(f"Performing a study based on {repeat} iterations | Выполняем исследование на основе {repeat} итераций")
+# Генерация особей и последующее выполнение ГА
+for method in methods:
+    # Открываем файл для записи:
+    if method == min_elem_method:
+        method_str = "minimum_elem_method"
+    elif method == plotnikov_zverev_method:
+        method_str = "Plotnikov_Zverev_method"
+    elif method == square_method:
+        method_str = "square_method"
+    elif method == barrier_method:
+        method_str = "barrier_method"
+    txt_file = f'experiments/{method_str}_analysis.txt'
+    f = open(txt_file, 'w', encoding="utf-8")
+    for _ in tqdm(range(repeat), ncols=100, desc=f"{method_str}"):
+        individuals = [generate_individ(method, n, 0) for _ in range(z//2)]
+        [individuals.append(generate_individ(m, n, 1)) for _ in range(z//2)]
 
-    # Особи нулевого поколения (родители для будущего поколения):
-    listMax = []
-    newline = "\n"
-    for i, individual in enumerate(individuals):
-        load = count_load(individual, n, m, matrix)
-        listMax.append(load)
-    best_result, bestLoad_index = best_load(listMax)  # лучшая загрузка и (индекс лучшей особи - 1)
-    best_individual = individuals[bestLoad_index]
-    previous_best_result, bestLoad_index = 0, 0
-    best_of_all_generations_result = best_result
-
-    # Переменные для ГА и сам ГА:
-    counter, gen_count = 0, 0
-
-    while k != counter - 1:
-        previous_best_result = best_result
-        gen_count += 1
-        generation = []
-        best_generation_loads = []
-        for _ in range(z):
-
-            # Алгоритм образования пар родителей:
-            parent1 = c(individuals)
-            individuals_no_repeat = deepcopy(individuals)
-            individuals_no_repeat.remove(parent1)  # дабы избежать попадание рандома на первого
-            parent2 = c(individuals_no_repeat)
-            while r(0, 100) <= Pk:
-                parent2 = c(individuals_no_repeat)
-            parents_list = (parent1, parent2)
-
-            # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
-            children = []
-            load_list = []
-            counter_child = 0
-            crossover_result = crossover(parent1, parent2)
-            for i, child in enumerate(crossover_result):
-                children.append(child)
-                load_list.append(count_load(child, n, m, matrix))
-                counter_child += 1
-                muted_child = mutation(child, Pm)
-                children.append(muted_child)
-                load_list.append(count_load(muted_child, n, m, matrix))
-            best_child_load, best_child_index = best_load(load_list)
-            num = 0
-            generation.append(children[best_child_index])
-
-        # Список всех детей:
+        # Особи нулевого поколения (родители для будущего поколения):
         listMax = []
-        for i, child in enumerate(generation):
-            listMax.append(count_load(child, n, m, matrix))
+        newline = "\n"
+        for i, individual in enumerate(individuals):
+            load = count_load(individual, n, m, matrix)
+            listMax.append(load)
+        best_result, bestLoad_index = best_load(listMax)  # лучшая загрузка и (индекс лучшей особи - 1)
+        best_individual = individuals[bestLoad_index]
+        previous_best_result, bestLoad_index = 0, 0
+        best_of_all_generations_result = best_result
 
-        # Индекс лучшего результата в поколении
-        currentLoad = best_load(listMax)[1]
+        # Переменные для ГА и сам ГА:
+        counter, gen_count = 0, 0
 
-        # Собираем матрицу родителей и лучших детей для отбора:
-        check_matrix, parent_child_loads = [], []
-        for elem in generation:
-            check_matrix.append(elem)
-            parent_child_loads.append(max(count_load(elem, n, m, matrix)))
-        for elem in individuals:
-            check_matrix.append(elem)
-            parent_child_loads.append(max(count_load(elem, n, m, matrix)))
+        while k != counter - 1:
+            previous_best_result = best_result
+            gen_count += 1
+            generation = []
+            best_generation_loads = []
+            for _ in range(z):
 
-        best_result = sorted(parent_child_loads)[0]
+                # Алгоритм образования пар родителей:
+                parent1 = c(individuals)
+                individuals_no_repeat = deepcopy(individuals)
+                individuals_no_repeat.remove(parent1)  # дабы избежать попадание рандома на первого
+                parent2 = c(individuals_no_repeat)
+                while r(0, 100) <= Pk:
+                    parent2 = c(individuals_no_repeat)
+                parents_list = (parent1, parent2)
 
-        # Создаём матрицу индексов лучших особей:
-        best_index = []
-        for elem in sorted(parent_child_loads)[:z]:
-            for i, el in enumerate(parent_child_loads):
-                if elem == el:
-                    best_index.append(i)
-                    break
+                # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
+                children = []
+                load_list = []
+                counter_child = 0
+                crossover_result = crossover(parent1, parent2)
+                for i, child in enumerate(crossover_result):
+                    children.append(child)
+                    load_list.append(count_load(child, n, m, matrix))
+                    counter_child += 1
+                    muted_child = mutation(child, Pm)
+                    children.append(muted_child)
+                    load_list.append(count_load(muted_child, n, m, matrix))
+                best_child_load, best_child_index = best_load(load_list)
+                num = 0
+                generation.append(children[best_child_index])
 
-        # Добавляем лучших особей поколения среди родителей и детей:
-        individuals = []
-        for elem in best_index:
-            individuals.append(check_matrix[elem])
+            # Список всех детей:
+            listMax = []
+            for i, child in enumerate(generation):
+                listMax.append(count_load(child, n, m, matrix))
+
+            # Индекс лучшего результата в поколении
+            currentLoad = best_load(listMax)[1]
+
+            # Собираем матрицу родителей и лучших детей для отбора:
+            check_matrix, parent_child_loads = [], []
+            for elem in generation:
+                check_matrix.append(elem)
+                parent_child_loads.append(max(count_load(elem, n, m, matrix)))
+            for elem in individuals:
+                check_matrix.append(elem)
+                parent_child_loads.append(max(count_load(elem, n, m, matrix)))
+
+            best_result = sorted(parent_child_loads)[0]
+
+            # Создаём матрицу индексов лучших особей:
+            best_index = []
+            for elem in sorted(parent_child_loads)[:z]:
+                for i, el in enumerate(parent_child_loads):
+                    if elem == el:
+                        best_index.append(i)
+                        break
+
+            # Добавляем лучших особей поколения среди родителей и детей:
+            individuals = []
+            for elem in best_index:
+                individuals.append(check_matrix[elem])
 
 
-        # Если сквозь поколения была лучшая загрузка ждем когда она не повторится или улучшится:
-        if best_result < best_of_all_generations_result:
-            best_of_all_generations_result = best_result
-            counter = 0
+            # Если сквозь поколения была лучшая загрузка ждем когда она не повторится или улучшится:
+            if best_result < best_of_all_generations_result:
+                best_of_all_generations_result = best_result
+                counter = 0
 
-        # Если загрузка предыдущего поколения равна загрузке текущего
-        if best_of_all_generations_result == best_result:
-            counter += 1
-        else:
-            counter = 0
-    f.write(f"{100 - repeat} iteration | итерация: {best_result}")
-    f.write("\n")
+            # Если загрузка предыдущего поколения равна загрузке текущего
+            if best_of_all_generations_result == best_result:
+                counter += 1
+            else:
+                counter = 0
+        f.write(f"{best_result} ")
+    f.close()
+    with open(txt_file, 'r', encoding="utf-8") as f:
+        result = [int(elem) for elem in f.readline().split()]
+        print(sum(result) / len(result))
+    time.sleep(2)
+# print("Метод минмальных элементов:")
+# for row in min_elem_method:
+#     print(*row)
+# print("Метод Плотникова-Зверева:")
+# for row in plotnikov_zverev_method:
+#     print(*row)
+# print("Метод квадратов:")
+# for row in square_method:
+#     print(*row)
+# print("Метод барьера:")
+# for row in barrier_method:
+#     print(*row)
 
-f.close()
-
-# Вывод данных из txt-файлов:
-# show_generation(txt_file, gen_count, word)
