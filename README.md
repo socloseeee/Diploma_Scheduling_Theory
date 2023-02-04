@@ -4,9 +4,10 @@ For the formation of the initial generation, algorithms are considered: The meth
 
 ### The method of minimal elements
 The essence of this method is that we simply take the smallest element from each line.
-
-![Метод минмальных элементов](https://user-images.githubusercontent.com/65871712/216768440-aeac3a1b-0636-4588-88b1-6699748891b9.png) [0 16 0 0 0]
+[0 16 0 0 0]
 [10 16 0 0 0]
+![Метод минмальных элементов](https://user-images.githubusercontent.com/65871712/216768440-aeac3a1b-0636-4588-88b1-6699748891b9.png) 
+
 ### The Plotnikov-Zverev method
 A one-dimensional array is formed equal to the number of elements in each row of the matrix. 
 We move this one-dimensional array from the first row of the matrix. 
