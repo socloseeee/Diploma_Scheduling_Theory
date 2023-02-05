@@ -2,6 +2,13 @@
 Solving an inhomogeneous minemax problem of scheduling theory by the goldberg method with different formation of the initial generation.
 For the formation of the initial generation, algorithms are considered: The method of minimal elements, the Plotnikov-Zverev method, the method of squares and the barrier method
 
+## The essence of the work
+Form the initial generation using various methods and compare their effectiveness as a solution to the distribution problem of scheduling theory using the Goldberg method.
+### Algorythm(n repeats):
+1. We choose how we form the initial generation. For example, 50 randomly + 50 by determinate method, etc.
+2. Choose determinate method (a little below there is a brief description of each method) to form initial generation
+3. This is where GA (Genethic Algorythm) comes into play. We take z individuals. Crossing with each other using the crossover operation, along the way, do not forget about mutations! At the end, we compare the loads of the best children with their parents and select the best individuals for subsequent generations. This is all we do until the best result of the load in generation is repeated k times.
+
 ## Methods for the formation of the initial generation
 *All screens are from methods_analysis.py*
 
@@ -27,6 +34,7 @@ The barrier is calculated equal to the sum of loads per processor using the meth
 Before the barrier (-), we calculate by the method of minimal elements, and after by the Plotnikov-Zverev method.
 
 ![Метод барьера](https://user-images.githubusercontent.com/65871712/216844878-f418f483-3b91-40f1-b7ef-3178f9afffa1.png)
+
 
 ## The result of work with various formations of the initial generation
 *All screens are from experiments.py*
