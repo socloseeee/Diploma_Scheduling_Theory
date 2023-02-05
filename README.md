@@ -13,8 +13,7 @@ A one-dimensional array is formed equal to the number of elements in each row of
 We move this one-dimensional array from the first row of the matrix. 
 For each iteration, we add index-wise the elements of the matrix row and one-dimensional array, then compare and add the element that gives us the smallest difference between the elements of the one-dimensional array.
 
-![Метод Плотникова-Зверева](https://user-images.githubusercontent.com/65871712/216844871-f02687c4-6b9f-48b2-82e6-5edc6f5c0917.png)
-
+![Метод Плотникова-Зверева](https://user-images.githubusercontent.com/65871712/216844871-f02687c4-6b9f-48b2-82e6-5edc6f5c0917.png) 
 *screen from methods_analysis.py*
 ### The method of squares
 The same as the Plotnikov-Zverev method, only when adding we square the sum and then select the element with the least square of the sum.
