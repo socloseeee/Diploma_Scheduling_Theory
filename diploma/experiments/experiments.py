@@ -99,8 +99,8 @@ Pk = 99  # вероятность кроссовера
 Pm = 99  # вероятность мутации
 
 # Открываем файл для записи:
-txt_file = 'experiments/result.txt'
-f = open(txt_file, 'w', encoding="utf-8")
+txt_file1 = 'experiments/result.txt'
+result_file = open(txt_file1, 'w', encoding="utf-8")
 
 matrix = generate_matrix(m, n, T1, T2)
 matrix_sum = sorted([sum(elem) for elem in matrix], reverse=True)
@@ -198,7 +198,7 @@ for method in methods:
         method_str = "square_method"
     elif method == barrier_method:
         method_str = "barrier_method"
-    txt_file = f'experiments/{method_str}_analysis.txt'
+    txt_file = f'experiments/methods_data/{method_str}_analysis.txt'
     f = open(txt_file, 'w', encoding="utf-8")
     with tqdm(range(repeat), ncols=100, desc=f"{method_str}") as t:
         for _ in t:
@@ -300,7 +300,14 @@ for method in methods:
             all_repeats_result = [int(elem) for elem in f.readline().split()]
             results.append(Fore.YELLOW + str(sum(all_repeats_result) / len(all_repeats_result)) + Style.RESET_ALL)
         work_time.append(Fore.GREEN + str(t.format_interval(t.format_dict['elapsed'])) + Style.RESET_ALL)
-        time.sleep(2)
-for iter_method, elapsed_time, result in zip(str_methods, work_time, results):
+        time.sleep(1)
+for iter_method, elapsed_time, result, show_method in zip(str_methods, work_time, results, methods):
     print(f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time}\nResult | Результат: {result}")
-
+    result_file.write(f"\n{iter_method[5:-4]}\nElapsed time | Время работы: {elapsed_time[5:-4]}\nResult | Результат: {result[5:-4]}")
+    for row in show_method:
+        print(*row)
+        for elem in row:
+            result_file.write(f"{elem} ")
+        result_file.write("\n")
+    result_file.write(f"\n")
+result_file.close()
