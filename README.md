@@ -2,6 +2,9 @@
 Solving an inhomogeneous minemax problem of scheduling theory by the goldberg method with different formation of the initial generation.
 For the formation of the initial generation, algorithms are considered: The method of minimal elements, the Plotnikov-Zverev method, the method of squares and the barrier method
 
+## Methods for the formation of the initial generation
+*All screens are from methods_analysis.py*
+
 ### The method of minimal elements
 The essence of this method is that we simply take the smallest element from each line.
 
@@ -24,6 +27,11 @@ The barrier is calculated equal to the sum of loads per processor using the meth
 Before the barrier (-), we calculate by the method of minimal elements, and after by the Plotnikov-Zverev method.
 
 ![Метод барьера](https://user-images.githubusercontent.com/65871712/216844878-f418f483-3b91-40f1-b7ef-3178f9afffa1.png)
+
+## The result of work with various formations of the initial generation
+*All screens are from experiments.py*
+![image](https://user-images.githubusercontent.com/65871712/216846398-968f404b-8b61-423b-902b-14323f54bb0d.png)
+
 
 ## Directory description
 Diploma_Scheduling_Theory/diploma/experiments - this is a directory in which, through multiple iterations, the results of the GA execution under different conditions are singled out for the purpose of their subsequent comparison.
