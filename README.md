@@ -30,7 +30,7 @@ Before the barrier (-), we calculate by the method of minimal elements, and afte
 
 ## The result of work with various formations of the initial generation
 *All screens are from experiments.py*
-![image](https://user-images.githubusercontent.com/65871712/216846398-968f404b-8b61-423b-902b-14323f54bb0d.png)
+![216846398-968f404b-8b61-423b-902b-14323f54bb0d](https://user-images.githubusercontent.com/65871712/216846824-0aa1f0d9-1c67-4031-b387-67a0bd255eb8.png)
 
 
 ## Directory description
