@@ -98,6 +98,10 @@ k = 30   # кол-во поколений подряд при котором л�
 Pk = 99  # вероятность кроссовера
 Pm = 99  # вероятность мутации
 
+# Открываем файл для записи:
+txt_file = 'experiments/result.txt'
+f = open(txt_file, 'w', encoding="utf-8")
+
 matrix = generate_matrix(m, n, T1, T2)
 matrix_sum = sorted([sum(elem) for elem in matrix], reverse=True)
 matrix = sorted(matrix, key=lambda x: sum(x), reverse=True)
@@ -174,8 +178,15 @@ for j in range(m):
         barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) + Style.RESET_ALL for i in range(len(result_str2))])
 
 methods = [min_elem_method, plotnikov_zverev_method, square_method, barrier_method]
-repeat = int(input("Number of repetitions of GA cycles | Количество повторов цикла ГА > "))
-print(f"Performing a study based on {repeat} iterations | Выполняем исследование на основе {repeat} итераций")
+work_time, results = [], []
+str_methods = (
+    Fore.BLUE + "The method of minimal elements | Метод минмальных элементов:" + Style.RESET_ALL,
+    Fore.BLUE + "The Plotnikov-Zverev method | Метод Плотникова-Зверева:" + Style.RESET_ALL,
+    Fore.BLUE + "The method of squares | Метод квадратов:" + Style.RESET_ALL,
+    Fore.BLUE + "The barrier method | Метод барьера:" + Style.RESET_ALL)
+repeat = int(input(Fore.MAGENTA + "Number of repetitions of GA cycles | Количество повторов цикла ГА > " + Style.RESET_ALL))
+repeat_str = Fore.LIGHTYELLOW_EX + str(repeat) + Style.RESET_ALL
+print(f"Performing a study based on {repeat_str} iterations | Выполняем исследование на основе {repeat_str} итераций")
 # Генерация особей и последующее выполнение ГА
 for method in methods:
     # Открываем файл для записи:
@@ -189,115 +200,107 @@ for method in methods:
         method_str = "barrier_method"
     txt_file = f'experiments/{method_str}_analysis.txt'
     f = open(txt_file, 'w', encoding="utf-8")
-    for _ in tqdm(range(repeat), ncols=100, desc=f"{method_str}"):
-        individuals = [generate_individ(method, n, 0) for _ in range(z//2)]
-        [individuals.append(generate_individ(m, n, 1)) for _ in range(z//2)]
+    with tqdm(range(repeat), ncols=100, desc=f"{method_str}") as t:
+        for _ in t:
+            individuals = [generate_individ(method, n, 0) for _ in range(z//2)]
+            [individuals.append(generate_individ(m, n, 1)) for _ in range(z//2)]
 
-        # Особи нулевого поколения (родители для будущего поколения):
-        listMax = []
-        newline = "\n"
-        for i, individual in enumerate(individuals):
-            load = count_load(individual, n, m, matrix)
-            listMax.append(load)
-        best_result, bestLoad_index = best_load(listMax)  # лучшая загрузка и (индекс лучшей особи - 1)
-        best_individual = individuals[bestLoad_index]
-        previous_best_result, bestLoad_index = 0, 0
-        best_of_all_generations_result = best_result
-
-        # Переменные для ГА и сам ГА:
-        counter, gen_count = 0, 0
-
-        while k != counter - 1:
-            previous_best_result = best_result
-            gen_count += 1
-            generation = []
-            best_generation_loads = []
-            for _ in range(z):
-
-                # Алгоритм образования пар родителей:
-                parent1 = c(individuals)
-                individuals_no_repeat = deepcopy(individuals)
-                individuals_no_repeat.remove(parent1)  # дабы избежать попадание рандома на первого
-                parent2 = c(individuals_no_repeat)
-                while r(0, 100) <= Pk:
-                    parent2 = c(individuals_no_repeat)
-                parents_list = (parent1, parent2)
-
-                # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
-                children = []
-                load_list = []
-                counter_child = 0
-                crossover_result = crossover(parent1, parent2)
-                for i, child in enumerate(crossover_result):
-                    children.append(child)
-                    load_list.append(count_load(child, n, m, matrix))
-                    counter_child += 1
-                    muted_child = mutation(child, Pm)
-                    children.append(muted_child)
-                    load_list.append(count_load(muted_child, n, m, matrix))
-                best_child_load, best_child_index = best_load(load_list)
-                num = 0
-                generation.append(children[best_child_index])
-
-            # Список всех детей:
+            # Особи нулевого поколения (родители для будущего поколения):
             listMax = []
-            for i, child in enumerate(generation):
-                listMax.append(count_load(child, n, m, matrix))
+            newline = "\n"
+            for i, individual in enumerate(individuals):
+                load = count_load(individual, n, m, matrix)
+                listMax.append(load)
+            best_result, bestLoad_index = best_load(listMax)  # лучшая загрузка и (индекс лучшей особи - 1)
+            best_individual = individuals[bestLoad_index]
+            previous_best_result, bestLoad_index = 0, 0
+            best_of_all_generations_result = best_result
 
-            # Индекс лучшего результата в поколении
-            currentLoad = best_load(listMax)[1]
+            # Переменные для ГА и сам ГА:
+            counter, gen_count = 0, 0
 
-            # Собираем матрицу родителей и лучших детей для отбора:
-            check_matrix, parent_child_loads = [], []
-            for elem in generation:
-                check_matrix.append(elem)
-                parent_child_loads.append(max(count_load(elem, n, m, matrix)))
-            for elem in individuals:
-                check_matrix.append(elem)
-                parent_child_loads.append(max(count_load(elem, n, m, matrix)))
+            while k != counter - 1:
+                previous_best_result = best_result
+                gen_count += 1
+                generation = []
+                best_generation_loads = []
+                for _ in range(z):
 
-            best_result = sorted(parent_child_loads)[0]
+                    # Алгоритм образования пар родителей:
+                    parent1 = c(individuals)
+                    individuals_no_repeat = deepcopy(individuals)
+                    individuals_no_repeat.remove(parent1)  # дабы избежать попадание рандома на первого
+                    parent2 = c(individuals_no_repeat)
+                    while r(0, 100) <= Pk:
+                        parent2 = c(individuals_no_repeat)
+                    parents_list = (parent1, parent2)
 
-            # Создаём матрицу индексов лучших особей:
-            best_index = []
-            for elem in sorted(parent_child_loads)[:z]:
-                for i, el in enumerate(parent_child_loads):
-                    if elem == el:
-                        best_index.append(i)
-                        break
+                    # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
+                    children = []
+                    load_list = []
+                    counter_child = 0
+                    crossover_result = crossover(parent1, parent2)
+                    for i, child in enumerate(crossover_result):
+                        children.append(child)
+                        load_list.append(count_load(child, n, m, matrix))
+                        counter_child += 1
+                        muted_child = mutation(child, Pm)
+                        children.append(muted_child)
+                        load_list.append(count_load(muted_child, n, m, matrix))
+                    best_child_load, best_child_index = best_load(load_list)
+                    num = 0
+                    generation.append(children[best_child_index])
 
-            # Добавляем лучших особей поколения среди родителей и детей:
-            individuals = []
-            for elem in best_index:
-                individuals.append(check_matrix[elem])
+                # Список всех детей:
+                listMax = []
+                for i, child in enumerate(generation):
+                    listMax.append(count_load(child, n, m, matrix))
+
+                # Индекс лучшего результата в поколении
+                currentLoad = best_load(listMax)[1]
+
+                # Собираем матрицу родителей и лучших детей для отбора:
+                check_matrix, parent_child_loads = [], []
+                for elem in generation:
+                    check_matrix.append(elem)
+                    parent_child_loads.append(max(count_load(elem, n, m, matrix)))
+                for elem in individuals:
+                    check_matrix.append(elem)
+                    parent_child_loads.append(max(count_load(elem, n, m, matrix)))
+
+                best_result = sorted(parent_child_loads)[0]
+
+                # Создаём матрицу индексов лучших особей:
+                best_index = []
+                for elem in sorted(parent_child_loads)[:z]:
+                    for i, el in enumerate(parent_child_loads):
+                        if elem == el:
+                            best_index.append(i)
+                            break
+
+                # Добавляем лучших особей поколения среди родителей и детей:
+                individuals = []
+                for elem in best_index:
+                    individuals.append(check_matrix[elem])
 
 
-            # Если сквозь поколения была лучшая загрузка ждем когда она не повторится или улучшится:
-            if best_result < best_of_all_generations_result:
-                best_of_all_generations_result = best_result
-                counter = 0
+                # Если сквозь поколения была лучшая загрузка ждем когда она не повторится или улучшится:
+                if best_result < best_of_all_generations_result:
+                    best_of_all_generations_result = best_result
+                    counter = 0
 
-            # Если загрузка предыдущего поколения равна загрузке текущего
-            if best_of_all_generations_result == best_result:
-                counter += 1
-            else:
-                counter = 0
-        f.write(f"{best_result} ")
-    f.close()
-    with open(txt_file, 'r', encoding="utf-8") as f:
-        result = [int(elem) for elem in f.readline().split()]
-        print(sum(result) / len(result))
-    time.sleep(2)
-# print("Метод минмальных элементов:")
-# for row in min_elem_method:
-#     print(*row)
-# print("Метод Плотникова-Зверева:")
-# for row in plotnikov_zverev_method:
-#     print(*row)
-# print("Метод квадратов:")
-# for row in square_method:
-#     print(*row)
-# print("Метод барьера:")
-# for row in barrier_method:
-#     print(*row)
+                # Если загрузка предыдущего поколения равна загрузке текущего
+                if best_of_all_generations_result == best_result:
+                    counter += 1
+                else:
+                    counter = 0
+            f.write(f"{best_result} ")
+        f.close()
+        with open(txt_file, 'r', encoding="utf-8") as f:
+            all_repeats_result = [int(elem) for elem in f.readline().split()]
+            results.append(Fore.YELLOW + str(sum(all_repeats_result) / len(all_repeats_result)) + Style.RESET_ALL)
+        work_time.append(Fore.GREEN + str(t.format_interval(t.format_dict['elapsed'])) + Style.RESET_ALL)
+        time.sleep(2)
+for iter_method, elapsed_time, result in zip(str_methods, work_time, results):
+    print(f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time}\nResult | Результат: {result}")
 

@@ -104,6 +104,21 @@ def show(matrix) -> None:
             f.write(f"{i}  ")
         f.write("\n")
 
+# Метод отображения c одномерным массивом
+def show_with_res(matrix, n) -> None:
+    str_res = [0] * n
+    for j in matrix:
+        for i in j:
+            f.write(f"{i}  ")
+        for i, elem in enumerate(j):
+            if "\x1b[31m" in str(elem):
+                str_res[i] += int(elem[5:7])
+                break
+        # for i in str_res:
+        #     f.write(f"{i}  ")
+        # f.write(f"\n")
+        f.write(f" {[str(elem).ljust(2) for elem in str_res]}\n")
+
 # Отображаем данные
 def show_generation(txt_file, amount_of_generations, word) -> None:
     with open(txt_file, 'r', encoding="utf-8") as file:
@@ -367,16 +382,16 @@ method = min_elem_method
 # method = square_method
 # method = barrier_method
 f.write(f"Minimum element method | Метод минимальных элементов:\n")
-show(min_elem_method)
+show_with_res(min_elem_method, n)
 f.write(f"{result} = {max(result)}\n")
 f.write(f"Plotnikov-Zverev method | Метод Плотникова-Зверева:\n")
-show(plotnikov_zverev_method)
+show_with_res(plotnikov_zverev_method, n)
 f.write(f"{result_str} = {max(result_str)}\n")
-f.write(f"Quadrangle method | Метод Квадратов:\n")
-show(square_method)
+f.write(f"Square method | Метод Квадратов:\n")
+show_with_res(square_method, n)
 f.write(f"{result_str1} = {max(result_str1)}\n")
 f.write(f"Barrier method | Метод Барьера:\n")
-show(barrier_method)
+show_with_res(barrier_method, n)
 f.write(f"{result_str2} = {max(result_str2)}\n")
 # f.write('\n')
 f.write(f"#\n\n")
