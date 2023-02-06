@@ -30,8 +30,7 @@ for i, elem in enumerate(elapsed_time):
 # elapsed_time = sorted(elapsed_time)
 # plt.yticks([int(elem[-2:]) for elem in elapsed_time])
 fig, ax = plt.subplots()
-mng = plt.get_current_fig_manager()
-mng.window.state('zoomed')
+fig.set_size_inches(8, 5.5)
 fig.canvas.set_window_title('Result')
 f1, f2, f3, f4 = [ax.bar(x, y, label=z, width=0.025) for x, y, z in zip(data, elapsed_time, str_methods)]
 # print(ax)
