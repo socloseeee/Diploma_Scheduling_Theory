@@ -40,6 +40,7 @@ Before the barrier (-), we calculate by the method of minimal elements, and afte
 *All screens are from experiments.py*
 ![216846398-968f404b-8b61-423b-902b-14323f54bb0d](https://user-images.githubusercontent.com/65871712/216846824-0aa1f0d9-1c67-4031-b387-67a0bd255eb8.png)
 
+![image](https://user-images.githubusercontent.com/65871712/217037811-2c07e03a-066f-48f0-98ed-ab6e8910b689.png)
 
 ## Directory description
 Diploma_Scheduling_Theory/diploma/experiments - this is a directory in which, through multiple iterations, the results of the GA execution under different conditions are singled out for the purpose of their subsequent comparison.
