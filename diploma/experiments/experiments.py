@@ -5,6 +5,7 @@ from random import choice as c, randint as r
 from colorama import Fore, init, Style, Back
 from tqdm import tqdm
 import time
+import matplotlib.pyplot as plt
 
 init(autoreset=True)
 
@@ -183,7 +184,8 @@ str_methods = (
     Fore.BLUE + "The method of minimal elements | Метод минмальных элементов:" + Style.RESET_ALL,
     Fore.BLUE + "The Plotnikov-Zverev method | Метод Плотникова-Зверева:" + Style.RESET_ALL,
     Fore.BLUE + "The method of squares | Метод квадратов:" + Style.RESET_ALL,
-    Fore.BLUE + "The barrier method | Метод барьера:" + Style.RESET_ALL)
+    Fore.BLUE + "The barrier method | Метод барьера:" + Style.RESET_ALL
+)
 repeat = int(input(Fore.MAGENTA + "Number of repetitions of GA cycles | Количество повторов цикла ГА > " + Style.RESET_ALL))
 repeat_str = Fore.LIGHTYELLOW_EX + str(repeat) + Style.RESET_ALL
 print(f"Performing a study based on {repeat_str} iterations | Выполняем исследование на основе {repeat_str} итераций")
@@ -300,10 +302,10 @@ for method in methods:
             all_repeats_result = [int(elem) for elem in f.readline().split()]
             results.append(Fore.YELLOW + str(sum(all_repeats_result) / len(all_repeats_result)) + Style.RESET_ALL)
         work_time.append(Fore.GREEN + str(t.format_interval(t.format_dict['elapsed'])) + Style.RESET_ALL)
-        time.sleep(1)
+        time.sleep(2)
 for iter_method, elapsed_time, result, show_method in zip(str_methods, work_time, results, methods):
     print(f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time}\nResult | Результат: {result}")
-    result_file.write(f"\n{iter_method[5:-4]}\nElapsed time | Время работы: {elapsed_time[5:-4]}\nResult | Результат: {result[5:-4]}")
+    result_file.write(f"\n{iter_method[5:-4]}\nElapsed time | Время работы: {elapsed_time[5:-4]}\nResult | Результат: {result[5:-4]}\n")
     for row in show_method:
         print(*row)
         for elem in row:
