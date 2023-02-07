@@ -6,19 +6,20 @@ from copy import deepcopy
 
 data, elapsed_time = [], []
 str_methods = (
-    "The method of minimal elements | Метод минмальных элементов:",
-    "The Plotnikov-Zverev method | Метод Плотникова-Зверева:",
-    "The method of squares | Метод квадратов:",
-    "The barrier method | Метод барьера:"
+    "The method of minimal elements | Метод минмальных элементов",
+    "The Plotnikov-Zverev method | Метод Плотникова-Зверева",
+    "The method of squares | Метод квадратов",
+    "The barrier method | Метод барьера"
 )
 with open("result.txt", 'r', encoding="UTF-8") as file:
     file_data = file.readlines()
+    print(file_data)
     for elem in file_data:
         if 'Result | Результат: ' in elem:
-            number = float(elem[-6:-1])
+            number = float(elem[elem.index(":") + 1:elem.index("\n")])
             data.append(number)
         elif 'Elapsed time | Время работы: ' in elem:
-            time = elem[-5:-1]
+            time = elem[elem.index(":") + 1:elem.index("\n")]
             elapsed_time.append(time)
 for i, elem in enumerate(elapsed_time):
     min, secs = [int(i) for i in elem.split(':')]
@@ -30,9 +31,9 @@ for i, elem in enumerate(elapsed_time):
 # elapsed_time = sorted(elapsed_time)
 # plt.yticks([int(elem[-2:]) for elem in elapsed_time])
 fig, ax = plt.subplots()
-fig.set_size_inches(8, 5.5)
+fig.set_size_inches(14, 8)
 fig.canvas.set_window_title('Result')
-f1, f2, f3, f4 = [ax.bar(x, y, label=z, width=0.025) for x, y, z in zip(data, elapsed_time, str_methods)]
+f1, f2, f3, f4 = [ax.bar(x, y, label=z, width=0.075) for x, y, z in zip(data, elapsed_time, str_methods)]
 # print(ax)
 # print(f1)
 # wid = 0.025
@@ -45,8 +46,13 @@ ax.legend()
 plt.title('Результаты при начальном формировании \n(50 рандомно + 50 детерминированно)')
 # plt.xticks(data, data)
 plt.xlabel('Result | Результаты')
+[plt.text(x - 0.05, y + 0.25, x, bbox=dict(boxstyle="square")) for x, y in zip(data, elapsed_time)]
+elapsed_time = sorted(elapsed_time)
 data = sorted(data)
+print(elapsed_time, data)
 plt.xlim(left=data[0] - 0.05, right=data[-1] + 0.05)
+plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
+print(ax.bar)
 # plt.legend(f1, str_methods[0])
 print(data)
 # plt.ylim(elapsed_time[0], elapsed_time[-1])

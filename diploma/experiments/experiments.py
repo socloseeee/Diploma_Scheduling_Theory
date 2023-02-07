@@ -102,12 +102,12 @@ Pm = 99  # вероятность мутации
 # Открываем файл для записи:
 txt_file1 = 'experiments/result.txt'
 result_file = open(txt_file1, 'w', encoding="utf-8")
+# result_file.write("")
 
 matrix = generate_matrix(m, n, T1, T2)
 matrix_sum = sorted([sum(elem) for elem in matrix], reverse=True)
 matrix = sorted(matrix, key=lambda x: sum(x), reverse=True)
 
-# Назначение метода в общую переменную
 # Метод минимальных элементов
 new_matrix, result = [], [0] * n
 for j in range(m):
@@ -179,6 +179,7 @@ for j in range(m):
         barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) + Style.RESET_ALL for i in range(len(result_str2))])
 
 methods = [min_elem_method, plotnikov_zverev_method, square_method, barrier_method]
+methods_strs = ["minimum_elem_method", "Plotnikov_Zverev_method", "square_method", "barrier_method"]
 work_time, results = [], []
 str_methods = (
     Fore.BLUE + "The method of minimal elements | Метод минмальных элементов:" + Style.RESET_ALL,
@@ -190,16 +191,8 @@ repeat = int(input(Fore.MAGENTA + "Number of repetitions of GA cycles | Коли
 repeat_str = Fore.LIGHTYELLOW_EX + str(repeat) + Style.RESET_ALL
 print(f"Performing a study based on {repeat_str} iterations | Выполняем исследование на основе {repeat_str} итераций")
 # Генерация особей и последующее выполнение ГА
-for method in methods:
+for method, method_str in zip(methods, methods_strs):
     # Открываем файл для записи:
-    if method == min_elem_method:
-        method_str = "minimum_elem_method"
-    elif method == plotnikov_zverev_method:
-        method_str = "Plotnikov_Zverev_method"
-    elif method == square_method:
-        method_str = "square_method"
-    elif method == barrier_method:
-        method_str = "barrier_method"
     txt_file = f'experiments/methods_data/{method_str}_analysis.txt'
     f = open(txt_file, 'w', encoding="utf-8")
     with tqdm(range(repeat), ncols=100, desc=f"{method_str}") as t:
