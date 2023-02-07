@@ -41,7 +41,7 @@ Before the barrier (-), we calculate by the method of minimal elements, and afte
 ![216846398-968f404b-8b61-423b-902b-14323f54bb0d](https://user-images.githubusercontent.com/65871712/216846824-0aa1f0d9-1c67-4031-b387-67a0bd255eb8.png)
 
 *Screen is from visualizing_histogram.py*
-![image](https://user-images.githubusercontent.com/65871712/217038221-068c26f0-2641-4ebd-b3b4-cb6da2196706.png)
+![image](https://user-images.githubusercontent.com/65871712/217184148-62bfa4b3-3327-4b96-af43-7d28bf013e9a.png)
 
 ## Directory description
 Diploma_Scheduling_Theory/diploma/experiments - this is a directory in which, through multiple iterations, the results of the GA execution under different conditions are singled out for the purpose of their subsequent comparison.
