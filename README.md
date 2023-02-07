@@ -37,10 +37,14 @@ Before the barrier (-), we calculate by the method of minimal elements, and afte
 
 
 ## The result of work with various formations of the initial generation
-*All screens are from experiments.py*
+*Screen is from experiments.py*
 ![216846398-968f404b-8b61-423b-902b-14323f54bb0d](https://user-images.githubusercontent.com/65871712/216846824-0aa1f0d9-1c67-4031-b387-67a0bd255eb8.png)
 
-![image](https://user-images.githubusercontent.com/65871712/217037811-2c07e03a-066f-48f0-98ed-ab6e8910b689.png)
+*Screens are from visualizing_histogram.py*
+![image](https://user-images.githubusercontent.com/65871712/217184148-62bfa4b3-3327-4b96-af43-7d28bf013e9a.png)
+
+![image](https://user-images.githubusercontent.com/65871712/217190921-2543fb77-b6d4-4130-8399-330c5a0082b0.png)
+
 
 ## Directory description
 Diploma_Scheduling_Theory/diploma/experiments - this is a directory in which, through multiple iterations, the results of the GA execution under different conditions are singled out for the purpose of their subsequent comparison.
