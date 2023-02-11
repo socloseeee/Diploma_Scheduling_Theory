@@ -188,7 +188,27 @@ str_methods = (
     Fore.BLUE + "The barrier method | Метод барьера:" + Style.RESET_ALL
 )
 repeat = int(input(Fore.MAGENTA + "Number of repetitions of GA cycles | Количество повторов цикла ГА > " + Style.RESET_ALL))
+create_way = int(
+    input(
+        "Way of forming the initial generation | Способ формирования начального поколения:\n"
+        "100% random species | 100% рандомных особей(0)\n"
+        "50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей(1)\n"
+        "25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей(2)\n"
+        "75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей(3)\n"
+        "> "
+    )
+)
+result_file.write("Way of forming | Способ формирования:")
+if create_way == 0:
+    result_file.write("100% random species | 100% рандомных особей\n\n")
+elif create_way == 1:
+    result_file.write("50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей\n\n")
+elif create_way == 2:
+    result_file.write("25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей\n\n")
+elif create_way == 3:
+    result_file.write("75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей\n\n")
 repeat_str = Fore.LIGHTYELLOW_EX + str(repeat) + Style.RESET_ALL
+individuals = []
 print(f"Performing a study based on {repeat_str} iterations | Выполняем исследование на основе {repeat_str} итераций")
 # Генерация особей и последующее выполнение ГА
 for method, method_str in zip(methods, methods_strs):
@@ -197,8 +217,17 @@ for method, method_str in zip(methods, methods_strs):
     f = open(txt_file, 'w', encoding="utf-8")
     with tqdm(range(repeat), ncols=100, desc=f"{method_str}") as t:
         for _ in t:
-            individuals = [generate_individ(method, n, 0) for _ in range(z//2)]
-            [individuals.append(generate_individ(m, n, 1)) for _ in range(z//2)]
+            if create_way == 0:
+                [individuals.append(generate_individ(m, n, 1)) for _ in range(z)]
+            elif create_way == 1:
+                individuals = [generate_individ(method, n, 0) for _ in range(z//2)]
+                [individuals.append(generate_individ(m, n, 1)) for _ in range(z//2)]
+            elif create_way == 2:
+                individuals = [generate_individ(method, n, 0) for _ in range(z//4)]
+                [individuals.append(generate_individ(m, n, 1)) for _ in range((z//4) * 3)]
+            elif create_way == 3:
+                individuals = [generate_individ(method, n, 0) for _ in range((z//4) * 3)]
+                [individuals.append(generate_individ(m, n, 1)) for _ in range(z//4)]
 
             # Особи нулевого поколения (родители для будущего поколения):
             listMax = []

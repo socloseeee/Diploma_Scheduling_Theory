@@ -4,7 +4,7 @@ from decimal import *
 import numpy as np
 from copy import deepcopy
 
-data, elapsed_time = [], []
+data, elapsed_time, way_of_forming = [], [], ''
 str_methods = (
     "The method of minimal elements | Метод минмальных элементов",
     "The Plotnikov-Zverev method | Метод Плотникова-Зверева",
@@ -13,9 +13,11 @@ str_methods = (
 )
 with open("result.txt", 'r', encoding="UTF-8") as file:
     file_data = file.readlines()
-    print(file_data)
-    for elem in file_data:
-        if 'Result | Результат: ' in elem:
+    # print(file_data)
+    for i, elem in enumerate(file_data):
+        if 'Way of forming | Способ формирования:' in elem:
+            way_of_forming = file_data[i + 1]
+        elif 'Result | Результат: ' in elem:
             number = float(elem[elem.index(":") + 1:elem.index("\n")])
             data.append(number)
         elif 'Elapsed time | Время работы: ' in elem:
@@ -32,6 +34,7 @@ for i, elem in enumerate(elapsed_time):
 # plt.yticks([int(elem[-2:]) for elem in elapsed_time])
 fig, ax = plt.subplots()
 fig.set_size_inches(14, 8)
+# fig.set_size_inches(8, 5.5)
 fig.canvas.set_window_title('Result')
 f1, f2, f3, f4 = [ax.bar(x, y, label=z, width=0.075) for x, y, z in zip(data, elapsed_time, str_methods)]
 # print(ax)
@@ -41,12 +44,12 @@ f1, f2, f3, f4 = [ax.bar(x, y, label=z, width=0.075) for x, y, z in zip(data, el
 # f2.set(width=wid, x=data[1], color='b')
 # f3.set(width=wid, x=data[2], color='m')
 # f4.set(width=wid, x=data[3], color='r')
-ax.legend()
+ax.legend(loc='best')
 # print(data)
-plt.title('Результаты при начальном формировании \n(50 рандомно + 50 детерминированно)')
+plt.title(f'Результаты при начальном формировании \n{way_of_forming}')
 # plt.xticks(data, data)
 plt.xlabel('Result | Результаты')
-[plt.text(x - 0.05, y + 0.25, x, bbox=dict(boxstyle="square")) for x, y in zip(data, elapsed_time)]
+[plt.text(x - 0.05, y + 0.35, x, bbox=dict(boxstyle="square")) for x, y in zip(data, elapsed_time)]
 elapsed_time = sorted(elapsed_time)
 data = sorted(data)
 print(elapsed_time, data)
