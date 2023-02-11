@@ -51,17 +51,17 @@ plt.xlabel('Result | Результаты')
 [plt.text(x - 0.05, y + 0.35, x, bbox=dict(boxstyle="square")) for x, y in zip(new_data, new_elapsed)]
 elapsed_time = sorted(elapsed_time)
 data = sorted(data)
-plt.xlim(left=data[0] - (data[-1] - data[0]) / 20, right=data[-1] + (data[-1] - data[0]) / 20)
+plt.xlim(left=data[0] - (data[-1] - data[0]) / 20, right=data[-1] + (data[-1] - data[0]) / 20) # 0.05
 plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
 plt.ylabel('Elapsed time | Затраченное время')
 if way_of_forming == '100% random species | 100% рандомных особей\n':
-    plt.savefig("Result_100r")
+    plt.savefig("histograms/Result_100r")
 elif way_of_forming == '50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей\n':
-    plt.savefig("Result_50r+50d")
+    plt.savefig("histograms/Result_50r+50d")
 elif way_of_forming == '25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей\n':
-    plt.savefig("Result_25r+75d")
+    plt.savefig("histograms/Result_25r+75d")
 elif way_of_forming == '75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей\n':
-    plt.savefig("Result_75r+25d")
+    plt.savefig("histograms/Result_75r+25d")
 elif way_of_forming == '100% determinate species | 100% детерминированных особей\n':
-    plt.savefig("Result_100d")
+    plt.savefig("histograms/Result_100d")
 plt.show()
