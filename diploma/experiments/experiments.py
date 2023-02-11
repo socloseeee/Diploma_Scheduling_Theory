@@ -104,9 +104,27 @@ txt_file1 = 'experiments/result.txt'
 result_file = open(txt_file1, 'w', encoding="utf-8")
 # result_file.write("")
 
-matrix = generate_matrix(m, n, T1, T2)
-matrix_sum = sorted([sum(elem) for elem in matrix], reverse=True)
-matrix = sorted(matrix, key=lambda x: sum(x), reverse=True)
+while True:
+    chose = input('Использовать готовую матрицу или сгенерировать новую | Use a ready-made matrix or generate a new one? (1/0) > ')
+    if chose == '0':
+        matrix = generate_matrix(m, n, T1, T2)
+        matrix_sum = sorted([sum(elem) for elem in matrix], reverse=True)
+        matrix = sorted(matrix, key=lambda x: sum(x), reverse=True)
+        matrix_file = open('experiments/matrix.txt', 'w', encoding='utf-8')
+        [matrix_file.write(f"{elem}\n") for elem in matrix]
+        matrix_file.close()
+        break
+    elif chose == '1':
+        matrix_file = open('experiments/matrix.txt', 'r', encoding='utf-8')
+        matrix = []
+        data = matrix_file.readlines()
+        [matrix.append([int(el) for el in elem[1:-2].split(', ')]) for elem in data]
+        # print(matrix)
+        matrix_file.close()
+        break
+    else:
+        print('Некорректный ввод!')
+
 
 # Метод минимальных элементов
 new_matrix, result = [], [0] * n
@@ -195,18 +213,21 @@ create_way = int(
         "50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей(1)\n"
         "25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей(2)\n"
         "75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей(3)\n"
+        "100% determinate species | 100% детерминированных особей(4)\n"
         "> "
     )
 )
-result_file.write("Way of forming | Способ формирования:")
+result_file.write("Way of forming | Способ формирования:\n")
 if create_way == 0:
     result_file.write("100% random species | 100% рандомных особей\n\n")
 elif create_way == 1:
-    result_file.write("50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей\n\n")
+    result_file.write("50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей\n")
 elif create_way == 2:
-    result_file.write("25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей\n\n")
+    result_file.write("25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей\n")
 elif create_way == 3:
-    result_file.write("75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей\n\n")
+    result_file.write("75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей\n")
+elif create_way == 4:
+    result_file.write("100% determinate species | 100% детерминированных особей\n")
 repeat_str = Fore.LIGHTYELLOW_EX + str(repeat) + Style.RESET_ALL
 individuals = []
 print(f"Performing a study based on {repeat_str} iterations | Выполняем исследование на основе {repeat_str} итераций")
@@ -228,7 +249,8 @@ for method, method_str in zip(methods, methods_strs):
             elif create_way == 3:
                 individuals = [generate_individ(method, n, 0) for _ in range((z//4) * 3)]
                 [individuals.append(generate_individ(m, n, 1)) for _ in range(z//4)]
-
+            elif create_way == 4:
+                individuals = [generate_individ(method, n, 0) for _ in range(z)]
             # Особи нулевого поколения (родители для будущего поколения):
             listMax = []
             newline = "\n"
