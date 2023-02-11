@@ -42,14 +42,13 @@ Before the barrier (-), we calculate by the method of minimal elements, and afte
 
 *Screens are from visualizing_histogram.py*
 
+![image](https://user-images.githubusercontent.com/65871712/218282259-b20de175-5f61-4cf2-8bdf-990f91966572.png)
+
 ![image](https://user-images.githubusercontent.com/65871712/218254541-6d6d1ee9-418e-4949-a8d0-37e5cfcfc2ba.png)
 
 ![image](https://user-images.githubusercontent.com/65871712/218262456-9fde587d-a493-4d8e-afff-091077a3a1b3.png)
 
 ![image](https://user-images.githubusercontent.com/65871712/218282253-48925756-8f1f-413f-9421-61a920cf8512.png)
-
-![image](https://user-images.githubusercontent.com/65871712/218282259-b20de175-5f61-4cf2-8bdf-990f91966572.png)
-
 
 ![image](https://user-images.githubusercontent.com/65871712/218282241-1d7a8fff-b064-4303-bbc0-d06b49975812.png)
 
