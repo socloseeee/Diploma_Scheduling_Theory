@@ -28,32 +28,40 @@ for i, elem in enumerate(elapsed_time):
     elapsed_time[i] = min * 60 + secs
 
 # Сортировка для того чтоб графики не наслаивались:
-elapsed_index_sorted = sorted([(elapsed_time[i], i) for i in range(len(elapsed_time))], key=lambda x: x[0], reverse=True)
-new_data, new_elapsed, new_str_methods = [], [], []
-for i in range(len(elapsed_index_sorted)):
-    index = elapsed_index_sorted[i][1]
-    new_elapsed.append(elapsed_index_sorted[i][0])
-    new_data.append(data[index])
-    new_str_methods.append(str_methods[index])
-
+if way_of_forming != '100% random species | 100% рандомных особей\n':
+    elapsed_index_sorted = sorted([(elapsed_time[i], i) for i in range(len(elapsed_time))], key=lambda x: x[0], reverse=True)
+    new_data, new_elapsed, new_str_methods = [], [], []
+    for i in range(len(elapsed_index_sorted)):
+        index = elapsed_index_sorted[i][1]
+        new_elapsed.append(elapsed_index_sorted[i][0])
+        new_data.append(data[index])
+        new_str_methods.append(str_methods[index])
 
 fig, ax = plt.subplots()
 fig.set_size_inches(14, 8)
 fig.canvas.set_window_title('Result')
-f1, f2, f3, f4 = [ax.bar(x, y, label=z, width=0.075 + (data[-1] - data[0]) / 20) for x, y, z in zip(new_data, new_elapsed, new_str_methods)]
+if way_of_forming != '100% random species | 100% рандомных особей\n':
+    f1, f2, f3, f4 = [ax.bar(x, y, label=z, width=0.075 + (data[-1] - data[0]) / 20) for x, y, z in zip(new_data, new_elapsed, new_str_methods)]
+    [plt.text(x - 0.05, y + 0.35, x, bbox=dict(boxstyle="square")) for x, y in zip(new_data, new_elapsed)]
+else:
+    f = ax.bar(data[0], elapsed_time[0], label=str_methods[0], width=0.075 + (data[-1] - data[0]) / 20)
+    [plt.text(x - 0.05, y + 0.35, x, bbox=dict(boxstyle="square")) for x, y in zip(data, elapsed_time)]
+
 if str_methods[3] == "The method of minimal elements | Метод минмальных элементов":
     ax.legend(loc='upper right')
 else:
     ax.legend(loc='upper left')
+
 plt.title(f'Результаты при начальном формировании \n{way_of_forming}')
 # plt.xticks(data, data)
 plt.xlabel('Result | Результаты')
-[plt.text(x - 0.05, y + 0.35, x, bbox=dict(boxstyle="square")) for x, y in zip(new_data, new_elapsed)]
+plt.ylabel('Elapsed time | Затраченное время')
+
 elapsed_time = sorted(elapsed_time)
 data = sorted(data)
 plt.xlim(left=data[0] - (data[-1] - data[0]) / 20, right=data[-1] + (data[-1] - data[0]) / 20) # 0.05
 plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
-plt.ylabel('Elapsed time | Затраченное время')
+
 if way_of_forming == '100% random species | 100% рандомных особей\n':
     plt.savefig("histograms/Result_100r")
 elif way_of_forming == '50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей\n':

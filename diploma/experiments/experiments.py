@@ -234,6 +234,8 @@ print(f"Performing a study based on {repeat_str} iterations | Выполняем
 # Генерация особей и последующее выполнение ГА
 for method, method_str in zip(methods, methods_strs):
     # Открываем файл для записи:
+    if create_way == 0:
+        method_str = "Random formation"
     txt_file = f'experiments/methods_data/{method_str}_analysis.txt'
     f = open(txt_file, 'w', encoding="utf-8")
     with tqdm(range(repeat), ncols=100, desc=f"{method_str}") as t:
@@ -346,8 +348,12 @@ for method, method_str in zip(methods, methods_strs):
             all_repeats_result = [int(elem) for elem in f.readline().split()]
             results.append(Fore.YELLOW + str(sum(all_repeats_result) / len(all_repeats_result)) + Style.RESET_ALL)
         work_time.append(Fore.GREEN + str(t.format_interval(t.format_dict['elapsed'])) + Style.RESET_ALL)
+        if create_way == 0:
+            break
         time.sleep(2)
 for iter_method, elapsed_time, result, show_method in zip(str_methods, work_time, results, methods):
+    if create_way == 0:
+        iter_method = "Random formation method | Метод рандомного формирования:"
     print(f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time}\nResult | Результат: {result}")
     result_file.write(f"\n{iter_method[5:-4]}\nElapsed time | Время работы: {elapsed_time[5:-4]}\nResult | Результат: {result[5:-4]}\n")
     for row in show_method:
