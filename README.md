@@ -4,6 +4,8 @@ For the formation of the initial generation, algorithms are considered: The meth
 
 ### Libraries:
 <a href="https://tqdm.github.io/"><img src="https://user-images.githubusercontent.com/65871712/218450425-67752886-b8d7-42c4-b990-ea9342bf8ed7.png" alt="tqdm"></a>
+![imgonline-com-ua-Transparent-backgr-0qAQ8Z8LGCL7ERX](https://user-images.githubusercontent.com/65871712/218451132-50037e38-fc79-41c1-b3b8-8fb89153f312.png)
+
 <a href="https://matplotlib.org/stable/index.html"><img src="https://user-images.githubusercontent.com/65871712/218449590-b1a28106-1c93-487a-a74a-eefe422006a5.png" alt="matplotlib"></a>
 
 <a href="https://pypi.org/project/colorama/"><img src="https://user-images.githubusercontent.com/65871712/218449346-3b8335f9-5974-4d47-a385-5ce6e3666891.png" alt="colorama"></a>
