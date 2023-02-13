@@ -14,18 +14,22 @@ def generate_matrix(m, n, T1, T2):
     return [[r(T1, T2) for j in range(n)] for i in range(m)]
 
 # Генерируем особь (рандомно/детерминированно):
-def generate_individ(m, n, flag):
+def generate_individ(m, n, random, bnds = None):
     individ = []
-    if flag == 0:
+    if random:
+        return [r(1, 255) for _ in range(m)]
+    else:
         for row in m:
             for i, elem in enumerate(row):
                 if '\x1b[31m' in str(elem):  # '\x1b[31m' - идентификатор цвета
-                    # individ.append(i * (255 // n) + (255 // n) // 2)  # чётко по центру между двумя границами в процессоре
-                    # individ.append(i * (255 // n))  # чётко по левой границе в процессоре
-                    # individ.append(i * (255 // n) + (255 // n))  # чётко по правой границе в процессоре
-                    individ.append(r(i * (255 // n) + 1, i * (255 // n) + (255 // n)))  # рандомно между двумя границами в процессоре
-    else:
-        return [r(1, 255) for _ in range(m)]
+                    if bnds == 0:
+                        individ.append(i * (255 // n) + (255 // n) // 2)  # чётко по центру между двумя границами в процессоре
+                    elif bnds == 1:
+                        individ.append(i * (255 // n))  # чётко по левой границе в процессоре
+                    elif bnds == 2:
+                        individ.append(i * (255 // n) + (255 // n))  # чётко по правой границе в процессоре
+                    elif bnds == 3:
+                        individ.append(r(i * (255 // n) + 1, i * (255 // n) + (255 // n)))  # рандомно между двумя границами в процессоре
     return individ
 
 # Считаем загрузки:
@@ -99,7 +103,7 @@ k = 30   # кол-во поколений подряд при котором л�
 Pk = 99  # вероятность кроссовера
 Pm = 99  # вероятность мутации
 
-# Выбираем готовую матрицу или генерируем новую
+# Вводим данные для исследования
 while True:
     chose = input('Использовать готовую матрицу или сгенерировать новую | Use a ready-made matrix or generate a new one? (1/0) > ')
     if chose == '0':
@@ -120,7 +124,28 @@ while True:
         break
     else:
         print('Некорректный ввод!')
-
+repeat = int(input(Fore.MAGENTA + "Number of repetitions of GA cycles | Количество повторов цикла ГА > " + Style.RESET_ALL))
+create_way = int(
+    input(
+        "Way of forming the initial generation | Способ формирования начального поколения:\n"
+        "100% random species | 100% рандомных особей(0)\n"
+        "50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей(1)\n"
+        "25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей(2)\n"
+        "75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей(3)\n"
+        "100% determinate species | 100% детерминированных особей(4)\n"
+        "> "
+    )
+)
+if create_way != 0:
+    bounds = int(
+        input(
+            "Ways to form genes | Способы формирования генов:\n"
+            "Clearly centered between two borders in the processor | Чётко по центру между двумя границами в процессоре(0)\n"
+            "Clearly on the left border in the processor | Чётко по левой границе в процессоре(1)\n"
+            "Clearly on the right border in the processor | Чётко по правой границе в процессоре(2)\n"
+            "Randomly between two boundaries in the processor | Рандомно между двумя границами в процессоре(3)\n"
+        )
+    )
 
 # Метод минимальных элементов
 new_matrix, result = [], [0] * n
@@ -192,38 +217,33 @@ for j in range(m):
                 result_str2[i] -= matrix[j][i]
         barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) + Style.RESET_ALL for i in range(len(result_str2))])
 
+work_time, results = [], []
 methods = [min_elem_method, plotnikov_zverev_method, square_method, barrier_method]
 methods_strs = ["minimum_elem_method", "Plotnikov_Zverev_method", "square_method", "barrier_method"]
-work_time, results = [], []
 str_methods = (
     Fore.BLUE + "The method of minimal elements | Метод минмальных элементов:" + Style.RESET_ALL,
     Fore.BLUE + "The Plotnikov-Zverev method | Метод Плотникова-Зверева:" + Style.RESET_ALL,
     Fore.BLUE + "The method of squares | Метод квадратов:" + Style.RESET_ALL,
     Fore.BLUE + "The barrier method | Метод барьера:" + Style.RESET_ALL
 )
-repeat = int(input(Fore.MAGENTA + "Number of repetitions of GA cycles | Количество повторов цикла ГА > " + Style.RESET_ALL))
-create_way = int(
-    input(
-        "Way of forming the initial generation | Способ формирования начального поколения:\n"
-        "100% random species | 100% рандомных особей(0)\n"
-        "50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей(1)\n"
-        "25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей(2)\n"
-        "75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей(3)\n"
-        "100% determinate species | 100% детерминированных особей(4)\n"
-        "> "
-    )
-)
-way_of_forming = {
+way_of_forming_init = {
     0: ("100% random species | 100% рандомных особей", '100r'),
     1: ("50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей", '50r+50d'),
     2: ("25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей", "25r+75d"),
     3: ("75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей", "75r+25d"),
     4: ("100% determinate species | 100% детерминированных особей", '100d')
 }
+way_of_forming_genes = {
+    0: "central_bound",
+    1: "left_bound",
+    2: "right_bound",
+    3: "random_bound",
+}
 
 # Открываем файл для записи:
-result_file = open(f'experiments/experiment_results/result_{way_of_forming[create_way][1]}.txt', 'w', encoding="utf-8")
-result_file.write(f"Way of forming | Способ формирования:\n{way_of_forming[create_way][0]}\n")
+result_file = open(f'experiments/experiment_results/{way_of_forming_genes[bounds]}/result_{way_of_forming_init[create_way][1]}.txt', 'w', encoding="utf-8")
+result_file.write(f"Way of forming | Способ формирования:\n{way_of_forming_init[create_way][0]}\n{way_of_forming_genes[bounds]}\n")
+
 repeat_str = Fore.LIGHTYELLOW_EX + str(repeat) + Style.RESET_ALL
 individuals = []
 print(f"Performing a study based on {repeat_str} iterations | Выполняем исследование на основе {repeat_str} итераций")
@@ -239,16 +259,16 @@ for method, method_str in zip(methods, methods_strs):
             if create_way == 0:
                 [individuals.append(generate_individ(m, n, 1)) for _ in range(z)]
             elif create_way == 1:
-                individuals = [generate_individ(method, n, 0) for _ in range(z//2)]
+                individuals = [generate_individ(method, n, 0, bounds) for _ in range(z//2)]
                 [individuals.append(generate_individ(m, n, 1)) for _ in range(z//2)]
             elif create_way == 2:
-                individuals = [generate_individ(method, n, 0) for _ in range(z//4)]
+                individuals = [generate_individ(method, n, 0, bounds) for _ in range(z//4)]
                 [individuals.append(generate_individ(m, n, 1)) for _ in range((z//4) * 3)]
             elif create_way == 3:
-                individuals = [generate_individ(method, n, 0) for _ in range((z//4) * 3)]
+                individuals = [generate_individ(method, n, 0, bounds) for _ in range((z//4) * 3)]
                 [individuals.append(generate_individ(m, n, 1)) for _ in range(z//4)]
             elif create_way == 4:
-                individuals = [generate_individ(method, n, 0) for _ in range(z)]
+                individuals = [generate_individ(method, n, 0, bounds) for _ in range(z)]
             # Особи нулевого поколения (родители для будущего поколения):
             listMax = []
             newline = "\n"
@@ -346,7 +366,9 @@ for method, method_str in zip(methods, methods_strs):
         work_time.append(Fore.GREEN + str(t.format_interval(t.format_dict['elapsed'])) + Style.RESET_ALL)
         if create_way == 0:
             break
-        time.sleep(2)
+        # time.sleep(2)
+
+# Writing in files
 for iter_method, elapsed_time, result, show_method in zip(str_methods, work_time, results, methods):
     if create_way == 0:
         iter_method = "Random formation method | Метод рандомного формирования:"

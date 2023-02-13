@@ -22,14 +22,30 @@ create_way = int(
         "> "
     )
 )
-file_formation = {
+if create_way != 0:
+    bounds = int(
+        input(
+            "Ways to form genes | Способы формирования генов:\n"
+            "Clearly centered between two borders in the processor | Чётко по центру между двумя границами в процессоре(0)\n"
+            "Clearly on the left border in the processor | Чётко по левой границе в процессоре(1)\n"
+            "Clearly on the right border in the processor | Чётко по правой границе в процессоре(2)\n"
+            "Randomly between two boundaries in the processor | Рандомно между двумя границами в процессоре(3)\n"
+        )
+    )
+file_formation_init = {
     0: '100r',
     1: '50r+50d',
     2: '25r+75d',
     3: '75r+25d',
     4: '100d'
 }
-with open(f"experiment_results/result_{file_formation[create_way]}.txt", 'r', encoding="UTF-8") as file:
+file_formation_genes = {
+    0: 'central_bound',
+    1: 'left_bound',
+    2: 'right_bound',
+    3: 'random_bound'
+}
+with open(f"experiment_results/{file_formation_genes[bounds]}/result_{file_formation_init[create_way]}.txt", 'r', encoding="UTF-8") as file:
     file_data = file.readlines()
     # print(file_data)
     for i, elem in enumerate(file_data):
@@ -81,5 +97,5 @@ else:
     plt.xlim(left=data[0] - 0.45, right=data[0] + 0.45)
     plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
 
-plt.savefig(f"histograms/Result_{file_formation[create_way]}")
+plt.savefig(f"histograms/{file_formation_genes[bounds]}/Result_{file_formation_init[create_way]}")
 plt.show()
