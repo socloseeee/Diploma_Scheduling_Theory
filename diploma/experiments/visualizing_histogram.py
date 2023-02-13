@@ -4,6 +4,7 @@ from decimal import *
 import numpy as np
 from copy import deepcopy
 
+
 data, elapsed_time, way_of_forming = [], [], ''
 str_methods = (
     "The method of minimal elements | Метод минмальных элементов",
@@ -22,16 +23,15 @@ create_way = int(
         "> "
     )
 )
-if create_way != 0:
-    bounds = int(
-        input(
-            "Ways to form genes | Способы формирования генов:\n"
-            "Clearly centered between two borders in the processor | Чётко по центру между двумя границами в процессоре(0)\n"
-            "Clearly on the left border in the processor | Чётко по левой границе в процессоре(1)\n"
-            "Clearly on the right border in the processor | Чётко по правой границе в процессоре(2)\n"
-            "Randomly between two boundaries in the processor | Рандомно между двумя границами в процессоре(3)\n"
-        )
+bounds = int(
+    input(
+        "Ways to form genes | Способы формирования генов:\n"
+        "Clearly centered between two borders in the processor | Чётко по центру между двумя границами в процессоре(0)\n"
+        "Clearly on the left border in the processor | Чётко по левой границе в процессоре(1)\n"
+        "Clearly on the right border in the processor | Чётко по правой границе в процессоре(2)\n"
+        "Randomly between two boundaries in the processor | Рандомно между двумя границами в процессоре(3)\n"
     )
+) if create_way != 0 else 4
 file_formation_init = {
     0: '100r',
     1: '50r+50d',
@@ -43,7 +43,8 @@ file_formation_genes = {
     0: 'central_bound',
     1: 'left_bound',
     2: 'right_bound',
-    3: 'random_bound'
+    3: 'random_bound',
+    4: 'no_bounds'
 }
 with open(f"experiment_results/{file_formation_genes[bounds]}/result_{file_formation_init[create_way]}.txt", 'r', encoding="UTF-8") as file:
     file_data = file.readlines()
@@ -83,7 +84,12 @@ else:
 
 ax.legend(loc='best')
 
-plt.title(f'Результаты при начальном формировании \n{way_of_forming}')
+orientation_gene_text = file_formation_genes[bounds]
+plt.title(
+    f'Результаты при начальном формировании \n{way_of_forming}' +
+    (way_of_forming != 0) * f'{orientation_gene_text[:orientation_gene_text.index("_")].capitalize()}'
+)
+
 # plt.xticks(data, data)
 plt.xlabel('Result | Результаты')
 plt.ylabel('Elapsed time | Затраченное время')

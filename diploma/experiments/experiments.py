@@ -136,16 +136,15 @@ create_way = int(
         "> "
     )
 )
-if create_way != 0:
-    bounds = int(
-        input(
-            "Ways to form genes | Способы формирования генов:\n"
-            "Clearly centered between two borders in the processor | Чётко по центру между двумя границами в процессоре(0)\n"
-            "Clearly on the left border in the processor | Чётко по левой границе в процессоре(1)\n"
-            "Clearly on the right border in the processor | Чётко по правой границе в процессоре(2)\n"
-            "Randomly between two boundaries in the processor | Рандомно между двумя границами в процессоре(3)\n"
-        )
+bounds = int(
+    input(
+        "Ways to form genes | Способы формирования генов:\n"
+        "Clearly centered between two borders in the processor | Чётко по центру между двумя границами в процессоре(0)\n"
+        "Clearly on the left border in the processor | Чётко по левой границе в процессоре(1)\n"
+        "Clearly on the right border in the processor | Чётко по правой границе в процессоре(2)\n"
+        "Randomly between two boundaries in the processor | Рандомно между двумя границами в процессоре(3)\n"
     )
+) if create_way != 0 else 4
 
 # Метод минимальных элементов
 new_matrix, result = [], [0] * n
@@ -238,6 +237,7 @@ way_of_forming_genes = {
     1: "left_bound",
     2: "right_bound",
     3: "random_bound",
+    4: "no_bounds"
 }
 
 # Открываем файл для записи:
