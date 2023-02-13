@@ -143,6 +143,7 @@ bounds = int(
         "Clearly on the left border in the processor | Чётко по левой границе в процессоре(1)\n"
         "Clearly on the right border in the processor | Чётко по правой границе в процессоре(2)\n"
         "Randomly between two boundaries in the processor | Рандомно между двумя границами в процессоре(3)\n"
+        "> "
     )
 ) if create_way != 0 else 4
 

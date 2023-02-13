@@ -30,6 +30,7 @@ bounds = int(
         "Clearly on the left border in the processor | Чётко по левой границе в процессоре(1)\n"
         "Clearly on the right border in the processor | Чётко по правой границе в процессоре(2)\n"
         "Randomly between two boundaries in the processor | Рандомно между двумя границами в процессоре(3)\n"
+        "> "
     )
 ) if create_way != 0 else 4
 file_formation_init = {
@@ -46,6 +47,7 @@ file_formation_genes = {
     3: 'random_bound',
     4: 'no_bounds'
 }
+colors = ('blue', 'orange', 'green', 'red')
 with open(f"experiment_results/{file_formation_genes[bounds]}/result_{file_formation_init[create_way]}.txt", 'r', encoding="UTF-8") as file:
     file_data = file.readlines()
     # print(file_data)
@@ -76,8 +78,26 @@ fig, ax = plt.subplots()
 fig.set_size_inches(14, 8)
 fig.canvas.set_window_title('Result')
 if way_of_forming != '100% random species | 100% рандомных особей\n':
-    f1, f2, f3, f4 = [ax.bar(x, y, label=z, width=0.075 + (data[-1] - data[0]) / 20) for x, y, z in zip(new_data, new_elapsed, new_str_methods)]
-    [plt.text(x - 0.05, y + 0.35, f"{x} | {y}", bbox=dict(boxstyle="square")) for x, y in zip(new_data, new_elapsed)]
+    f1, f2, f3, f4 = [ax.bar(x, y, label=z, width=0.75) for x, y, z in zip(new_data, new_elapsed, new_str_methods)] # 0.075 + (data[-1] - data[0]) / 20
+    dict_, dict__ = {}, {}
+    for i, x in enumerate(new_data):
+        if x in dict_:
+            dict_[x] += 1
+        else:
+            dict_[x] = 1
+        if i > 0:
+            if new_data[i-1] < new_data[i] and new_data[i-1] > new_data[i] - 0.05 and new_elapsed[i - 1] == new_elapsed[i]:
+                dict__[x] = 7.2 * (new_data[i] - new_data[i - 1])
+            else:
+                dict__[x] = 0
+        else:
+            dict__[x] = 0
+
+    print(dict_, dict__)
+    # [plt.text(x - 0.05, (y + 0.35) + 0.2 * (dict_[x] > 1), f"{x} | {y}", bbox=dict(boxstyle="square")) for x, y in zip(new_data, new_elapsed)]
+    for x, y, color_ in zip(new_data, new_elapsed, colors):
+        dict_[x] -= 1
+        plt.text(x - 0.05 + dict__[x], (y + 0.35) + 0.45 * dict_[x], f"{x} | {y}", bbox=dict(boxstyle="square", facecolor=color_, edgecolor="black"))
 else:
     f = ax.bar(data[0], elapsed_time[0], label="Random formation method | Метод рандомного формирования", width=0.075)
     [plt.text(x - 0.05, y + 0.35, f"{x} | {y}", bbox=dict(boxstyle="square")) for x, y in zip(data, elapsed_time)]
