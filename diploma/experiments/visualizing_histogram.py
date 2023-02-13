@@ -65,10 +65,7 @@ else:
     f = ax.bar(data[0], elapsed_time[0], label="Random formation method | Метод рандомного формирования", width=0.075)
     [plt.text(x - 0.05, y + 0.35, f"{x} | {y}", bbox=dict(boxstyle="square")) for x, y in zip(data, elapsed_time)]
 
-if str_methods[3] == "The method of minimal elements | Метод минмальных элементов":
-    ax.legend(loc='upper right')
-else:
-    ax.legend(loc='upper left')
+ax.legend(loc='best')
 
 plt.title(f'Результаты при начальном формировании \n{way_of_forming}')
 # plt.xticks(data, data)
@@ -84,14 +81,5 @@ else:
     plt.xlim(left=data[0] - 0.45, right=data[0] + 0.45)
     plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
 
-if way_of_forming == '100% random species | 100% рандомных особей\n':
-    plt.savefig("histograms/Result_100r")
-elif way_of_forming == '50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей\n':
-    plt.savefig("histograms/Result_50r+50d")
-elif way_of_forming == '25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей\n':
-    plt.savefig("histograms/Result_25r+75d")
-elif way_of_forming == '75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей\n':
-    plt.savefig("histograms/Result_75r+25d")
-elif way_of_forming == '100% determinate species | 100% детерминированных особей\n':
-    plt.savefig("histograms/Result_100d")
+plt.savefig(f"histograms/Result_{file_formation[create_way]}")
 plt.show()
