@@ -5,10 +5,9 @@ For the formation of the initial generation, algorithms are considered: The meth
 Libraries:
 <a href="https://matplotlib.org/stable/index.html"><img src="https://user-images.githubusercontent.com/65871712/218445933-69e30a51-eb62-4f04-8514-ac40a06d2f6c.png" alt="matplotlib"></a>
 
-![2023-02-13_14-30-25](https://user-images.githubusercontent.com/65871712/218446553-edb40ea7-a920-449d-b472-6996488959ce.png)
+<a href="https://pypi.org/project/colorama/"><img src="https://user-images.githubusercontent.com/65871712/218446553-edb40ea7-a920-449d-b472-6996488959ce.png" alt="colorama"></a>
 
-![image](https://user-images.githubusercontent.com/65871712/218447023-ddb8e213-408a-4604-9be2-f6859c6362b2.png)
-
+<a href="https://tqdm.github.io/"><img src="https://user-images.githubusercontent.com/65871712/218447023-ddb8e213-408a-4604-9be2-f6859c6362b2.png" alt="tqdm"></a>
 
 ## The essence of the work
 Form the initial generation using various methods and compare their effectiveness as a solution to the distribution problem of scheduling theory using the Goldberg method.
