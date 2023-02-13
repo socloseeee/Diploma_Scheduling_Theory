@@ -99,11 +99,7 @@ k = 30   # кол-во поколений подряд при котором л�
 Pk = 99  # вероятность кроссовера
 Pm = 99  # вероятность мутации
 
-# Открываем файл для записи:
-txt_file1 = 'experiments/result.txt'
-result_file = open(txt_file1, 'w', encoding="utf-8")
-# result_file.write("")
-
+# Выбираем готовую матрицу или генерируем новую
 while True:
     chose = input('Использовать готовую матрицу или сгенерировать новую | Use a ready-made matrix or generate a new one? (1/0) > ')
     if chose == '0':
@@ -217,17 +213,17 @@ create_way = int(
         "> "
     )
 )
-result_file.write("Way of forming | Способ формирования:\n")
-if create_way == 0:
-    result_file.write("100% random species | 100% рандомных особей\n\n")
-elif create_way == 1:
-    result_file.write("50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей\n")
-elif create_way == 2:
-    result_file.write("25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей\n")
-elif create_way == 3:
-    result_file.write("75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей\n")
-elif create_way == 4:
-    result_file.write("100% determinate species | 100% детерминированных особей\n")
+way_of_forming = {
+    0: ("100% random species | 100% рандомных особей", '100r'),
+    1: ("50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей", '50r+50d'),
+    2: ("25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей", "25r+75d"),
+    3: ("75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей", "75r+25d"),
+    4: ("100% determinate species | 100% детерминированных особей", '100d')
+}
+
+# Открываем файл для записи:
+result_file = open(f'experiments/experiment_results/result_{way_of_forming[create_way][1]}.txt', 'w', encoding="utf-8")
+result_file.write(f"Way of forming | Способ формирования:\n{way_of_forming[create_way][0]}\n")
 repeat_str = Fore.LIGHTYELLOW_EX + str(repeat) + Style.RESET_ALL
 individuals = []
 print(f"Performing a study based on {repeat_str} iterations | Выполняем исследование на основе {repeat_str} итераций")

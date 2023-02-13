@@ -11,7 +11,25 @@ str_methods = (
     "The method of squares | Метод квадратов",
     "The barrier method | Метод барьера"
 )
-with open("result.txt", 'r', encoding="UTF-8") as file:
+create_way = int(
+    input(
+        "Way of forming the initial generation | Способ формирования начального поколения:\n"
+        "100% random species | 100% рандомных особей(0)\n"
+        "50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей(1)\n"
+        "25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей(2)\n"
+        "75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей(3)\n"
+        "100% determinate species | 100% детерминированных особей(4)\n"
+        "> "
+    )
+)
+file_formation = {
+    0: '100r',
+    1: '50r+50d',
+    2: '25r+75d',
+    3: '75r+25d',
+    4: '100d'
+}
+with open(f"experiment_results/result_{file_formation[create_way]}.txt", 'r', encoding="UTF-8") as file:
     file_data = file.readlines()
     # print(file_data)
     for i, elem in enumerate(file_data):
@@ -42,10 +60,10 @@ fig.set_size_inches(14, 8)
 fig.canvas.set_window_title('Result')
 if way_of_forming != '100% random species | 100% рандомных особей\n':
     f1, f2, f3, f4 = [ax.bar(x, y, label=z, width=0.075 + (data[-1] - data[0]) / 20) for x, y, z in zip(new_data, new_elapsed, new_str_methods)]
-    [plt.text(x - 0.05, y + 0.35, x, bbox=dict(boxstyle="square")) for x, y in zip(new_data, new_elapsed)]
+    [plt.text(x - 0.05, y + 0.35, f"{x} | {y}", bbox=dict(boxstyle="square")) for x, y in zip(new_data, new_elapsed)]
 else:
-    f = ax.bar(data[0], elapsed_time[0], label=str_methods[0], width=0.075 + (data[-1] - data[0]) / 20)
-    [plt.text(x - 0.05, y + 0.35, x, bbox=dict(boxstyle="square")) for x, y in zip(data, elapsed_time)]
+    f = ax.bar(data[0], elapsed_time[0], label="Random formation method | Метод рандомного формирования", width=0.075)
+    [plt.text(x - 0.05, y + 0.35, f"{x} | {y}", bbox=dict(boxstyle="square")) for x, y in zip(data, elapsed_time)]
 
 if str_methods[3] == "The method of minimal elements | Метод минмальных элементов":
     ax.legend(loc='upper right')
@@ -57,10 +75,14 @@ plt.title(f'Результаты при начальном формирован�
 plt.xlabel('Result | Результаты')
 plt.ylabel('Elapsed time | Затраченное время')
 
-elapsed_time = sorted(elapsed_time)
-data = sorted(data)
-plt.xlim(left=data[0] - (data[-1] - data[0]) / 20, right=data[-1] + (data[-1] - data[0]) / 20) # 0.05
-plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
+if way_of_forming != '100% random species | 100% рандомных особей\n':
+    elapsed_time = sorted(elapsed_time)
+    data = sorted(data)
+    plt.xlim(left=data[0] - (data[-1] - data[0]) / 20, right=data[-1] + (data[-1] - data[0]) / 20) # 0.05
+    plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
+else:
+    plt.xlim(left=data[0] - 0.45, right=data[0] + 0.45)
+    plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
 
 if way_of_forming == '100% random species | 100% рандомных особей\n':
     plt.savefig("histograms/Result_100r")
