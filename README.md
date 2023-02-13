@@ -2,13 +2,6 @@
 Solving an inhomogeneous minemax problem of scheduling theory by the goldberg method with different formation of the initial generation.
 For the formation of the initial generation, algorithms are considered: The method of minimal elements, the Plotnikov-Zverev method, the method of squares and the barrier method
 
-Libraries:
-<a href="https://matplotlib.org/stable/index.html"><img src="https://user-images.githubusercontent.com/65871712/218445933-69e30a51-eb62-4f04-8514-ac40a06d2f6c.png" alt="matplotlib"></a>
-
-<a href="https://pypi.org/project/colorama/"><img src="https://user-images.githubusercontent.com/65871712/218446553-edb40ea7-a920-449d-b472-6996488959ce.png" alt="colorama"></a>
-
-<a href="https://tqdm.github.io/"><img src="https://user-images.githubusercontent.com/65871712/218447023-ddb8e213-408a-4604-9be2-f6859c6362b2.png" alt="tqdm"></a>
-
 ## The essence of the work
 Form the initial generation using various methods and compare their effectiveness as a solution to the distribution problem of scheduling theory using the Goldberg method.
 ### Algorythm(n repeats):
@@ -60,8 +53,15 @@ Before the barrier (-), we calculate by the method of minimal elements, and afte
 ![image](https://user-images.githubusercontent.com/65871712/218282241-1d7a8fff-b064-4303-bbc0-d06b49975812.png)
 
 
-
 ## Directory description
 Diploma_Scheduling_Theory/diploma/experiments - this is a directory in which, through multiple iterations, the results of the GA execution under different conditions are singled out for the purpose of their subsequent comparison.
 
 Diploma_Scheduling_Theory/diploma/methods_analysis - this is a directory in which we can carefully verify that all the given methods work correctly and check the results of their execution.
+
+### Libraries:
+<a href="https://matplotlib.org/stable/index.html"><img src="https://user-images.githubusercontent.com/65871712/218445933-69e30a51-eb62-4f04-8514-ac40a06d2f6c.png" alt="matplotlib"></a>
+
+<a href="https://pypi.org/project/colorama/"><img src="https://user-images.githubusercontent.com/65871712/218446553-edb40ea7-a920-449d-b472-6996488959ce.png" alt="colorama"></a>
+
+<a href="https://tqdm.github.io/"><img src="https://user-images.githubusercontent.com/65871712/218447023-ddb8e213-408a-4604-9be2-f6859c6362b2.png" alt="tqdm"></a>
+
