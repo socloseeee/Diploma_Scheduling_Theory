@@ -3,7 +3,7 @@ Solving an inhomogeneous minemax problem of scheduling theory by the goldberg me
 For the formation of the initial generation, algorithms are considered: The method of minimal elements, the Plotnikov-Zverev method, the method of squares and the barrier method
 
 ### Libraries:
-<a href="https://tqdm.github.io/"><img src="https://user-images.githubusercontent.com/65871712/218447023-ddb8e213-408a-4604-9be2-f6859c6362b2.png" alt="tqdm"></a>
+<a href="https://tqdm.github.io/"><img src="https://user-images.githubusercontent.com/65871712/218450425-67752886-b8d7-42c4-b990-ea9342bf8ed7.png" alt="tqdm"></a>
 
 <a href="https://matplotlib.org/stable/index.html"><img src="https://user-images.githubusercontent.com/65871712/218449590-b1a28106-1c93-487a-a74a-eefe422006a5.png" alt="matplotlib"></a>
 
