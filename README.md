@@ -60,7 +60,7 @@ Before the barrier (-), we calculate by the method of minimal elements, and afte
 ![image](https://user-images.githubusercontent.com/65871712/218282241-1d7a8fff-b064-4303-bbc0-d06b49975812.png)
 
 
-## Directory description
+## Directories description
 Diploma_Scheduling_Theory/diploma/experiments - this is a directory in which, through multiple iterations, the results of the GA execution under different conditions are singled out for the purpose of their subsequent comparison.
 
 Diploma_Scheduling_Theory/diploma/methods_analysis - this is a directory in which we can carefully verify that all the given methods work correctly and check the results of their execution.
