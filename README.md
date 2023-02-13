@@ -42,7 +42,7 @@ Before the barrier (-), we calculate by the method of minimal elements, and afte
 
 *Screens are from visualizing_histogram.py*
 
-![image](https://user-images.githubusercontent.com/65871712/218262456-9fde587d-a493-4d8e-afff-091077a3a1b3.png)
+![image](https://user-images.githubusercontent.com/65871712/218283100-528414bd-0ded-4d2d-b133-bf1970947cbb.png)
 
 ![image](https://user-images.githubusercontent.com/65871712/218254541-6d6d1ee9-418e-4949-a8d0-37e5cfcfc2ba.png)
 
