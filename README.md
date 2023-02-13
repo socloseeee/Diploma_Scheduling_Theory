@@ -59,9 +59,9 @@ Diploma_Scheduling_Theory/diploma/experiments - this is a directory in which, th
 Diploma_Scheduling_Theory/diploma/methods_analysis - this is a directory in which we can carefully verify that all the given methods work correctly and check the results of their execution.
 
 ### Libraries:
-<a href="https://matplotlib.org/stable/index.html"><img src="https://user-images.githubusercontent.com/65871712/218445933-69e30a51-eb62-4f04-8514-ac40a06d2f6c.png" alt="matplotlib"></a>
+<a href="https://matplotlib.org/stable/index.html"><img src="https://user-images.githubusercontent.com/65871712/218449078-5da3e41e-806f-4ccc-b6da-3a780f441b67.png" alt="matplotlib"></a>
 
-<a href="https://pypi.org/project/colorama/"><img src="https://user-images.githubusercontent.com/65871712/218446553-edb40ea7-a920-449d-b472-6996488959ce.png" alt="colorama"></a>
+<a href="https://pypi.org/project/colorama/"><img src="https://user-images.githubusercontent.com/65871712/218449346-3b8335f9-5974-4d47-a385-5ce6e3666891.png" alt="colorama"></a>
 
 <a href="https://tqdm.github.io/"><img src="https://user-images.githubusercontent.com/65871712/218447023-ddb8e213-408a-4604-9be2-f6859c6362b2.png" alt="tqdm"></a>
 
