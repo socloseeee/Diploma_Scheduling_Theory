@@ -124,28 +124,40 @@ while True:
         break
     else:
         print('Некорректный ввод!')
-repeat = int(input(Fore.MAGENTA + "Number of repetitions of GA cycles | Количество повторов цикла ГА > " + Style.RESET_ALL))
-create_way = int(
+repeat = int(
     input(
-        "Way of forming the initial generation | Способ формирования начального поколения:\n"
-        "100% random species | 100% рандомных особей(0)\n"
-        "50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей(1)\n"
-        "25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей(2)\n"
-        "75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей(3)\n"
-        "100% determinate species | 100% детерминированных особей(4)\n"
-        "> "
+        Fore.MAGENTA + "Number of repetitions of GA cycles | Количество повторов цикла ГА > " + Style.RESET_ALL
     )
 )
+is_create_way = input(
+    "Select all or a specific method of forming (partitioning) the initial generation | "
+    "Выбрать все или конкретный метод формирования (разбиения) начального поколения(1/any) > "
+)
+is_create_way = int(is_create_way) if is_create_way.isdigit() else is_create_way
+if is_create_way != 1:
+    create_way = int(
+        input(
+            "Way of forming the initial generation | Способ формирования начального поколения:\n"
+            "100% random species | 100% рандомных особей(0)\n"
+            "50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей(1)\n"
+            "25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей(2)\n"
+            "75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей(3)\n"
+            "100% determinate species | 100% детерминированных особей(4)\n"
+            "> "
+        )
+    )
 bounds = int(
     input(
+        Fore.YELLOW +
         "Ways to form genes | Способы формирования генов:\n"
         "Clearly centered between two borders in the processor | Чётко по центру между двумя границами в процессоре(0)\n"
         "Clearly on the left border in the processor | Чётко по левой границе в процессоре(1)\n"
         "Clearly on the right border in the processor | Чётко по правой границе в процессоре(2)\n"
         "Randomly between two boundaries in the processor | Рандомно между двумя границами в процессоре(3)\n"
         "> "
+        + Style.RESET_ALL
     )
-) if create_way != 0 else 4
+)
 
 # Метод минимальных элементов
 new_matrix, result = [], [0] * n
@@ -217,7 +229,6 @@ for j in range(m):
                 result_str2[i] -= matrix[j][i]
         barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) + Style.RESET_ALL for i in range(len(result_str2))])
 
-work_time, results = [], []
 methods = [min_elem_method, plotnikov_zverev_method, square_method, barrier_method]
 methods_strs = ["minimum_elem_method", "Plotnikov_Zverev_method", "square_method", "barrier_method"]
 str_methods = (
@@ -226,13 +237,23 @@ str_methods = (
     Fore.BLUE + "The method of squares | Метод квадратов:" + Style.RESET_ALL,
     Fore.BLUE + "The barrier method | Метод барьера:" + Style.RESET_ALL
 )
-way_of_forming_init = {
-    0: ("100% random species | 100% рандомных особей", '100r'),
-    1: ("50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей", '50r+50d'),
-    2: ("25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей", "25r+75d"),
-    3: ("75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей", "75r+25d"),
-    4: ("100% determinate species | 100% детерминированных особей", '100d')
-}
+if is_create_way != 1:
+    way_of_forming_init = {
+        0: ("100% random species | 100% рандомных особей", '100r'),
+        1: ("50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей", '50r+50d'),
+        2: ("25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей", "25r+75d"),
+        3: ("75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей", "75r+25d"),
+        4: ("100% determinate species | 100% детерминированных особей", '100d')
+    }
+    way_of_forming_init = {create_way: way_of_forming_init[create_way]}
+else:
+    way_of_forming_init = {
+        1: ("50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей", '50r+50d'),
+        2: ("25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей", "25r+75d"),
+        3: ("75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей", "75r+25d"),
+        4: ("100% determinate species | 100% детерминированных особей", '100d')
+    }
+
 way_of_forming_genes = {
     0: "central_bound",
     1: "left_bound",
@@ -241,144 +262,149 @@ way_of_forming_genes = {
     4: "no_bounds"
 }
 
-# Открываем файл для записи:
-result_file = open(f'experiments/experiment_results/{way_of_forming_genes[bounds]}/result_{way_of_forming_init[create_way][1]}.txt', 'w', encoding="utf-8")
-result_file.write(f"Way of forming | Способ формирования:\n{way_of_forming_init[create_way][0]}\n{way_of_forming_genes[bounds]}\n")
-
 repeat_str = Fore.LIGHTYELLOW_EX + str(repeat) + Style.RESET_ALL
 individuals = []
 print(f"Performing a study based on {repeat_str} iterations | Выполняем исследование на основе {repeat_str} итераций")
 # Генерация особей и последующее выполнение ГА
-for method, method_str in zip(methods, methods_strs):
+for way in way_of_forming_init.keys():
+    work_time, results = [], []
+    print(Fore.LIGHTCYAN_EX + way_of_forming_init[way][0] + Style.RESET_ALL)
     # Открываем файл для записи:
-    if create_way == 0:
-        method_str = "Random formation"
-    txt_file = f'experiments/methods_data/{method_str}_analysis.txt'
-    f = open(txt_file, 'w', encoding="utf-8")
-    with tqdm(range(repeat), ncols=100, desc=f"{method_str}") as t:
-        for _ in t:
+    result_file = open(
+        f'experiments/experiment_results/{way_of_forming_genes[bounds]}/result_{way_of_forming_init[way][1]}.txt',
+        'w', encoding="utf-8")
+    result_file.write(
+        f"Way of forming | Способ формирования:\n{way_of_forming_init[way][0]}\n{way_of_forming_genes[bounds]}\n")
+    for method, method_str in zip(methods, methods_strs):
+        # Открываем файл для записи:
+        if is_create_way != 1:
             if create_way == 0:
-                [individuals.append(generate_individ(m, n, 1)) for _ in range(z)]
-            elif create_way == 1:
-                individuals = [generate_individ(method, n, 0, bounds) for _ in range(z//2)]
-                [individuals.append(generate_individ(m, n, 1)) for _ in range(z//2)]
-            elif create_way == 2:
-                individuals = [generate_individ(method, n, 0, bounds) for _ in range(z//4)]
-                [individuals.append(generate_individ(m, n, 1)) for _ in range((z//4) * 3)]
-            elif create_way == 3:
-                individuals = [generate_individ(method, n, 0, bounds) for _ in range((z//4) * 3)]
-                [individuals.append(generate_individ(m, n, 1)) for _ in range(z//4)]
-            elif create_way == 4:
-                individuals = [generate_individ(method, n, 0, bounds) for _ in range(z)]
-            # Особи нулевого поколения (родители для будущего поколения):
-            listMax = []
-            newline = "\n"
-            for i, individual in enumerate(individuals):
-                load = count_load(individual, n, m, matrix)
-                listMax.append(load)
-            best_result, bestLoad_index = best_load(listMax)  # лучшая загрузка и (индекс лучшей особи - 1)
-            best_individual = individuals[bestLoad_index]
-            previous_best_result, bestLoad_index = 0, 0
-            best_of_all_generations_result = best_result
-
-            # Переменные для ГА и сам ГА:
-            counter, gen_count = 0, 0
-
-            while k != counter - 1:
-                previous_best_result = best_result
-                gen_count += 1
-                generation = []
-                best_generation_loads = []
-                for _ in range(z):
-
-                    # Алгоритм образования пар родителей:
-                    parent1 = c(individuals)
-                    individuals_no_repeat = deepcopy(individuals)
-                    individuals_no_repeat.remove(parent1)  # дабы избежать попадание рандома на первого
-                    parent2 = c(individuals_no_repeat)
-                    while r(0, 100) <= Pk:
-                        parent2 = c(individuals_no_repeat)
-                    parents_list = (parent1, parent2)
-
-                    # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
-                    children = []
-                    load_list = []
-                    counter_child = 0
-                    crossover_result = crossover(parent1, parent2)
-                    for i, child in enumerate(crossover_result):
-                        children.append(child)
-                        load_list.append(count_load(child, n, m, matrix))
-                        counter_child += 1
-                        muted_child = mutation(child, Pm)
-                        children.append(muted_child)
-                        load_list.append(count_load(muted_child, n, m, matrix))
-                    best_child_load, best_child_index = best_load(load_list)
-                    num = 0
-                    generation.append(children[best_child_index])
-
-                # Список всех детей:
+                method_str = "Random formation"
+        txt_file = f'experiments/methods_data/{method_str}_analysis.txt'
+        f = open(txt_file, 'w', encoding="utf-8")
+        with tqdm(range(repeat), ncols=100, desc=f"{method_str}") as t:
+            for _ in t:
+                if way == 0:
+                    [individuals.append(generate_individ(m, n, 1)) for _ in range(z)]
+                elif way == 1:
+                    individuals = [generate_individ(method, n, 0, bounds) for _ in range(z//2)]
+                    [individuals.append(generate_individ(m, n, 1)) for _ in range(z//2)]
+                elif way == 2:
+                    individuals = [generate_individ(method, n, 0, bounds) for _ in range(z//4)]
+                    [individuals.append(generate_individ(m, n, 1)) for _ in range((z//4) * 3)]
+                elif way == 3:
+                    individuals = [generate_individ(method, n, 0, bounds) for _ in range((z//4) * 3)]
+                    [individuals.append(generate_individ(m, n, 1)) for _ in range(z//4)]
+                elif way == 4:
+                    individuals = [generate_individ(method, n, 0, bounds) for _ in range(z)]
+                # Особи нулевого поколения (родители для будущего поколения):
                 listMax = []
-                for i, child in enumerate(generation):
-                    listMax.append(count_load(child, n, m, matrix))
+                newline = "\n"
+                for i, individual in enumerate(individuals):
+                    load = count_load(individual, n, m, matrix)
+                    listMax.append(load)
+                best_result, bestLoad_index = best_load(listMax)  # лучшая загрузка и (индекс лучшей особи - 1)
+                best_individual = individuals[bestLoad_index]
+                previous_best_result, bestLoad_index = 0, 0
+                best_of_all_generations_result = best_result
 
-                # Индекс лучшего результата в поколении
-                currentLoad = best_load(listMax)[1]
+                # Переменные для ГА и сам ГА:
+                counter, gen_count = 0, 0
 
-                # Собираем матрицу родителей и лучших детей для отбора:
-                check_matrix, parent_child_loads = [], []
-                for elem in generation:
-                    check_matrix.append(elem)
-                    parent_child_loads.append(max(count_load(elem, n, m, matrix)))
-                for elem in individuals:
-                    check_matrix.append(elem)
-                    parent_child_loads.append(max(count_load(elem, n, m, matrix)))
+                while k != counter - 1:
+                    previous_best_result = best_result
+                    gen_count += 1
+                    generation = []
+                    best_generation_loads = []
+                    for _ in range(z):
 
-                best_result = sorted(parent_child_loads)[0]
+                        # Алгоритм образования пар родителей:
+                        parent1 = c(individuals)
+                        individuals_no_repeat = deepcopy(individuals)
+                        individuals_no_repeat.remove(parent1)  # дабы избежать попадание рандома на первого
+                        parent2 = c(individuals_no_repeat)
+                        while r(0, 100) <= Pk:
+                            parent2 = c(individuals_no_repeat)
+                        parents_list = (parent1, parent2)
 
-                # Создаём матрицу индексов лучших особей:
-                best_index = []
-                for elem in sorted(parent_child_loads)[:z]:
-                    for i, el in enumerate(parent_child_loads):
-                        if elem == el:
-                            best_index.append(i)
-                            break
+                        # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
+                        children = []
+                        load_list = []
+                        counter_child = 0
+                        crossover_result = crossover(parent1, parent2)
+                        for i, child in enumerate(crossover_result):
+                            children.append(child)
+                            load_list.append(count_load(child, n, m, matrix))
+                            counter_child += 1
+                            muted_child = mutation(child, Pm)
+                            children.append(muted_child)
+                            load_list.append(count_load(muted_child, n, m, matrix))
+                        best_child_load, best_child_index = best_load(load_list)
+                        num = 0
+                        generation.append(children[best_child_index])
 
-                # Добавляем лучших особей поколения среди родителей и детей:
-                individuals = []
-                for elem in best_index:
-                    individuals.append(check_matrix[elem])
+                    # Список всех детей:
+                    listMax = []
+                    for i, child in enumerate(generation):
+                        listMax.append(count_load(child, n, m, matrix))
+
+                    # Индекс лучшего результата в поколении
+                    currentLoad = best_load(listMax)[1]
+
+                    # Собираем матрицу родителей и лучших детей для отбора:
+                    check_matrix, parent_child_loads = [], []
+                    for elem in generation:
+                        check_matrix.append(elem)
+                        parent_child_loads.append(max(count_load(elem, n, m, matrix)))
+                    for elem in individuals:
+                        check_matrix.append(elem)
+                        parent_child_loads.append(max(count_load(elem, n, m, matrix)))
+
+                    best_result = sorted(parent_child_loads)[0]
+
+                    # Создаём матрицу индексов лучших особей:
+                    best_index = []
+                    for elem in sorted(parent_child_loads)[:z]:
+                        for i, el in enumerate(parent_child_loads):
+                            if elem == el:
+                                best_index.append(i)
+                                break
+
+                    # Добавляем лучших особей поколения среди родителей и детей:
+                    individuals = []
+                    for elem in best_index:
+                        individuals.append(check_matrix[elem])
 
 
-                # Если сквозь поколения была лучшая загрузка ждем когда она не повторится или улучшится:
-                if best_result < best_of_all_generations_result:
-                    best_of_all_generations_result = best_result
-                    counter = 0
+                    # Если сквозь поколения была лучшая загрузка ждем когда она не повторится или улучшится:
+                    if best_result < best_of_all_generations_result:
+                        best_of_all_generations_result = best_result
+                        counter = 0
 
-                # Если загрузка предыдущего поколения равна загрузке текущего
-                if best_of_all_generations_result == best_result:
-                    counter += 1
-                else:
-                    counter = 0
-            f.write(f"{best_result} ")
-        f.close()
-        with open(txt_file, 'r', encoding="utf-8") as f:
-            all_repeats_result = [int(elem) for elem in f.readline().split()]
-            results.append(Fore.YELLOW + str(sum(all_repeats_result) / len(all_repeats_result)) + Style.RESET_ALL)
-        work_time.append(Fore.GREEN + str(t.format_interval(t.format_dict['elapsed'])) + Style.RESET_ALL)
-        if create_way == 0:
-            break
-        # time.sleep(2)
-
-# Writing in files
-for iter_method, elapsed_time, result, show_method in zip(str_methods, work_time, results, methods):
-    if create_way == 0:
-        iter_method = "Random formation method | Метод рандомного формирования:"
-    print(f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time}\nResult | Результат: {result}")
-    result_file.write(f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time[5:-4]}\nResult | Результат: {result[5:-4]}\n")
-    for row in show_method:
-        print(*row)
-        for elem in row:
-            result_file.write(f"{elem} ")
-        result_file.write("\n")
-    result_file.write(f"\n")
-result_file.close()
+                    # Если загрузка предыдущего поколения равна загрузке текущего
+                    if best_of_all_generations_result == best_result:
+                        counter += 1
+                    else:
+                        counter = 0
+                f.write(f"{best_result} ")
+            f.close()
+            with open(txt_file, 'r', encoding="utf-8") as f:
+                all_repeats_result = [int(elem) for elem in f.readline().split()]
+                results.append(Fore.YELLOW + str(sum(all_repeats_result) / len(all_repeats_result)) + Style.RESET_ALL)
+            work_time.append(Fore.GREEN + str(t.format_interval(t.format_dict['elapsed'])) + Style.RESET_ALL)
+            if way == 0:
+                break
+            # time.sleep(2)
+    # Writing in files
+    for iter_method, elapsed_time, result, show_method in zip(str_methods, work_time, results, methods):
+        if way == 0:
+            iter_method = "Random formation method | Метод рандомного формирования:"
+        print(f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time}\nResult | Результат: {result}")
+        result_file.write(f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time[5:-4]}\nResult | Результат: {result[5:-4]}\n")
+        for row in show_method:
+            print(*row)
+            for elem in row:
+                result_file.write(f"{elem} ")
+            result_file.write("\n")
+        result_file.write(f"\n")
+    result_file.close()
