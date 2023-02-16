@@ -66,6 +66,8 @@ for bound in bounds:
     axes_dict[bound].set_ylabel('Elapsed time | Затраченное время')
     axes_dict[bound].set_xlim(right=max([elem[0] for elem in methods_data]) + 10, left=min([elem[0] for elem in methods_data]) - 10)  # 0.05
     axes_dict[bound].set_ylim(bottom=min([elem[1] for elem in methods_data]) - 10, top=max([elem[1] for elem in methods_data]) + 10)
+    h, l = axes_dict[bound].get_legend_handles_labels()
+    axes_dict[bound].legend(handles=h, labels=methods_data)
 
     axes_dict1[bound].set_title(
         f'{bound}',
@@ -91,6 +93,8 @@ for bound in bounds:
                               left=min([elem[0] for elem in genes_data]) - 10)  # 0.05
     axes_dict1[bound].set_ylim(bottom=min([elem[1] for elem in genes_data]) - 10,
                               top=max([elem[1] for elem in genes_data]) + 10)
+    h1, l1 = axes_dict1[bound].get_legend_handles_labels()
+    axes_dict1[bound].legend(handles=h1, labels=genes_data)
     print(methods_data, genes_data)
 h, l = axes[0][0].get_legend_handles_labels()
 h1, l1 = axes1[0][0].get_legend_handles_labels()
