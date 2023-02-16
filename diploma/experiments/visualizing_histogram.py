@@ -109,7 +109,7 @@ for way in file_formation_init.keys():
     fig.set_size_inches(14, 8)
     fig.canvas.set_window_title('Result')
     if way_of_forming != '100% random species | 100% рандомных особей\n':
-        bars = [ax.bar(x, y, label=z, color=colors_dict[z], width=(data[-1] - data[0])) for x, y, z in zip(new_data, new_elapsed, new_str_methods)] #
+        bars = [ax.bar(x, y, label=z, color=colors_dict[z], width=(max(data) - min(data))/10) for x, y, z in zip(new_data, new_elapsed, new_str_methods)] #
         dict_, dict__ = {}, {}
         for i, x in enumerate(new_data):
             if x in dict_:
@@ -160,32 +160,90 @@ for way in file_formation_init.keys():
 
 if is_create_way == 1:
     fig, axes = plt.subplots(2, 2)
-    fig.set_size_inches(24, 13.5)
-    # axes.set_size_inches
-    #fig.subplots_adjust(left=0.07, bottom=0.04, top=0.97, hspace=0.13)
-    # legends = [] * len(str_methods)
+    fig.set_size_inches(19, 9.5)
+    # axes.set_size_i
+    k = 0
     for i, row in enumerate(axes):
         for j, col in enumerate(row):
             axes[i][j].set_title(
-                f'{all_way_of_forming[i + j][:all_way_of_forming[i + j].index("|") - 1]}',
+                f'{all_way_of_forming[i + j + k][:all_way_of_forming[i + j + k].index("|") - 1]}',
                 bbox=dict(boxstyle="square", facecolor='darkviolet', edgecolor="black"),
                 fontsize = 11
             )
-            max_data, min_data = max(data_all[i + j]), min(data_all[i + j])
-            max_elapsed, min_elapsed = max(elapsed_all[i + j]), min(elapsed_all[i + j])
-            [axes[i][j].bar(x, y, label=z, color=colors_dict[z], width=(max_data - min_data) / 8) for x, y, z in zip(data_all[i + j], elapsed_all[i + j], labels_all[i + j])]
+            max_data, min_data = max(data_all[i + j + k]), min(data_all[i + j + k])
+            max_elapsed, min_elapsed = max(elapsed_all[i + j + k]), min(elapsed_all[i + j + k])
+            [axes[i][j].bar(x, y, label=z, color=colors_dict[z], width=(max_data - min_data) / 8) for x, y, z in zip(data_all[i + j + k], elapsed_all[i + j + k], labels_all[i + j + k])]
             axes[i][j].set_xlim(left=min_data - (max_data - min_data) / 10, right=max_data + (max_data - min_data) / 10)
             axes[i][j].set_ylim(bottom=min_elapsed - 1, top=max_elapsed + 1)
             [axes[i][j].text(x - 0.05, y - 0.15, f"{x} | {y}",
-                     bbox=dict(boxstyle="square", facecolor=colors_dict[method], edgecolor="black")) for x, y, method in zip(data_all[i + j], elapsed_all[i + j], labels_all[i + j])]
+                     bbox=dict(boxstyle="square", facecolor=colors_dict[method], edgecolor="black")) for x, y, method in zip(data_all[i + j + k], elapsed_all[i + j + k], labels_all[i + j + k])]
             # axes[i][j].legend(loc='best')
             #axes[i][j].xlabel('Result | Результаты')
             #axes[i][j].ylabel('Elapsed time | Затраченное время')
             # axes[i][j].set_title()
+        k += 1
+    boundaries = {
+        0: '|__________x__________|',
+        1: 'x_____________________|',
+        2: '|_____________________x',
+        3: 'xxxxxxxxxxxxxxxxxxxxxxx'
+    }
     h, l = axes[0][0].get_legend_handles_labels()
+    # l = [f"{elem} ({data_all[0]} | {elapsed_all[0]})" for i, elem in enumerate(l)]
     fig.legend(handles=h, labels=l, loc='upper left')
-    fig.suptitle(f'{orientation_gene_text[:orientation_gene_text.index("_")].capitalize()}')
+    fig.suptitle(
+        f'Location between two processor boundaries: \n'
+        f'{orientation_gene_text[:orientation_gene_text.index("_")].capitalize()}\n'
+        f'{boundaries[bounds]}\n'
+       # f'{data_all[0]} | {elapsed_all[0]}'
+    )
     plt.savefig(f"histograms/{file_formation_genes[bounds]}/Result_all")
     # t.sleep(1)
+    # fig = plt.figure(figsize=(3.5, 2))
+    # location = (
+    #     0.5, 0.4, 0.3, 0.2
+    # )
+    # [fig.text(0, y, f"{row_data} {row_time}") for y, row_data, row_time in zip(location, data_all, elapsed_all)]
+    fig, ax = plt.subplots()
+    # fig.set_figheight(8)
+    # fig.set_figwidth(8)
+    ax.axis('tight')
+    ax.axis('off')
+    row = ["50r+50d", "25r+75d", "75r+25d", "100d", "result"]
+    col = ["Minimum", "Plt-Zverev", "Square", "Barrier", "result"]
+    cellData = [[0 for _ in range(len(data_all[0]))] for __ in range(len(data_all))]
+
+    for row_label, row_data, row_elapsed, row_cell in zip(labels_all, data_all, elapsed_all, cellData):
+        for i, check_method in enumerate(str_methods):
+            index = row_label.index(check_method)
+            row_cell[i] = (row_data[index], row_elapsed[index])
+    summary_results_method = [(0, 0) for _ in range(len(str_methods))]
+    summary_results_genes = [(0, 0) for _ in range(len(str_methods))]
+    for i in range(len(cellData)):
+        for j in range(len(cellData)):
+            summary_results_method[i] = (round(summary_results_method[i][0] + cellData[j][i][0], 2),
+                                         round(summary_results_method[i][1] + cellData[j][i][1], 2))
+            summary_results_genes[i] = (round(summary_results_genes[i][0] + cellData[i][j][0], 2),
+                                         round(summary_results_genes[i][1] + cellData[i][j][1], 2))
+    print(summary_results_genes)
+    print(cellData)
+    for i, elem in enumerate(cellData):
+        elem.append(summary_results_genes[i])
+    cellData.append(summary_results_method)
+    cellData[-1].append('')
+    ax.table(
+        cellText=cellData, cellLoc='center', loc='center',
+        rowColours=["palegreen"] * 5, colColours=["palegreen"] * 5, colLabels=col, rowLabels=row# colWidths=[0.1, 0.1, 0.1, 0.1],
+    )
+    # for i, row in enumerate(axes):
+    #     for j, col in enumerate(row):
+    #         ax[i][j].axis('tight')
+    #         ax[i][j].axis('off')
+    #         ax[i][j].table(
+    #             cellText=data_all, cellLoc='center', rowLabels=labels_all[i + j],
+    #             #rowColours=["palegreen"] * 4, colLabels=col, colColours=["palegreen"] * 4, loc='center'
+    #         )
+    #         ax[i][j].set_title('Матрица заданий', family='fantasy', size=15)
+    plt.savefig(f"experiment_results/{file_formation_genes[bounds]}/results.png")
     plt.show()
     # os.startfile(f"C:/Users/Богдан/PycharmProjects/everistika/diploma/experiments/histograms/{file_formation_genes[bounds]}/Result_all.png")
