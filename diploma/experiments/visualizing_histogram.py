@@ -244,6 +244,6 @@ if is_create_way == 1:
     #             #rowColours=["palegreen"] * 4, colLabels=col, colColours=["palegreen"] * 4, loc='center'
     #         )
     #         ax[i][j].set_title('Матрица заданий', family='fantasy', size=15)
-    plt.savefig(f"experiment_results/{file_formation_genes[bounds]}/results.png")
+    plt.savefig(f"histograms/{file_formation_genes[bounds]}/results.png")
     plt.show()
     # os.startfile(f"C:/Users/Богдан/PycharmProjects/everistika/diploma/experiments/histograms/{file_formation_genes[bounds]}/Result_all.png")
