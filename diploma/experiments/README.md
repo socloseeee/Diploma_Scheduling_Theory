@@ -9,5 +9,7 @@ This folder is a repository (essentially cache information) containing data from
 This script uses to do research based on various inputs. The data from all of these experiments writes to histograms, methods_data and matrix.txt
 ## visualizing_histogram.py
 This script uses to visualize data that outputs from experiments.py.
+## summary_results.py
+This script uses to summary all the goal results in an apropriate form(histograms + data).
 ## matrix.txt
 Containts generated in experiments.py matrix. This matrix can be used in all experiments to achieve the clear result.
