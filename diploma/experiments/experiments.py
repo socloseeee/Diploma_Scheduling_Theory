@@ -110,12 +110,12 @@ while True:
         matrix = generate_matrix(m, n, T1, T2)
         matrix_sum = sorted([sum(elem) for elem in matrix], reverse=True)
         matrix = sorted(matrix, key=lambda x: sum(x), reverse=True)
-        matrix_file = open('experiments/matrix.txt', 'w', encoding='utf-8')
+        matrix_file = open('matrix.txt', 'w', encoding='utf-8')
         [matrix_file.write(f"{elem}\n") for elem in matrix]
         matrix_file.close()
         break
     elif chose == '1':
-        matrix_file = open('experiments/matrix.txt', 'r', encoding='utf-8')
+        matrix_file = open('matrix.txt', 'r', encoding='utf-8')
         matrix = []
         data = matrix_file.readlines()
         [matrix.append([int(el) for el in elem[1:-2].split(', ')]) for elem in data]
@@ -142,7 +142,7 @@ if is_create_way != 1:
             "50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей(1)\n"
             "25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей(2)\n"
             "75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей(3)\n"
-            "100% determinate species | 100% детерминированных особей(4)\n"
+            "50% Plt-Zvr + 50% barrier species | 50% Плт-Зврв + 50% барьерных особей(4)\n"
             "> "
         )
     )
@@ -229,12 +229,11 @@ for j in range(m):
                 result_str2[i] -= matrix[j][i]
         barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) + Style.RESET_ALL for i in range(len(result_str2))])
 
-methods = [min_elem_method, plotnikov_zverev_method, square_method, barrier_method]
-methods_strs = ["minimum_elem_method", "Plotnikov_Zverev_method", "square_method", "barrier_method"]
+methods = [min_elem_method, plotnikov_zverev_method, barrier_method]
+methods_strs = ["minimum_elem_method", "Plotnikov_Zverev_method", "barrier_method"]
 str_methods = (
     Fore.BLUE + "The method of minimal elements | Метод минмальных элементов:" + Style.RESET_ALL,
     Fore.BLUE + "The Plotnikov-Zverev method | Метод Плотникова-Зверева:" + Style.RESET_ALL,
-    Fore.BLUE + "The method of squares | Метод квадратов:" + Style.RESET_ALL,
     Fore.BLUE + "The barrier method | Метод барьера:" + Style.RESET_ALL
 )
 if is_create_way != 1:
@@ -243,7 +242,7 @@ if is_create_way != 1:
         1: ("50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей", '50r+50d'),
         2: ("25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей", "25r+75d"),
         3: ("75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей", "75r+25d"),
-        4: ("100% determinate species | 100% детерминированных особей", '100d')
+        4: ("50% Plt-Zvr + 50% barrier species | 50% Плт-Зврв + 50% барьерных особей", '50pz+50b')
     }
     way_of_forming_init = {create_way: way_of_forming_init[create_way]}
 else:
@@ -251,7 +250,7 @@ else:
         1: ("50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей", '50r+50d'),
         2: ("25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей", "25r+75d"),
         3: ("75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей", "75r+25d"),
-        4: ("100% determinate species | 100% детерминированных особей", '100d')
+        4: ("50% Plt-Zvr + 50% barrier species | 50% Плт-Зврв + 50% барьерных особей", '50pz+50b')
     }
 
 way_of_forming_genes = {
@@ -271,16 +270,23 @@ for way in way_of_forming_init.keys():
     print(Fore.LIGHTCYAN_EX + way_of_forming_init[way][0] + Style.RESET_ALL)
     # Открываем файл для записи:
     result_file = open(
-        f'experiments/experiment_results/{way_of_forming_genes[bounds]}/result_{way_of_forming_init[way][1]}.txt',
+        f'experiment_results/{way_of_forming_genes[bounds]}/result_{way_of_forming_init[way][1]}.txt',
         'w', encoding="utf-8")
     result_file.write(
         f"Way of forming | Способ формирования:\n{way_of_forming_init[way][0]}\n{way_of_forming_genes[bounds]}\n")
+    if way == 4:
+        str_methods = ["Plotnikov Zverev and barrier method | Метод Плотникова-Зверева и барьера"]
+        methods_strs = ["Plotnikov_Zverev_and_barrier_method"]
+        individuals = [generate_individ(methods[1], n, 0, bounds) for _ in range(z // 2)]
+        [individuals.append(generate_individ(methods[2], n, 0, bounds)) for _ in range(z // 2)]
+        methods = (plotnikov_zverev_method, barrier_method)
+        # print(individuals)
     for method, method_str in zip(methods, methods_strs):
         # Открываем файл для записи:
         if is_create_way != 1:
             if create_way == 0:
                 method_str = "Random formation"
-        txt_file = f'experiments/methods_data/{method_str}_analysis.txt'
+        txt_file = f'methods_data/{method_str}_analysis.txt'
         f = open(txt_file, 'w', encoding="utf-8")
         with tqdm(range(repeat), ncols=100, desc=f"{method_str}") as t:
             for _ in t:
@@ -295,8 +301,6 @@ for way in way_of_forming_init.keys():
                 elif way == 3:
                     individuals = [generate_individ(method, n, 0, bounds) for _ in range((z//4) * 3)]
                     [individuals.append(generate_individ(m, n, 1)) for _ in range(z//4)]
-                elif way == 4:
-                    individuals = [generate_individ(method, n, 0, bounds) for _ in range(z)]
                 # Особи нулевого поколения (родители для будущего поколения):
                 listMax = []
                 newline = "\n"

@@ -190,7 +190,7 @@ def show_generation(txt_file, amount_of_generations, word) -> None:
 
 
 # Открываем файл для записи:
-txt_file = 'methods_analysis/methods_and_ga_detailed_analysis.txt'
+txt_file = 'methods_and_ga_detailed_analysis.txt'
 f = open(txt_file, 'w', encoding="utf-8")
 
 # Генерация массива и сортировка
