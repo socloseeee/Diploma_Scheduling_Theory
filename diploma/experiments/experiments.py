@@ -210,7 +210,7 @@ for j in range(m):
         check = 0  # check - позволяет вычленять из двух одинаковых только первое левое значение
         for i in range(n):
             if matrix[j][i] != min(matrix[j]) or matrix[j][i] == check:
-                barrier_method[j].append(Style.RESET_ALL + str(matrix[j][i]))
+                barrier_method[j].append(str(matrix[j][i]))
             else:
                 result_str2[i] += matrix[j][i]
                 barrier_method[j].append(Fore.RED + str(matrix[j][i]) + Style.RESET_ALL)
@@ -227,7 +227,7 @@ for j in range(m):
         for i in range(n):
             if i != min_index:
                 result_str2[i] -= matrix[j][i]
-        barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) + Style.RESET_ALL for i in range(len(result_str2))])
+        barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) for i in range(len(result_str2))])
 
 methods = [min_elem_method, plotnikov_zverev_method, barrier_method]
 methods_strs = ["minimum_elem_method", "Plotnikov_Zverev_method", "barrier_method"]
@@ -405,10 +405,21 @@ for way in way_of_forming_init.keys():
             iter_method = "Random formation method | Метод рандомного формирования:"
         print(f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time}\nResult | Результат: {result}")
         result_file.write(f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time[5:-4]}\nResult | Результат: {result[5:-4]}\n")
-        for row in show_method:
-            print(*row)
-            for elem in row:
-                result_file.write(f"{elem} ")
+        if way != 4:
+            for row in show_method:
+                print(*row)
+                for elem in row:
+                    result_file.write(f"{elem} ")
+                result_file.write("\n")
+        else:
+            for method in methods:
+                for row in method:
+                    print(*row)
+                    for elem in row:
+                        result_file.write(f"{elem} ")
+                    result_file.write("\n")
+                result_file.write("\n")
+                print()
             result_file.write("\n")
         result_file.write(f"\n")
     result_file.close()

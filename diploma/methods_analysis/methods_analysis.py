@@ -381,6 +381,7 @@ method = min_elem_method
 # method = plotnikov_zverev_method
 # method = square_method
 # method = barrier_method
+method = (plotnikov_zverev_method, barrier_method)
 f.write(f"Minimum element method | Метод минимальных элементов:\n")
 show_with_res(min_elem_method, n)
 f.write(f"{result} = {max(result)}\n")
@@ -397,8 +398,8 @@ f.write(f"{result_str2} = {max(result_str2)}\n")
 f.write(f"#\n\n")
 
 # Генерация особей (50 детерминированно + 50 рандомно)
-individuals = [generate_individ(method, n, 0) for _ in range(z//2)]
-[individuals.append(generate_individ(m, n, 1)) for _ in range(z//2)]
+individuals = [generate_individ(method[0], n, 0) for _ in range(z//2)]
+[individuals.append(generate_individ(method[1], n, 0)) for _ in range(z//2)]
 
 # Особи нулевого поколения (родители для будущего поколения):
 listMax = []
@@ -536,21 +537,27 @@ print(f'Generations | Поколения: {gen_count}\nBest result | Лучши�
 f.write(f'\nGenerations | Поколения: {gen_count}\nBest result | Лучший результат: {best_result}\n')
 
 # Сравнение расписания при начальном поколении и конечном:
-if method == min_elem_method:
-    word = "методе минимальных элементов"
-    chosen_load = result
-elif method == plotnikov_zverev_method:
-    word = "методе Плотникова-Зверева"
-    chosen_load = result_str
-elif method == square_method:
-    word = "методе квадратов"
-    chosen_load = result_str1
+if len(method) == 1:
+    if method == min_elem_method:
+        word = "методе минимальных элементов"
+        chosen_load = result
+    elif method == plotnikov_zverev_method:
+        word = "методе Плотникова-Зверева"
+        chosen_load = result_str
+    elif method == square_method:
+        word = "методе квадратов"
+        chosen_load = result_str1
+    else:
+        word = "методе барьеров"
+        chosen_load = result_str2
 else:
-    word = "методе барьеров"
-    chosen_load = result_str2
+    word = "методе Плотникова-Зверева+Барьера"
+    chosen_load = (result_str, result_str2)
 f.write(f"Init generation | Начальное поколение при {word}:\n")
-show(method)
-f.write(f'Init generation load | Загрузка при {word}:\n{" ".join([str(el) for el in chosen_load])}\nMax = {max(chosen_load)}\n')
+show(method) if len(method) == 1 else [show(elem) for elem in method]
+# print(" ".join([[e for e in el] for el in chosen_load]))
+f.write(f'Init generation load | Начальная загрузка при {word}:\n{[[e for e in el] for el in chosen_load]}\n'
+        f'Max = {(max(chosen_load[0]), max(chosen_load[1]))}\n')
 f.write("Final generation | Финальное поколение:\n")
 proc = [i for i in range(255//n, 255 + 255//n, int(255//n))]
 last_gen_show = []
