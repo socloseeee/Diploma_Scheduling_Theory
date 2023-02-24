@@ -8,7 +8,7 @@ For the formation of the initial generation, algorithms are considered: The meth
 <a href="https://numpy.org/"><img src="https://user-images.githubusercontent.com/65871712/218452060-ed889a4c-caad-4900-bf59-b030c2794247.png" alt="numpy" width="100" height="100"></a>
 
 <a href="https://pypi.org/project/colorama/"><img src="https://user-images.githubusercontent.com/65871712/218449346-3b8335f9-5974-4d47-a385-5ce6e3666891.png" alt="colorama" width=310 height=50></a>
-<a href="https://pypi.org/project/PyQt5/"><img src="https://user-images.githubusercontent.com/65871712/221126427-10a3c106-04ec-4baa-b336-2120c6e72bc2.png"></a>
+<a href="https://pypi.org/project/PyQt5/"><img src="https://user-images.githubusercontent.com/65871712/221126427-10a3c106-04ec-4baa-b336-2120c6e72bc2.png" width=310 height=100></a>
 
 ## The essence of the work
 Form the initial generation using various methods and compare their effectiveness as a solution to the distribution problem of scheduling theory using the Goldberg method.
