@@ -2,6 +2,7 @@ from random import choice as c, randint as r
 from copy import deepcopy
 from typing import List, Any
 from datetime import datetime
+from tqdm import tqdm
 
 newline = '\n'
 
@@ -142,119 +143,123 @@ class Generation(Individ):
 # Переменные
 m = 12
 n = 3
-z = 10
-k = 10
+z = 100
+k = 30
 Pk = 93
+Pm = 92
+T1 = 10
+T2 = 30
 
 # Матрица и генерация нулевого поколения
-Matrix(m=12, n=3, T1=10, T2=17).generate_new_matrix()
+Matrix(m=m, n=n, T1=T1, T2=T2).generate_new_matrix()
 start, results, generations = datetime.now(), [], []
-for _ in range(100):
-    individuals = Generation(Pk=93, Pm=92, m=12, n=3, T1=10, T2=17, z=10)
-    individuals.generate_new_generation()
-    # print(individuals)
+with tqdm(range(100), ncols=100, desc=f"ООП ГА") as t:
+    for _ in t:
+        individuals = Generation(Pk=Pk, Pm=Pm, m=m, n=n, T1=T1, T2=T2, z=z)
+        individuals.generate_new_generation()
+        # print(individuals)
 
-    # Особи нулевого поколения (родители для будущего поколения):
-    listMax = []
-    for i, individual in enumerate(individuals):
-        # print(individual)
-        load = individual.count_load()
-        listMax.append(load)
-    best_result, bestLoad_index = best_load(listMax)  # лучшая загрузка и (индекс лучшей особи - 1)
-    best_individual = individuals[bestLoad_index]
-    previous_best_result, bestLoad_index = 0, 0
-    best_of_all_generations_result = best_result
-    # Переменные для ГА и сам ГА:
-    counter, gen_count = 0, 0
-
-    while k != counter - 1:
-        previous_best_result = best_result
-        gen_count += 1
-        generation = []
-        best_generation_loads = []
-        for _ in range(z):
-
-            # Алгоритм образования пар родителей:
-            parent1 = individuals[_]
-            parent2 = c(individuals)
-            while r(0, 100) <= Pk:
-                parent2 = c(individuals)
-            parents_list = (parent1, parent2)
-
-            # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
-            children: list[Any] = []
-            load_list = []
-            crossover_result = parent1.crossover(parent2)
-            for i, child in enumerate(crossover_result):
-                children.append(child)
-                load_list.append(child.count_load())
-                muted_child = child.mutation()
-                children.append(muted_child)
-                load_list.append(muted_child.count_load())
-            best_child_load, best_child_index = best_load(load_list)
-            generation.append(children[best_child_index])
-
-        # Список всех детей:
+        # Особи нулевого поколения (родители для будущего поколения):
         listMax = []
-        for i, child in enumerate(generation):
-            listMax.append(child.count_load())
+        for i, individual in enumerate(individuals):
+            # print(individual)
+            load = individual.count_load()
+            listMax.append(load)
+        best_result, bestLoad_index = best_load(listMax)  # лучшая загрузка и (индекс лучшей особи - 1)
+        best_individual = individuals[bestLoad_index]
+        previous_best_result, bestLoad_index = 0, 0
+        best_of_all_generations_result = best_result
+        # Переменные для ГА и сам ГА:
+        counter, gen_count = 0, 0
 
-        # Индекс лучшего результата в поколении
-        currentLoad = best_load(listMax)[1]
+        while k != counter - 1:
+            previous_best_result = best_result
+            gen_count += 1
+            generation = []
+            best_generation_loads = []
+            for _ in range(z):
 
-        # Собираем матрицу родителей и лучших детей для отбора:
-        check_matrix, parent_child_loads = [], []
-        for elem in generation:
-            check_matrix.append(elem)
-            parent_child_loads.append(max(elem.count_load()))
-        for elem in individuals:
-            check_matrix.append(elem)
-            parent_child_loads.append(max(elem.count_load()))
+                # Алгоритм образования пар родителей:
+                parent1 = individuals[_]
+                parent2 = c(individuals)
+                while r(0, 100) <= Pk:
+                    parent2 = c(individuals)
+                parents_list = (parent1, parent2)
 
-        best_result = sorted(parent_child_loads)[0]
+                # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
+                children: list[Any] = []
+                load_list = []
+                crossover_result = parent1.crossover(parent2)
+                for i, child in enumerate(crossover_result):
+                    children.append(child)
+                    load_list.append(child.count_load())
+                    muted_child = child.mutation()
+                    children.append(muted_child)
+                    load_list.append(muted_child.count_load())
+                best_child_load, best_child_index = best_load(load_list)
+                generation.append(children[best_child_index])
 
-        # Создаём матрицу индексов лучших особей:
-        best_index = []
-        for elem in sorted(parent_child_loads)[:z]:
-            for i, el in enumerate(parent_child_loads):
-                if elem == el:
-                    best_index.append(i)
-                    break
+            # Список всех детей:
+            listMax = []
+            for i, child in enumerate(generation):
+                listMax.append(child.count_load())
 
-        # Добавляем лучших особей поколения среди родителей и детей:
-        individuals = []
-        for elem in best_index:
-            individuals.append(check_matrix[elem])
+            # Индекс лучшего результата в поколении
+            currentLoad = best_load(listMax)[1]
 
-        head, values = [], []
-        [head.append(f'm{m - i}') for i in range(m)]
-        head.append('m')
-        reversed_best = deepcopy(individuals[0])[::-1]
-        to_add = ['genes']
-        [to_add.append(f'n{i + 1}') for i in range(n)]
-        count = 0
-        for gene, procs in reversed_best:
-            values.append(gene)
-        values.append('Genes')
-        for i in range(n):
+            # Собираем матрицу родителей и лучших детей для отбора:
+            check_matrix, parent_child_loads = [], []
+            for elem in generation:
+                check_matrix.append(elem)
+                parent_child_loads.append(max(elem.count_load()))
+            for elem in individuals:
+                check_matrix.append(elem)
+                parent_child_loads.append(max(elem.count_load()))
+
+            best_result = sorted(parent_child_loads)[0]
+
+            # Создаём матрицу индексов лучших особей:
+            best_index = []
+            for elem in sorted(parent_child_loads)[:z]:
+                for i, el in enumerate(parent_child_loads):
+                    if elem == el:
+                        best_index.append(i)
+                        break
+
+            # Добавляем лучших особей поколения среди родителей и детей:
+            individuals = []
+            for elem in best_index:
+                individuals.append(check_matrix[elem])
+
+            head, values = [], []
+            [head.append(f'm{m - i}') for i in range(m)]
+            head.append('m')
+            reversed_best = deepcopy(individuals[0])[::-1]
+            to_add = ['genes']
+            [to_add.append(f'n{i + 1}') for i in range(n)]
+            count = 0
             for gene, procs in reversed_best:
-                values.append(procs[i])
-            values.append(f'n{i+1}')
+                values.append(gene)
+            values.append('Genes')
+            for i in range(n):
+                for gene, procs in reversed_best:
+                    values.append(procs[i])
+                values.append(f'n{i+1}')
 
-        # Если сквозь поколения была лучшая загрузка ждем когда она не повторится или улучшится:
-        if best_result < best_of_all_generations_result:
-            best_of_all_generations_result = best_result
-            counter = 0
+            # Если сквозь поколения была лучшая загрузка ждем когда она не повторится или улучшится:
+            if best_result < best_of_all_generations_result:
+                best_of_all_generations_result = best_result
+                counter = 0
 
-        # Если загрузка предыдущего поколения равна загрузке текущего
-        if best_of_all_generations_result == best_result:
-            counter += 1
-        else:
-            counter = 0
-        # print(gen_count, best_result, best_of_all_generations_result)
+            # Если загрузка предыдущего поколения равна загрузке текущего
+            if best_of_all_generations_result == best_result:
+                counter += 1
+            else:
+                counter = 0
+            # print(gen_count, best_result, best_of_all_generations_result)
 
-    generations.append(gen_count), results.append(best_result)
-    # print(f'Generations: {gen_count}\nBest result: {best_result}')
+        generations.append(gen_count), results.append(best_result)
+        # print(f'Generations: {gen_count}\nBest result: {best_result}')
 print(
     f"{datetime.now() - start}\n"
     f"{sum(generations) / len(generations)}\n"

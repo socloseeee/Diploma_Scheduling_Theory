@@ -2,6 +2,7 @@ from random import choice as c, randint as r
 from copy import deepcopy
 from prettytable import PrettyTable
 from datetime import datetime
+from tqdm import tqdm
 
 def beautiful_table(head, values):
     columns = len(head)  # Подсчитаем кол-во столбцов на будущее.
@@ -154,14 +155,14 @@ def show_generation(txt_file, amount_of_generations):
 
 
 # Переменные для задания ГА:
-m = 12  # кол-во заданий
-n = 3  # кол-во процессоров (кол-во равных промежутков от 0 до 255)
-T1 = 10  # левая граница значения задания
-T2 = 17  # правая граница значения задания
-z = 10  # кол-во особей
-k = 10  # кол-во поколений подряд при котором лучшая загрузка будет повторяться k-раз
-Pk = 92  # вероятность кроссовера
-Pm = 93  # вероятность мутации
+m = 12
+n = 3
+z = 100
+k = 30
+Pk = 93
+Pm = 92
+T1 = 10
+T2 = 30
 
 # Открываем файл для записи:
 #txt_file = 'lab6_results.txt'
@@ -170,171 +171,172 @@ Pm = 93  # вероятность мутации
 # Генерируем нулевое поколение:
 matrix = generate_matrix(m, n, T1, T2)
 start, generations, results = datetime.now(), [], []
-for _ in range(100):
-    individuals = [generate_individ(matrix) for _ in range(z)]  # генерируем родителей 0-го поколения
+with tqdm(range(100), ncols=100, desc=f"Не ООП ГА") as t:
+    for _ in t:
+        individuals = [generate_individ(matrix) for _ in range(z)]  # генерируем родителей 0-го поколения
 
-    newline = '\n'
+        newline = '\n'
 
-    # Особи нулевого поколения (родители для будущего поколения):
-    listMax = []
-    #f.write('0 GENERATION >\n')
-    for i, individual in enumerate(individuals):
-      #  fill_matrix_to_txt(individuals, i)
-        load = count_load(individual, n)
-        listMax.append(load)
-    #    f.write(f'load: {load}\n')
-    best_result, bestLoad_index = best_load(listMax)  # лучшая загрузка и (индекс лучшей особи - 1)
-    best_individual = individuals[bestLoad_index]
-    #f.write(f'All_Loads:\n{newline.join(["(O" + str(i + 1) + ") " + " ".join([str(e) for e in el]) for i, el in enumerate(listMax)])}\nBest individual is ')
-    #fill_matrix_to_txt(individuals, bestLoad_index)
-    #f.write(f'Its load: {best_result}\n#\n')
-    previous_best_result, bestLoad_index = 0, 0
-    best_of_all_generations_result = best_result
-    #print(listMax)
-
-    # Переменные для ГА:
-    counter, gen_count = 0, 0
-
-    while k != counter - 1:
-        previous_best_result = best_result
-        gen_count += 1
-        generation = []
-        best_generation_loads = []
-    #    f.write(f'\n{gen_count} GENERATION >\n')
-       ## f.write(f'Parents:\n')
-     #   [fill_matrix_to_txt(individuals, i) for i, el in enumerate(individuals)]
-        for _ in range(z):
-
-            # Алгоритм образования пар родителей:
-            parent1 = individuals[_]
-            parent2 = c(individuals)
-            while r(0, 100) <= Pk:
-                parent2 = c(individuals)
-         #   f.write(f'Pair of parents:\n')
-          #  [fill_matrix_to_txt([parent1, parent2], i, 'parent') for i in range(2)]
-         #   f.write(f'Parent1 load: {count_load(parent1, n)}\nParent2 load: {count_load(parent2, n)}\n')
-            parents_list = (parent1, parent2)
-
-            # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
-            children = []
-            load_list = []
-            counter_child = 0
-          #  f.write(f'\n{_+1} child >\n')
-            crossover_result = crossover(parent1, parent2)
-            for i, child in enumerate(crossover_result):
-                children.append(child)
-                load_list.append(count_load(child, n))
-             #   f.write(f'{counter_child+i+1} Potential child({i+1} without mutation):\n')
-             #   fill_matrix_to_txt(crossover_result, counter_child, 'child')
-             #   f.write(f'Its load: {load_list[-1]}\n')
-             #   f.write(f'Mutation process...\n')
-                counter_child += 1
-                muted_child = mutation(child, Pm)
-                children.append(muted_child)
-                load_list.append(count_load(muted_child, n))
-            #    f.write(f'{counter_child+i+1} Potential child({i+1} with mutation):\n')
-            #    fill_matrix_to_txt(children, -1, 'child')
-           #     f.write(f'Its load: {load_list[-1]}\n')
-            best_child_load, best_child_index = best_load(load_list)
-           # f.write(f'Best child:\n')
-           # fill_matrix_to_txt(children, best_child_index, 'child')
-           # f.write(f'Its load: {best_child_load}\n\n')
-            generation.append(children[best_child_index])
-
-        # Список всех детей:
-       # f.write('\nChildren:\n')
+        # Особи нулевого поколения (родители для будущего поколения):
         listMax = []
-        for i, child in enumerate(generation):
-           # f.write(f'{str(i + 1)})\n')
-            #fill_matrix_to_txt(generation, i, 'child')
-            listMax.append(count_load(child, n))
-        #f.write(f'\nTheir load:\n{newline.join([str(i + 1) + ") " + " ".join([str(el) for el in count_load(elem, n)]) for i, elem in enumerate(generation)])}\n')
+        #f.write('0 GENERATION >\n')
+        for i, individual in enumerate(individuals):
+          #  fill_matrix_to_txt(individuals, i)
+            load = count_load(individual, n)
+            listMax.append(load)
+        #    f.write(f'load: {load}\n')
+        best_result, bestLoad_index = best_load(listMax)  # лучшая загрузка и (индекс лучшей особи - 1)
+        best_individual = individuals[bestLoad_index]
+        #f.write(f'All_Loads:\n{newline.join(["(O" + str(i + 1) + ") " + " ".join([str(e) for e in el]) for i, el in enumerate(listMax)])}\nBest individual is ')
+        #fill_matrix_to_txt(individuals, bestLoad_index)
+        #f.write(f'Its load: {best_result}\n#\n')
+        previous_best_result, bestLoad_index = 0, 0
+        best_of_all_generations_result = best_result
+        #print(listMax)
 
-        # Индекс лучшего результата в поколении
-        currentLoad = best_load(listMax)[1]
+        # Переменные для ГА:
+        counter, gen_count = 0, 0
 
-        # Собираем матрицу родителей и лучших детей для отбора:
-        check_matrix, parent_child_loads = [], []
-        for elem in generation:
-            check_matrix.append(elem)
-            parent_child_loads.append(max(count_load(elem, n)))
-        for elem in individuals:
-            check_matrix.append(elem)
-            parent_child_loads.append(max(count_load(elem, n)))
+        while k != counter - 1:
+            previous_best_result = best_result
+            gen_count += 1
+            generation = []
+            best_generation_loads = []
+        #    f.write(f'\n{gen_count} GENERATION >\n')
+           ## f.write(f'Parents:\n')
+         #   [fill_matrix_to_txt(individuals, i) for i, el in enumerate(individuals)]
+            for _ in range(z):
 
-        best_result = sorted(parent_child_loads)[0]
+                # Алгоритм образования пар родителей:
+                parent1 = individuals[_]
+                parent2 = c(individuals)
+                while r(0, 100) <= Pk:
+                    parent2 = c(individuals)
+             #   f.write(f'Pair of parents:\n')
+              #  [fill_matrix_to_txt([parent1, parent2], i, 'parent') for i in range(2)]
+             #   f.write(f'Parent1 load: {count_load(parent1, n)}\nParent2 load: {count_load(parent2, n)}\n')
+                parents_list = (parent1, parent2)
 
-        # Создаём матрицу индексов лучших особей:
-        best_index = []
-        for elem in sorted(parent_child_loads)[:z]:
-            for i, el in enumerate(parent_child_loads):
-                if elem == el:
-                    best_index.append(i)
-                    break
+                # Алгоритм отбора детей из потенциальных особей (2 + 2 мутанта)
+                children = []
+                load_list = []
+                counter_child = 0
+              #  f.write(f'\n{_+1} child >\n')
+                crossover_result = crossover(parent1, parent2)
+                for i, child in enumerate(crossover_result):
+                    children.append(child)
+                    load_list.append(count_load(child, n))
+                 #   f.write(f'{counter_child+i+1} Potential child({i+1} without mutation):\n')
+                 #   fill_matrix_to_txt(crossover_result, counter_child, 'child')
+                 #   f.write(f'Its load: {load_list[-1]}\n')
+                 #   f.write(f'Mutation process...\n')
+                    counter_child += 1
+                    muted_child = mutation(child, Pm)
+                    children.append(muted_child)
+                    load_list.append(count_load(muted_child, n))
+                #    f.write(f'{counter_child+i+1} Potential child({i+1} with mutation):\n')
+                #    fill_matrix_to_txt(children, -1, 'child')
+               #     f.write(f'Its load: {load_list[-1]}\n')
+                best_child_load, best_child_index = best_load(load_list)
+               # f.write(f'Best child:\n')
+               # fill_matrix_to_txt(children, best_child_index, 'child')
+               # f.write(f'Its load: {best_child_load}\n\n')
+                generation.append(children[best_child_index])
 
-        # Добавляем лучших особей поколения среди родителей и детей:
-        individuals = []
-        for elem in best_index:
-            individuals.append(check_matrix[elem])
+            # Список всех детей:
+           # f.write('\nChildren:\n')
+            listMax = []
+            for i, child in enumerate(generation):
+               # f.write(f'{str(i + 1)})\n')
+                #fill_matrix_to_txt(generation, i, 'child')
+                listMax.append(count_load(child, n))
+            #f.write(f'\nTheir load:\n{newline.join([str(i + 1) + ") " + " ".join([str(el) for el in count_load(elem, n)]) for i, elem in enumerate(generation)])}\n')
 
-       # f.write(f'\nBest individual:\n')
-       # fill_matrix_to_txt(individuals, 0, 'child')
-        #print(individuals[0])
-        # head, values = [], []
-        # [head.append(f'm{m - i}') for i in range(m)]
-        # head.append('m')
-        # reversed_best = deepcopy(individuals[0])[::-1]
-        # to_add = ['genes']
-        # [to_add.append(f'n{i + 1}') for i in range(n)]
-        # count = 0
-        # for gene, procs in reversed_best:
-        #     values.append(gene)
-        # values.append('Genes')
-        # for i in range(n):
-        #     for gene, procs in reversed_best:
-        #         values.append(procs[i])
-        #     values.append(f'n{i+1}')
+            # Индекс лучшего результата в поколении
+            currentLoad = best_load(listMax)[1]
+
+            # Собираем матрицу родителей и лучших детей для отбора:
+            check_matrix, parent_child_loads = [], []
+            for elem in generation:
+                check_matrix.append(elem)
+                parent_child_loads.append(max(count_load(elem, n)))
+            for elem in individuals:
+                check_matrix.append(elem)
+                parent_child_loads.append(max(count_load(elem, n)))
+
+            best_result = sorted(parent_child_loads)[0]
+
+            # Создаём матрицу индексов лучших особей:
+            best_index = []
+            for elem in sorted(parent_child_loads)[:z]:
+                for i, el in enumerate(parent_child_loads):
+                    if elem == el:
+                        best_index.append(i)
+                        break
+
+            # Добавляем лучших особей поколения среди родителей и детей:
+            individuals = []
+            for elem in best_index:
+                individuals.append(check_matrix[elem])
+
+           # f.write(f'\nBest individual:\n')
+           # fill_matrix_to_txt(individuals, 0, 'child')
+            #print(individuals[0])
+            # head, values = [], []
+            # [head.append(f'm{m - i}') for i in range(m)]
+            # head.append('m')
+            # reversed_best = deepcopy(individuals[0])[::-1]
+            # to_add = ['genes']
+            # [to_add.append(f'n{i + 1}') for i in range(n)]
+            # count = 0
+            # for gene, procs in reversed_best:
+            #     values.append(gene)
+            # values.append('Genes')
+            # for i in range(n):
+            #     for gene, procs in reversed_best:
+            #         values.append(procs[i])
+            #     values.append(f'n{i+1}')
 
 
-        #[values.append(f'n{i+1}') for i in range(n)]
-        #print(head, values)
+            #[values.append(f'n{i+1}') for i in range(n)]
+            #print(head, values)
 
-        # columns = len(head)  # Подсчитаем кол-во столбцов на будущее.
-        # table = PrettyTable(head)  # Определяем таблицу.
-        # # Cкопируем список td, на случай если он будет использоваться в коде дальше.
-        # td_data = values[:]  # Входим в цикл который заполняет нашу таблицу. Цикл будет выполняться до тех пор пока
-        # # у нас не кончатся данные для заполнения строк таблицы (список td_data).
-        # while td_data:
-        #     table.add_row(td_data[:columns])  # Используя срез добавляем первые три элементов в строку (columns = 3).
-        #     td_data = td_data[columns:]  # Используя срез переопределяем td_data так, чтобы он
-        #     # больше не содержал первых 3 элементов.
-        #     table.hrules = 1
-        # print(table)  # Печатаем таблицу
-        #table = table.get_string()
-        # f.write(table)
-        # f.write('\n')
-        #
-        # f.write(f'Its load: {" ".join([str(el) for el in count_load(individuals[0], n)])}\n')
-        #
-        # f.write(f'Best children + parents loads: {parent_child_loads}\n')
-        # f.write(f'Best z individuals: {sorted(parent_child_loads)[:z]}\n')
-        # f.write(f'Best load: {best_result}\n')
+            # columns = len(head)  # Подсчитаем кол-во столбцов на будущее.
+            # table = PrettyTable(head)  # Определяем таблицу.
+            # # Cкопируем список td, на случай если он будет использоваться в коде дальше.
+            # td_data = values[:]  # Входим в цикл который заполняет нашу таблицу. Цикл будет выполняться до тех пор пока
+            # # у нас не кончатся данные для заполнения строк таблицы (список td_data).
+            # while td_data:
+            #     table.add_row(td_data[:columns])  # Используя срез добавляем первые три элементов в строку (columns = 3).
+            #     td_data = td_data[columns:]  # Используя срез переопределяем td_data так, чтобы он
+            #     # больше не содержал первых 3 элементов.
+            #     table.hrules = 1
+            # print(table)  # Печатаем таблицу
+            #table = table.get_string()
+            # f.write(table)
+            # f.write('\n')
+            #
+            # f.write(f'Its load: {" ".join([str(el) for el in count_load(individuals[0], n)])}\n')
+            #
+            # f.write(f'Best children + parents loads: {parent_child_loads}\n')
+            # f.write(f'Best z individuals: {sorted(parent_child_loads)[:z]}\n')
+            # f.write(f'Best load: {best_result}\n')
 
-        # Если сквозь поколения была лучшая загрузка ждем когда она не повторится или улучшится:
-        if best_result < best_of_all_generations_result:
-            best_of_all_generations_result = best_result
-            counter = 0
+            # Если сквозь поколения была лучшая загрузка ждем когда она не повторится или улучшится:
+            if best_result < best_of_all_generations_result:
+                best_of_all_generations_result = best_result
+                counter = 0
 
-        # Если загрузка предыдущего поколения равна загрузке текущего
-        if best_of_all_generations_result == best_result:
-            counter += 1
-        else:
-            counter = 0
-        #f.write(f'#\n')
-        # print(gen_count, best_result, best_of_all_generations_result)
+            # Если загрузка предыдущего поколения равна загрузке текущего
+            if best_of_all_generations_result == best_result:
+                counter += 1
+            else:
+                counter = 0
+            #f.write(f'#\n')
+            # print(gen_count, best_result, best_of_all_generations_result)
 
-    generations.append(gen_count), results.append(best_result)
-    #print(f'Generations: {gen_count}\nBest result: {best_result}')
+        generations.append(gen_count), results.append(best_result)
+        #print(f'Generations: {gen_count}\nBest result: {best_result}')
 print(
     f"{datetime.now() - start}\n"
     f"{sum(generations) / len(generations)}\n"

@@ -13,16 +13,18 @@ str_methods = (
     "The Plotnikov-Zverev method | Метод Плотникова-Зверева",
     "The barrier method | Метод барьера"
 )
-is_create_way = input(
-    "Select all or a specific method of forming (partitioning) the initial generation | "
-    "Выбрать все или конкретный метод формирования (разбиения) начального поколения(1/any) > "
-)
-is_create_way = int(is_create_way) if is_create_way.isdigit() else is_create_way
-is_bounds = input(
-    "Select all or a specific method of forming genes | "
-    "Выбрать все или конкретный метод формирования генов(1/any) > "
-)
-is_bounds = int(is_bounds) if is_bounds.isdigit() else is_bounds
+# is_create_way = input(
+#     "Select all or a specific method of forming (partitioning) the initial generation | "
+#     "Выбрать все или конкретный метод формирования (разбиения) начального поколения(1/any) > "
+# )
+is_create_way = 1
+# is_create_way = int(is_create_way) if is_create_way.isdigit() else is_create_way
+# is_bounds = input(
+#     "Select all or a specific method of forming genes | "
+#     "Выбрать все или конкретный метод формирования генов(1/any) > "
+# )
+# is_bounds = int(is_bounds) if is_bounds.isdigit() else is_bounds
+is_bounds = 1
 if is_bounds == 1:
     bounds = -1
 else:
@@ -83,12 +85,14 @@ colors_dict = {
      'The barrier method | Метод барьера': 'firebrick'
 }
 for bounds in file_formation_genes.keys():
+    print(bounds, "f")
     if bounds == 4:
         file_formation_init = {0: '100r'}
     axes, bar_container, data_all, elapsed_all, labels_all, all_way_of_forming = [], [], [], [], [], []
     for way in file_formation_init.keys():
+        # print(file_formation_init[way])
         data, elapsed_time, way_of_forming = [], [], ''
-        with open(f"experiment_results/{file_formation_genes[bounds]}/result_{file_formation_init[way]}.txt", 'r', encoding="UTF-8") as file:
+        with open(f"../diploma/experiments/experiment_results/{file_formation_genes[bounds]}/result_{file_formation_init[way]}.txt", 'r', encoding="UTF-8") as file:
             file_data = file.readlines()
             # print(file_data)
             for i, elem in enumerate(file_data):
@@ -114,14 +118,14 @@ for bounds in file_formation_genes.keys():
                 index = elapsed_index_sorted[i][1]
                 new_elapsed.append(elapsed_index_sorted[i][0])
                 new_data.append(data[index])
-                print(str_methods, index)
+                # print(str_methods, index)
                 new_str_methods.append(str_methods[index])
 
         fig, ax = plt.subplots()
         fig.set_size_inches(14, 8)
         fig.canvas.set_window_title('Result')
         if way_of_forming not in ('100% random species | 100% рандомных особей\n', '50% Plt-Zvr + 50% barrier species | 50% Плт-Зврв + 50% барьерных особей\n'):
-            bars = [ax.bar(x, y, label=z, color=colors_dict[z], width=(max(data) - min(data))/10) for x, y, z in zip(new_data, new_elapsed, new_str_methods)] #
+            bars = [ax.bar(x, y, label=z, color=colors_dict[z], width=(max(data) - min(data))/10) if len(data) > 1 else 0.8 for x, y, z in zip(new_data, new_elapsed, new_str_methods)] #
             dict_, dict__ = {}, {}
             for i, x in enumerate(new_data):
                 if x in dict_:
@@ -144,7 +148,8 @@ for bounds in file_formation_genes.keys():
                 '100% random species | 100% рандомных особей\n': "Random formation method | Метод рандомного формирования",
                 '50% Plt-Zvr + 50% barrier species | 50% Плт-Зврв + 50% барьерных особей\n': "Plotnikov Zverev and barrier method | Метод Плотникова-Зверева и барьера",
             }
-            f = ax.bar(data[0], elapsed_time[0], label=exception_formation_dict[way_of_forming], width=0.075)
+            print(data, 'ffff')
+            bars = ax.bar(data, elapsed_time, label=exception_formation_dict[way_of_forming], width=0.08)
             [plt.text(x - 0.032, y + 0.05, f"{x} | {y}", bbox=dict(boxstyle="square")) for x, y in zip(data, elapsed_time)]
 
         ax.legend(loc='best')
@@ -159,16 +164,17 @@ for bounds in file_formation_genes.keys():
         plt.xlabel('Result | Результаты')
         plt.ylabel('Elapsed time | Затраченное время')
 
-        if way_of_forming != '100% random species | 100% рандомных особей\n':
+        if way_of_forming not in ('100% random species | 100% рандомных особей\n', '50% Plt-Zvr + 50% barrier species | 50% Плт-Зврв + 50% барьерных особей\n'):
             elapsed_time = sorted(elapsed_time)
-            data = sorted(data)
-            plt.xlim(left=data[0] - (data[-1] - data[0]) / 20, right=data[-1] + (data[-1] - data[0]) / 20) # 0.05
-            plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
+            if len(data) > 1:
+                data = sorted(data)
+                plt.xlim(left=data[0] - (data[-1] - data[0]) / 20, right=data[-1] + (data[-1] - data[0]) / 20)
+                plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
         else:
             plt.xlim(left=data[0] - 0.45, right=data[0] + 0.45)
             plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
 
-        plt.savefig(f"histograms/{file_formation_genes[bounds]}/Result_{file_formation_init[way]}")
+        plt.savefig(f"../diploma/experiments/histograms/{file_formation_genes[bounds]}/Result_{file_formation_init[way]}")
         if is_create_way == 1:
             axes.append(ax), bar_container.append(bars), data_all.append(new_data), elapsed_all.append(new_elapsed)
             labels_all.append(new_str_methods)
@@ -182,12 +188,14 @@ for bounds in file_formation_genes.keys():
         for i, row in enumerate(axes):
             for j, col in enumerate(row):
                 way_of_forming = all_way_of_forming[i + j + k][:all_way_of_forming[i + j + k].index("|") - 1]
-                print(way_of_forming)
+                # print(way_of_forming)
                 axes[i][j].set_title(
                     f'{way_of_forming}',
                     bbox=dict(boxstyle="square", facecolor='darkviolet', edgecolor="black"),
                     fontsize = 11
                 )
+                print(data_all[i + j + k])
+                print(bounds)
                 max_data, min_data = max(data_all[i + j + k]), min(data_all[i + j + k])
                 max_elapsed, min_elapsed = max(elapsed_all[i + j + k]), min(elapsed_all[i + j + k])
                 if way_of_forming != "50% Plt-Zvr + 50% barrier species":
@@ -218,7 +226,7 @@ for bounds in file_formation_genes.keys():
             f'{boundaries[bounds]}\n'
            # f'{data_all[0]} | {elapsed_all[0]}'
         )
-        plt.savefig(f"histograms/{file_formation_genes[bounds]}/Result_all")
+        plt.savefig(f"../diploma/experiments/histograms/{file_formation_genes[bounds]}/Result_all")
 
         fig, ax = plt.subplots()
         ax.axis('tight')
@@ -244,7 +252,7 @@ for bounds in file_formation_genes.keys():
                                              round(summary_results_genes[i][1] + cellData[i][j][1], 2))
         for i, elem in enumerate(cellData[:-1]):
             elem.append(summary_results_genes[i])
-        with open(f"experiment_results/{file_formation_genes[bounds]}/all_result.txt", 'w', encoding="utf-8") as f:
+        with open(f"../diploma/experiments/experiment_results/{file_formation_genes[bounds]}/all_result.txt", 'w', encoding="utf-8") as f:
             f.write("Methods summary\n")
             for method_data in summary_results_method:
                 f.write(f"{method_data}")
@@ -261,7 +269,7 @@ for bounds in file_formation_genes.keys():
             cellText=cellData, cellLoc='center', loc='center',
             rowColours=["palegreen"] * 4, colColours=["palegreen"] * 4, colLabels=col, rowLabels=row# colWidths=[0.1, 0.1, 0.1, 0.1],
         )
-        plt.savefig(f"histograms/{file_formation_genes[bounds]}/result_allmethods_table.png")
+        plt.savefig(f"../diploma/experiments/histograms/{file_formation_genes[bounds]}/result_allmethods_table.png")
         # plt.show()
         # os.startfile(f"C:/Users/Богдан/PycharmProjects/everistika/diploma/experiments/histograms/{file_formation_genes[bounds]}/Result_all.png")
 # plt.show()

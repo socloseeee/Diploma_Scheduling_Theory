@@ -9,14 +9,13 @@ import os
 str_methods = (
     "The method of minimal elements | Метод минмальных элементов",
     "The Plotnikov-Zverev method | Метод Плотникова-Зверева",
-    "The method of squares | Метод квадратов",
     "The barrier method | Метод барьера"
 )
 gene_form = (
     "50r+50d",
     "25r+75d",
     "75r+25d",
-    "100d"
+    "50pz+50b"
 )
 colors_dict = {
      'central': 'royalblue',
@@ -43,8 +42,9 @@ fig.set_size_inches(19, 9.5), fig1.set_size_inches(19, 9.5)
 for bound in bounds:
     with open(f"experiment_results/{bound}_bound/all_result.txt", 'r', encoding="utf-8") as f:
         data = f.readlines()
-        methods_data = [[float(el) for el in elem[1:-2].split(', ')] for elem in data[data.index('Methods summary\n') + 1:data.index('Methods summary\n') + 1 + len(bounds)]]
-        genes_data = [[float(el) for el in elem[1:-2].split(', ')] for elem in data[data.index('Genes_summary\n') + 1:data.index('Genes_summary\n') + 1 + len(bounds)]]
+        print(data)
+        methods_data = [[float(el) for el in elem[1:-2].split(', ')] for elem in data[data.index('Methods summary\n') + 1:data.index('Methods summary\n') + 1 + len(bounds) - 1]]
+        genes_data = [[float(el) for el in elem[1:-2].split(', ')] for elem in data[data.index('Genes_summary\n') + 1:data.index('Genes_summary\n') + 1 + len(bounds) - 1]]
     axes_dict[bound].set_title(
         f'{bound}',
         bbox=dict(boxstyle="square", facecolor='darkviolet', edgecolor="black"),
