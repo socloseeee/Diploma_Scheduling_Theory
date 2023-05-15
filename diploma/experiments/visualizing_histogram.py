@@ -92,7 +92,10 @@ for bounds in file_formation_genes.keys():
     for way in file_formation_init.keys():
         # print(file_formation_init[way])
         data, elapsed_time, way_of_forming = [], [], ''
-        with open(f"../diploma/experiments/experiment_results/{file_formation_genes[bounds]}/result_{file_formation_init[way]}.txt", 'r', encoding="UTF-8") as file:
+        with open(
+                os.path.abspath(
+                    f"experiment_results/{file_formation_genes[bounds]}/result_{file_formation_init[way]}.txt"
+                ), 'r', encoding="UTF-8") as file:
             file_data = file.readlines()
             # print(file_data)
             for i, elem in enumerate(file_data):
@@ -123,7 +126,7 @@ for bounds in file_formation_genes.keys():
 
         fig, ax = plt.subplots()
         fig.set_size_inches(14, 8)
-        fig.canvas.set_window_title('Result')
+        fig.canvas.setWindowTitle('Result')
         if way_of_forming not in ('100% random species | 100% рандомных особей\n', '50% Plt-Zvr + 50% barrier species | 50% Плт-Зврв + 50% барьерных особей\n'):
             bars = [ax.bar(x, y, label=z, color=colors_dict[z], width=(max(data) - min(data))/10) if len(data) > 1 else 0.8 for x, y, z in zip(new_data, new_elapsed, new_str_methods)] #
             dict_, dict__ = {}, {}
@@ -173,7 +176,9 @@ for bounds in file_formation_genes.keys():
         else:
             plt.xlim(left=data[0] - 0.45, right=data[0] + 0.45)
             plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
-        plt.savefig(f"../diploma/experiments/histograms/{file_formation_genes[bounds]}/Result_{file_formation_init[way]}")
+        plt.savefig(
+            os.path.abspath(f"histograms/{file_formation_genes[bounds]}/Result_{file_formation_init[way]}")
+        )
         if is_create_way == 1:
             axes.append(ax), bar_container.append(bars), data_all.append(new_data), elapsed_all.append(new_elapsed)
             labels_all.append(new_str_methods)
@@ -195,6 +200,7 @@ for bounds in file_formation_genes.keys():
                 )
                 print(data_all[i + j + k])
                 print(bounds)
+                print(data_all)
                 max_data, min_data = max(data_all[i + j + k]), min(data_all[i + j + k])
                 max_elapsed, min_elapsed = max(elapsed_all[i + j + k]), min(elapsed_all[i + j + k])
                 if way_of_forming != "50% Plt-Zvr + 50% barrier species":
@@ -225,7 +231,9 @@ for bounds in file_formation_genes.keys():
             f'{boundaries[bounds]}\n'
            # f'{data_all[0]} | {elapsed_all[0]}'
         )
-        plt.savefig(f"../diploma/experiments/histograms/{file_formation_genes[bounds]}/Result_all")
+        plt.savefig(
+            os.path.abspath(f"histograms/{file_formation_genes[bounds]}/Result_all")
+        )
 
         fig, ax = plt.subplots()
         ax.axis('tight')
@@ -251,7 +259,12 @@ for bounds in file_formation_genes.keys():
                                              round(summary_results_genes[i][1] + cellData[i][j][1], 2))
         for i, elem in enumerate(cellData[:-1]):
             elem.append(summary_results_genes[i])
-        with open(f"../diploma/experiments/experiment_results/{file_formation_genes[bounds]}/all_result.txt", 'w', encoding="utf-8") as f:
+        with open(
+                os.path.abspath(
+                f"experiment_results/{file_formation_genes[bounds]}/all_result.txt"
+                ), 'w', encoding="utf-8"
+        ) as f:
+
             f.write("Methods summary\n")
             for method_data in summary_results_method:
                 f.write(f"{method_data}")
@@ -268,7 +281,9 @@ for bounds in file_formation_genes.keys():
             cellText=cellData, cellLoc='center', loc='center',
             rowColours=["palegreen"] * 4, colColours=["palegreen"] * 4, colLabels=col, rowLabels=row# colWidths=[0.1, 0.1, 0.1, 0.1],
         )
-        plt.savefig(f"../diploma/experiments/histograms/{file_formation_genes[bounds]}/result_allmethods_table.png")
+        plt.savefig(
+            os.path.abspath(f"histograms/{file_formation_genes[bounds]}/result_allmethods_table.png")
+        )
         # plt.show()
         # os.startfile(f"C:/Users/Богдан/PycharmProjects/everistika/diploma/experiments/histograms/{file_formation_genes[bounds]}/Result_all.png")
 # plt.show()

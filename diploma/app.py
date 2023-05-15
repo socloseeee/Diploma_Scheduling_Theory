@@ -487,7 +487,7 @@ class Ui_formation_partitioning(object):
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_2.setObjectName("line_2")
         self.radioButton = QtWidgets.QRadioButton(self.centralwidget)
-        self.radioButton.setGeometry(QtCore.QRect(20, 180, 161, 20))
+        self.radioButton.setGeometry(QtCore.QRect(20, 180, 271, 20))
         self.radioButton.setObjectName("radioButton")
         self.radioButton_2 = QtWidgets.QRadioButton(self.centralwidget)
         self.radioButton_2.setGeometry(QtCore.QRect(20, 210, 271, 20))
@@ -521,7 +521,7 @@ class Ui_formation_partitioning(object):
         GenethicAlgorythm.setWindowTitle(_translate("formation_partitioning", "formation_partitioning"))
         self.label.setText(_translate("formation_partitioning", "Способ формирования (разбиения) начального поколения"))
         self.label_2.setText(_translate("formation_partitioning", f"{self.global_data.data['matrix']}"))
-        self.radioButton.setText(_translate("formation_partitioning", "100% рандомно"))
+        self.radioButton.setText(_translate("formation_partitioning", "50% Рандомно + 50% детерминированно"))
         self.radioButton_2.setText(_translate("formation_partitioning", "25% Рандомно + 75% детерминированно"))
         self.radioButton_3.setText(_translate("formation_partitioning", "75% Рандомно + 25% детерминированно"))
         self.radioButton_4.setText(_translate("formation_partitioning", "50% Плотников-Зверев + 50% Барьер"))
@@ -1240,6 +1240,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def way_of_create_btn(self):
         create_way = self.global_data.data["create_way"]
+        if create_way == "50% Плотников-Зверев + 50% Барьер":
+            self.progress_bar.setMaximum(self.progress_bar.maximum() // 3)
         data = {"create_way": create_way}
         json_open(
             namefile="../diploma/experiments/data.json",

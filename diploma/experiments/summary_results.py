@@ -40,7 +40,9 @@ axes_dict1 = {
 }
 fig.set_size_inches(19, 9.5), fig1.set_size_inches(19, 9.5)
 for bound in bounds:
-    with open(f"experiment_results/{bound}_bound/all_result.txt", 'r', encoding="utf-8") as f:
+    with open(
+            os.path.abspath(f"experiment_results/{bound}_bound/all_result.txt"),
+            'r', encoding="utf-8") as f:
         data = f.readlines()
         print(data)
         methods_data = [[float(el) for el in elem[1:-2].split(', ')] for elem in data[data.index('Methods summary\n') + 1:data.index('Methods summary\n') + 1 + len(bounds) - 1]]
