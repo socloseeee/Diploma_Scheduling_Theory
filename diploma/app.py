@@ -1,36 +1,22 @@
+import sys
+import json
+
+from typing import Optional, Union, List
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.Qt import *
-from random import randint as r
-import random
-import copy
 from copy import deepcopy
-from random import choice as c, randint as r
-from colorama import Fore, init, Style, Back
-import time
-import matplotlib.pyplot as plt
-import sys
-from experiments.experiments import signal_thread
-import os
+from random import randint as r
 from PIL import Image
+from pathlib import Path
+from dataclasses import dataclass, field
 
-init(autoreset=True)
+from experiments.experiments import signal_thread
 
 
-# globals
-newline = '\n'
-T1 = 30
-T2 = 40
-n = 5
-m = 12
-matrix = []
-ui_matrix_size = 13
-repetitions = None
-is_create_way = None
-create_way = None
-bounds = None
-methods_amount = 3
-ways_of_formation = 3
-
+class DataApp:
+    with open("../diploma/experiments/data.json", 'r') as f:
+        json_data = json.load(f)
+    data = json_data
 
 class Ui_choosing_variables(object):
     def setupUi(self, choosing_variables):
@@ -284,6 +270,7 @@ class Ui_generate_matrix(object):
 
 class Ui_number_of_repetitons(object):
     def setupUi(self, number_of_repetitons):
+        self.global_data = DataApp()
         number_of_repetitons.setObjectName("number_of_repetitons")
         number_of_repetitons.resize(812, 398)
         font = QtGui.QFont()
@@ -326,7 +313,7 @@ class Ui_number_of_repetitons(object):
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(414, 5, 391, 341))
         font = QtGui.QFont()
-        font.setPointSize(ui_matrix_size)
+        font.setPointSize(self.global_data.data["ui_matrix_size"])
         self.label_2.setFont(font)
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
@@ -364,7 +351,7 @@ class Ui_number_of_repetitons(object):
         _translate = QtCore.QCoreApplication.translate
         number_of_repetitons.setWindowTitle(_translate("number_of_repetitons", "NumberOfRepeats"))
         self.label.setText(_translate("number_of_repetitons", "Задайте количество повторов генетического алгоритма"))
-        self.label_2.setText(_translate("number_of_repetitons", f"{matrix}"))
+        self.label_2.setText(_translate("number_of_repetitons", f"{self.global_data.data['matrix']}"))
         self.pushButton.setText(_translate("number_of_repetitions", "Далее"))
         self.pushButton_2.setText(_translate("number_of_repetitions", "Вернуться"))
         self.lineEdit.setText(_translate("number_of_repetitons", "100"))
@@ -372,6 +359,7 @@ class Ui_number_of_repetitons(object):
 
 class Ui_chose_of_one_or_all_methods(object):
     def setupUi(self, chose_of_one_or_all_methods):
+        self.global_data = DataApp
         chose_of_one_or_all_methods.setObjectName("GenethicAlgorythm")
         chose_of_one_or_all_methods.resize(812, 398)
         font = QtGui.QFont()
@@ -423,7 +411,7 @@ class Ui_chose_of_one_or_all_methods(object):
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(414, 5, 391, 341))
         font = QtGui.QFont()
-        font.setPointSize(ui_matrix_size)
+        font.setPointSize(self.global_data.data['ui_matrix_size'])
         self.label_2.setFont(font)
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
@@ -446,11 +434,12 @@ class Ui_chose_of_one_or_all_methods(object):
         self.pushButton_2.setText(_translate("chose_of_one_or_all_methods", "Конкретный метод"))
         self.pushButton_3.setText(_translate("chose_of_one_or_all_methods", "Вернуться"))
         self.label.setText(_translate("chose_of_one_or_all_methods", "Выбрать все или конкретный метод формирования (разбиения) начального поколения"))
-        self.label_2.setText(_translate("chose_of_one_or_all_methods", f"{matrix}"))
+        self.label_2.setText(_translate("chose_of_one_or_all_methods", f"{self.global_data.data['matrix']}"))
 
 
 class Ui_formation_partitioning(object):
     def setupUi(self, formation_partitioning):
+        self.global_data = DataApp()
         formation_partitioning.setObjectName("formation_partitioning")
         formation_partitioning.resize(812, 398)
         font = QtGui.QFont()
@@ -488,7 +477,7 @@ class Ui_formation_partitioning(object):
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(414, 5, 391, 341))
         font = QtGui.QFont()
-        font.setPointSize(ui_matrix_size)
+        font.setPointSize(self.global_data.data['ui_matrix_size'])
         self.label_2.setFont(font)
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
@@ -531,7 +520,7 @@ class Ui_formation_partitioning(object):
         _translate = QtCore.QCoreApplication.translate
         GenethicAlgorythm.setWindowTitle(_translate("formation_partitioning", "formation_partitioning"))
         self.label.setText(_translate("formation_partitioning", "Способ формирования (разбиения) начального поколения"))
-        self.label_2.setText(_translate("formation_partitioning", f"{matrix}"))
+        self.label_2.setText(_translate("formation_partitioning", f"{self.global_data.data['matrix']}"))
         self.radioButton.setText(_translate("formation_partitioning", "100% рандомно"))
         self.radioButton_2.setText(_translate("formation_partitioning", "25% Рандомно + 75% детерминированно"))
         self.radioButton_3.setText(_translate("formation_partitioning", "75% Рандомно + 25% детерминированно"))
@@ -542,6 +531,7 @@ class Ui_formation_partitioning(object):
 
 class Ui_chosing_of_border(object):
     def setupUi(self, chosing_of_border):
+        self.global_data = DataApp
         chosing_of_border.setObjectName("GenethicAlgorythm")
         chosing_of_border.resize(812, 398)
         font = QtGui.QFont()
@@ -582,7 +572,7 @@ class Ui_chosing_of_border(object):
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(445, 5, 391, 341))
         font = QtGui.QFont()
-        font.setPointSize(ui_matrix_size)
+        font.setPointSize(self.global_data.data['ui_matrix_size'])
         font1 = QtGui.QFont()
         font1.setPointSize(11)
         self.label_2.setFont(font)
@@ -628,7 +618,7 @@ class Ui_chosing_of_border(object):
         chosing_of_border.setWindowTitle(_translate("chosing_of_border", "chosing_of_border"))
         self.pushButton.setText(_translate("chosing_of_border", "По центру"))
         self.label.setText(_translate("chosing_of_border", "Способы формирования генов"))
-        self.label_2.setText(_translate("chosing_of_border", f"{matrix}"))
+        self.label_2.setText(_translate("chosing_of_border", f"{self.global_data.data['matrix']}"))
         self.pushButton_2.setText(_translate("chosing_of_border", "Слева"))
         self.pushButton_3.setText(_translate("chosing_of_border", "Справа"))
         self.pushButton_4.setText(_translate("chosing_of_border", "Рандомно"))
@@ -1018,29 +1008,38 @@ OUTPUT_LOGGER_STDERR = OutputLogger(sys.stderr, OutputLogger.Severity.ERROR)
 sys.stdout = OUTPUT_LOGGER_STDOUT
 sys.stderr = OUTPUT_LOGGER_STDERR
 
+
+def json_open(namefile: Optional[Union[str, Path]], write_method: str, data: dict = None):
+    if write_method == 'r':
+        with open(namefile, 'r') as file:
+            return json.load(file)
+    new_data = deepcopy(data)
+    with open(namefile, 'r') as file:
+        try:
+            json_dict = json.load(file)
+            json_dict.update(new_data)
+        except Exception as e:
+            print(e)
+    with open(namefile, write_method) as file:
+        json.dump(json_dict, file, indent=4, ensure_ascii=False)
+
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
+        self.global_data = DataApp()
         super().__init__()
 
         self.stacked = QtWidgets.QStackedWidget(self)
         self.setCentralWidget(self.stacked)
 
         self.window_choosing_variables = choosing_variables(self)
-        # self.window_choosing_variables.setStyleSheet('#choosing_variables {background-color: #ffbdcc;}')
         self.window_generate_matrix = generate_matrix(self)
-        # self.window_generate_matrix.setStyleSheet('#generate_matrix {background-color: #ffbdcc;}')
         self.window_number_of_repetitions = number_of_repetitons(self)
-        #self.window_Win2.setStyleSheet('#Win2 {background-color: #ccffbd;}')
         self.window_chose_of_one_or_all_methods = chose_of_one_or_all_methods(self)
-        #self.window_Win3.setStyleSheet('#Win3 {background-color: #bdccccff;}')
         self.window_formation_partitioning = formation_partitioning(self)
-        # self.window_Win3.setStyleSheet('#Win3 {background-color: #bdccccff;}')
         self.window_chosing_of_border = chosing_of_border(self)
-        # self.window_Win3.setStyleSheet('#Win3 {background-color: #bdccccff;}')
         self.window_ga_loader = ga_loader(self)
-        # self.window_Win3.setStyleSheet('#Win3 {background-color: #bdccccff;}')
         self.window_hystograms_choose = hystograms_choose(self)
-        # self.window_Win3.setStyleSheet('#Win3 {background-color: #bdccccff;}')
 
         self.stacked.addWidget(self.window_choosing_variables)
         self.stacked.addWidget(self.window_generate_matrix)
@@ -1061,7 +1060,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.k = self.window_choosing_variables.lineEdit_6
         self.Pk = self.window_choosing_variables.lineEdit_7
         self.Pm = self.window_choosing_variables.lineEdit_8
-
 
         self.ready_btn = self.window_generate_matrix.pushButton
         self.new_btn = self.window_generate_matrix.pushButton_2
@@ -1141,62 +1139,94 @@ class MainWindow(QtWidgets.QMainWindow):
         self.window_hystograms_choose.lpic21.clicked.connect(self.openPic)
         self.window_hystograms_choose.lpic22.clicked.connect(self.openPic)
 
+
     def choice_of_variables(self):
-        file = open('../diploma/experiments/data.txt', 'w', encoding='utf-8')
-        m, n, T1, T2 = self.m.text(), self.n.text(), self.T1.text(), self.T2.text()
-        z, k, Pk, Pm = self.z.text(), self.k.text(), self.Pk.text(), self.Pm.text()
-        file.write(f"{m} {n} {T1} {T2} {z} {k} {Pk} {Pm}\n\n")
+        data = {
+            'm': int(self.m.text()),
+            'n': int(self.n.text()),
+            'T1': int(self.T1.text()),
+            'T2': int(self.T2.text()),
+            'z': int(self.z.text()),
+            'k': int(self.k.text()),
+            'Pk': int(self.Pk.text()),
+            'Pm': int(self.Pm.text())
+        }
+        json_open(
+            namefile="../diploma/experiments/data.json",
+            write_method='w',
+            data=data
+        )
         self.stacked.setCurrentIndex(1)
 
     def generate_or_new_matrix(self):
-        global matrix
+        T1, T2 = self.global_data.data["T1"], self.global_data.data["T2"]
         button = self.sender()
         print(button.text())
         if button.text() == 'Новая матрица':
-            matrix = [[r(T1, T2) for _ in range(int(self.n.text()))] for __ in range(int(self.m.text()))]
-            matrix_file = open('../diploma/experiments/matrix.txt', 'w', encoding='utf-8')
-            [matrix_file.write(f"{elem}\n") for elem in matrix]
-            matrix_file.close()
+            self.global_data.data["matrix"] = [[r(T1, T2) for _ in range(int(self.n.text()))] for __ in range(int(self.m.text()))]
+            matrix = self.global_data.data["matrix"]
+            data = json_open(
+                namefile="../diploma/experiments/data.json",
+                write_method='r'
+            )
+            data["matrix"] = '[' + ']\n['.join(', '.join(map(str, elem)) for elem in matrix) + ']'
+            json_open(
+                namefile="../diploma/experiments/data.json",
+                write_method='w',
+                data=data
+            )
         else:
-            matrix_file = open('../diploma/experiments/matrix.txt', 'r', encoding='utf-8')
-            data = matrix_file.readlines()
-            [matrix.append([int(el) for el in elem[1:-2].split(', ')]) for elem in data]
-            matrix_file.close()
-        matrix_str = f"{newline.join(['  '.join([str(elem) for elem in e])  for e in matrix])}"
-        file = open('../diploma/experiments/data.txt', 'a', encoding='utf-8')
-        file.write(f"{matrix}\n\n")
-        file.close()
-        print(matrix_str)
+            data = json_open(
+                namefile="../diploma/experiments/data.json",
+                write_method='r'
+            )
+            self.global_data.data["matrix"] = [[int(elem) for elem in row[1:-1].split(", ")] for row in data["matrix"].split("\n")]
+        matrix_str = data["matrix"]
         self.window_number_of_repetitions.label_2.setText(matrix_str)
         self.window_chose_of_one_or_all_methods.label_2.setText(matrix_str)
         self.window_formation_partitioning.label_2.setText(matrix_str)
         self.window_chosing_of_border.label_2.setText(matrix_str)
-        # self.window_ga_loader.label_3.setText(matrix_str)
         self.stacked.setCurrentIndex(2)
 
     def repetitions(self):
-        global repetitions, is_create_way
-        repetitions = self.repets.text()
-        file = open('../diploma/experiments/data.txt', 'a', encoding='utf-8')
-        file.write(f"{repetitions}\n\n")
-        file.close()
-        print(repetitions)
+        self.global_data.data["repetitions"] = int(self.repets.text())
+        repetitions = self.global_data.data["repetitions"]
+        data = {
+            "repetitions": repetitions
+        }
+        json_open(
+            namefile="../diploma/experiments/data.json",
+            write_method='w',
+            data=data
+        )
         self.stacked.setCurrentIndex(3)
 
     def is_create(self):
         button = self.sender()
-
-        global is_create_way, repetitions
-        is_create_way = button.text()
-        file = open('../diploma/experiments/data.txt', 'a', encoding='utf-8')
-        file.write(f"{is_create_way}\n\n")
-        file.close()
-        print(is_create_way)
+        repetitions = self.global_data.data["repetitions"]
+        ways_of_formation = self.global_data.data["ways_of_formation"]
+        methods_amount = self.global_data.data["methods_amount"]
+        self.global_data.data["is_create_way"] = button.text()
+        is_create_way = self.global_data.data["is_create_way"]
+        self.global_data.data["ways_of_formation"] = 0 if is_create_way == "Конкретный метод" else 3
+        ways_of_formation = self.global_data.data["ways_of_formation"]
+        data = {
+            "is_create_way": is_create_way
+        }
+        json_open(
+            namefile="../diploma/experiments/data.json",
+            write_method="w",
+            data=data
+        )
+        print(is_create_way, repetitions * methods_amount)
         self.progress_bar.setMaximum(
-            (
-                int(repetitions) * methods_amount,
-                int(repetitions) * methods_amount * ways_of_formation + int(repetitions)
-            )[is_create_way == "Все методы"]
+            {
+                "Конкретный метод": (
+                    int(repetitions) * methods_amount,
+                    int(repetitions) * methods_amount
+                )[self.global_data.data["create_way"] == "50% Плотников-Зверев + 50% Барьер"],
+                "Все методы": int(repetitions) * methods_amount * ways_of_formation + int(repetitions)
+            }[self.global_data.data["is_create_way"]]
         )
         self.stacked.setCurrentIndex(5) if is_create_way == 'Все методы' else self.stacked.setCurrentIndex(4)
 
@@ -1204,50 +1234,34 @@ class MainWindow(QtWidgets.QMainWindow):
         radio_button = self.sender()
 
         if radio_button.isChecked():
-            global create_way
-            create_way = radio_button.text()
+            self.global_data.data["create_way"] = radio_button.text()
+            create_way = self.global_data.data["create_way"]
             print(create_way)
 
     def way_of_create_btn(self):
-        file = open('../diploma/experiments/data.txt', 'a', encoding='utf-8')
-        file.write(f"{create_way}\n\n")
-        file.close()
+        create_way = self.global_data.data["create_way"]
+        data = {"create_way": create_way}
+        json_open(
+            namefile="../diploma/experiments/data.json",
+            write_method='w',
+            data=data
+        )
         self.stacked.setCurrentIndex(5)
 
     def bound(self):
         button = self.sender()
 
-        global bounds
+        bounds = self.global_data.data["bounds"]
         bounds = button.text()
         print(bounds)
-        file = open('../diploma/experiments/data.txt', 'a', encoding='utf-8')
-        file.write(f"{bounds}\n")
-        file.close()
-
-#         self.window_ga_loader.label_2.setPlainText(f"Количество заданий: {self.m.text()}\n"
-# "\n"
-# "\n"
-# f"Количество процессоров: {self.n.text()}\n"
-# "\n"
-# "\n"
-# f"Левая граница значений: {self.T1.text()}\n"
-# "\n"
-# "\n"
-# f"Правая граница значений: {self.T2.text()}\n"
-# "\n")
-#         self.window_ga_loader.label_4.setText(f"Количество особей в поколении: {self.z.text()}\n"
-# "\n"
-# "\n"
-# f"Количество повторов для выхода из алгоритма: {self.k.text()}\n"
-# "\n"
-# "\n"
-# f"Вероятность кроссовера: {self.Pk.text()}\n"
-# "\n"
-# "\n"
-# f"Вероятность мутации: {self.Pm.text()}\n"
-# "\n")
-        # self.connect(self.progress_bar_thread, SIGNAL("notify_progress(QString)"), self.notify_progress)
-        # self.connect(self.progress_bar_thread, SIGNAL("finished()"), self.done)
+        data = {
+            "bounds": bounds
+        }
+        json_open(
+            namefile="../diploma/experiments/data.json",
+            write_method='w',
+            data=data
+        )
         self.stacked.setCurrentIndex(6)
 
     def start(self):
@@ -1261,6 +1275,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def append_log(self, text, severity):
         text = repr(text)
+        bounds = self.global_data.data['bounds']
 
         if severity == OutputLogger.Severity.ERROR:
             text = '{}'.format(text)[3:]
@@ -1270,14 +1285,12 @@ class MainWindow(QtWidgets.QMainWindow):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.console_text.setFont(font)
-        #self.console_text.set
+
 
     def progress_signal_accept(self, msg):
         self.progress_bar.setValue(int(msg))
         if self.progress_bar.value() == self.progress_bar.maximum():
             self.stacked.setCurrentIndex(7)
-            import experiments.visualizing_histogram
-            self.window_hystograms_choose
 
     def method_signal_accept(self, msg):
         methods = (
@@ -1285,19 +1298,18 @@ class MainWindow(QtWidgets.QMainWindow):
             'Метод Плотникова-Зверева',
             'Метод Барьера'
         )
-       #self.window_ga_loader.label_3.setText(f"Метод {str(msg)}")
         self.window_ga_loader.label_5.setPlainText(
             f"{methods[int(msg[0]) - 1]} ({str(msg)})"
         )
 
     def bound_signal_accept(self, msg):
+        ways_of_formation = self.global_data.data["ways_of_formation"]
         bound_formation = (
             '50% рандомно + 50% детерминированных особей',
             '25% рандомно + 75% детерминированных особей',
             '75% рандомно + 25% детерминированных особей',
             '50% Плт-Зврв + 50% барьерных особей'
         )
-        #self.window_ga_loader.label_4.setText(f"Способ формирования {int(msg)}/{ways_of_formation + 1}")
         self.window_ga_loader.label_6.setPlainText(
             f"Cпособ формирования: {bound_formation[int(msg) - 1]} ({int(msg)}/{ways_of_formation + 1})"
         )
@@ -1309,7 +1321,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def forward(self):
         self.stacked.setCurrentIndex(self.stacked.currentIndex() + 1)
-        # import experiments.visualizing_histogram
 
     def openPic(self):
         translate = {
@@ -1336,21 +1347,15 @@ class MainWindow(QtWidgets.QMainWindow):
             'lpic21': 'all_bounds_results.png',
             'lpic22': 'all_methods_results.png'
         }
-        # print(self.sender().objectName(), translate[self.sender().objectName()])
         img = Image.open(f'../diploma/experiments/{translate[self.sender().objectName()]}')
         img.show()
-
-
-
-
 
 
 if __name__ == '__main__':
     import sys
     try:
-        # Включите в блок try/except, если вы также нацелены на Mac/Linux
+        # Включить в блок try/except, для Mac/Linux
         from PyQt5.QtWinExtras import QtWin  # !!!
-
         myappid = 'mycompany.myproduct.subproduct.version'  # !!!
         QtWin.setCurrentProcessExplicitAppUserModelID(myappid)  # !!!
     except ImportError:

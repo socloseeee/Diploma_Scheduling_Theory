@@ -173,7 +173,6 @@ for bounds in file_formation_genes.keys():
         else:
             plt.xlim(left=data[0] - 0.45, right=data[0] + 0.45)
             plt.ylim(bottom=elapsed_time[0] - 1, top=elapsed_time[-1] + 1)
-
         plt.savefig(f"../diploma/experiments/histograms/{file_formation_genes[bounds]}/Result_{file_formation_init[way]}")
         if is_create_way == 1:
             axes.append(ax), bar_container.append(bars), data_all.append(new_data), elapsed_all.append(new_elapsed)

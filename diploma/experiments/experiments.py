@@ -1,21 +1,25 @@
-import random
-import copy
 from copy import deepcopy
 from random import choice as c, randint as r
-from colorama import Fore, init, Style, Back
+from colorama import Fore, init, Style
 from tqdm import tqdm
-import time
-import matplotlib.pyplot as plt
 from PyQt5.Qt import *
+import json
+import os
+import multiprocessing
+
+multiprocessing.set_start_method('spawn', True)
+
 
 init(autoreset=True)
+
 
 # Генерируем матрицу заданий
 def generate_matrix(m, n, T1, T2):
     return [[r(T1, T2) for j in range(n)] for i in range(m)]
 
+
 # Генерируем особь (рандомно/детерминированно):
-def generate_individ(m, n, random, bnds = None):
+def generate_individ(m, n, random, bnds=None):
     individ = []
     if random:
         return [r(1, 255) for _ in range(m)]
@@ -24,19 +28,22 @@ def generate_individ(m, n, random, bnds = None):
             for i, elem in enumerate(row):
                 if '\x1b[31m' in str(elem):  # '\x1b[31m' - идентификатор цвета
                     if bnds == 0:
-                        individ.append(i * (255 // n) + (255 // n) // 2)  # чётко по центру между двумя границами в процессоре
+                        individ.append(
+                            i * (255 // n) + (255 // n) // 2)  # чётко по центру между двумя границами в процессоре
                     elif bnds == 1:
                         individ.append(i * (255 // n))  # чётко по левой границе в процессоре
                     elif bnds == 2:
                         individ.append(i * (255 // n) + (255 // n))  # чётко по правой границе в процессоре
                     elif bnds == 3:
-                        individ.append(r(i * (255 // n) + 1, i * (255 // n) + (255 // n)))  # рандомно между двумя границами в процессоре
+                        individ.append(r(i * (255 // n) + 1,
+                                         i * (255 // n) + (255 // n)))  # рандомно между двумя границами в процессоре
     return individ
+
 
 # Считаем загрузки:
 def count_load(individ, n, m, tasks, t=255):
     load_result = [0 for _ in range(n)]
-    proc = [i for i in range(t//n, t + t//n, int(t//n))]
+    proc = [i for i in range(t // n, t + t // n, int(t // n))]
     for j, gen in enumerate(individ):
         for i in range(n):
             if gen <= proc[i]:
@@ -44,10 +51,12 @@ def count_load(individ, n, m, tasks, t=255):
                 break
     return load_result
 
+
 # Считаем лучшую загрузку для каждой особи:
 def best_load(max_loads):
     result = [max(el) for el in max_loads]
     return (min(result), result.index(min(result)))
+
 
 # Двухточечный кроссовер
 def crossover(parent1, parent2):
@@ -57,10 +66,12 @@ def crossover(parent1, parent2):
         T2 = r(1, len(parent1) - 1)
     if T1 > T2:
         T1, T2 = T2, T1
-    #print(f'parents({T1},{T2}):\n{parent1}\n{parent2}')
-    child1, child2 = parent1[:T1] + parent2[T1:T2+1] + parent1[T2+1:], parent2[:T1] + parent1[T1:T2+1] + parent2[T2+1:],
-    #print(f'children:\n{child1}\n{child2}')
+    # print(f'parents({T1},{T2}):\n{parent1}\n{parent2}')
+    child1, child2 = parent1[:T1] + parent2[T1:T2 + 1] + parent1[T2 + 1:], parent2[:T1] + parent1[T1:T2 + 1] + parent2[
+                                                                                                               T2 + 1:],
+    # print(f'children:\n{child1}\n{child2}')
     return child1, child2
+
 
 # Двухточечная мутация
 def mutation(child, Pm):
@@ -76,28 +87,22 @@ def mutation(child, Pm):
         gen //= 2
     binary_gen = binary_gen[::-1]
     binary_gen = list(binary_gen)
-    index1 = r(0, len(binary_gen)-1)
-    index2 = r(0, len(binary_gen)-1)
+    index1 = r(0, len(binary_gen) - 1)
+    index2 = r(0, len(binary_gen) - 1)
     if binary_gen.count(binary_gen[0]) != len(binary_gen):
-        while index2 == index1 or binary_gen[index1] == binary_gen[index2]: # чтоб 0 менялся с 1 и индексы не одинаковые
-            index2 = r(0, len(binary_gen)-1)
+        while index2 == index1 or binary_gen[index1] == binary_gen[index2]:  # чтоб 0 менялся с 1 и индексы не одинаковые
+            index2 = r(0, len(binary_gen) - 1)
     binary_gen[index1], binary_gen[index2] = binary_gen[index2], binary_gen[index1]
     binary_gen = "".join(binary_gen)
     child_copy = [genes if genes != that_gen else int(binary_gen, 2) for genes in child_copy]
     return child_copy
-
-# Метод отображения
-def show(matrix) -> None:
-    for j in matrix:
-        for i in j:
-            f.write(f"{i}  ")
-        f.write("\n")
 
 
 class signal_thread(QThread):
     _signal = pyqtSignal(int)
     _signal_method = pyqtSignal(str)
     _signal_bound = pyqtSignal(int)
+
     def __init__(self):
         super(signal_thread, self).__init__()
 
@@ -110,104 +115,38 @@ class signal_thread(QThread):
         bound_progress = 1
 
         # Считывание data.txt
-        with open('../diploma/experiments/data.txt', 'r', encoding='UTF-8') as f:
-            data = f.readlines()
-        #print(data)
-        m, n, T1, T2, z, k, Pk, Pm = [int(elem) for elem in data[0][:-1].split(' ')]
-        matrix = [[int(el) for el in elem[:-3].split(', ')] for elem in data[2][2:].split('[')]
-        repeat = int(data[4][:-1])
+        with open(os.path.abspath('experiments/data.json'), 'r', encoding='UTF-8') as f:
+            data = json.load(f)
+        m, n, T1, T2 = data['m'], data['n'], data["T1"], data["T2"]
+        z, k, Pk, Pm = data['z'], data['k'], data["Pk"], data["Pm"]
+        matrix = [[int(elem) for elem in row[1:-1].split(", ")] for row in data["matrix"].split("\n")]
+        repeat = int(data["repetitions"])
         is_create_way_dict = {
             "Конкретный метод": 0,
             "Все методы": 1
         }
-        is_create_way = is_create_way_dict[data[6][:-1]]
+        is_create_way = is_create_way_dict[data["is_create_way"]]
         create_way_dict = {
-            "100% Рандомно": 0,
-            "50% Рандомно + 50% детерминированно": 1,
-            "25% Рандомно + 75% детерминированно": 2,
-            "75% Рандомно + 25% детерминированно": 3,
-            "50% Плт-Зврв + 50% барьерных особей": 4
+            "100% рандомно": 0,
+            "50% рандомно + 50% детерминированных особей": 1,
+            "25% рандомно + 75% детерминированных особей": 2,
+            "75% рандомно + 25% детерминированных особей": 3,
+            "50% Плотников-Зверев + 50% Барьер": 4
         }
-        create_way = create_way_dict[data[8][:-1]] if is_create_way != 1 else None
+        create_way = create_way_dict[data["create_way"]] if is_create_way != 1 else None
         bounds_dict = {
             "По центру": 0,
             "Слева": 1,
             "Справа": 2,
             "Рандомно": 3,
         }
-        bounds = bounds_dict[data[10 - ((is_create_way == 1) * 2)][:-1]]
-
-        # Генерация массива и сортировка
-        # n = 5    # кол-во процессоров
-        # T1 = 20  # левая граница задания
-        # T2 = 30  # правая граница задания
-        # m = 10   # кол-во заданий
-        # z = 100   # кол-во особей
-        # k = 30   # кол-во поколений подряд при котором лучшая загрузка будет повторяться k-раз
-        # Pk = 99  # вероятность кроссовера
-        # Pm = 99  # вероятность мутации
-        #
-        # # Вводим данные для исследования
-        # while True:
-        #     chose = input('Использовать готовую матрицу или сгенерировать новую | Use a ready-made matrix or generate a new one? (1/0) > ')
-        #     if chose == '0':
-        #         matrix = generate_matrix(m, n, T1, T2)
-        #         matrix_sum = sorted([sum(elem) for elem in matrix], reverse=True)
-        #         matrix = sorted(matrix, key=lambda x: sum(x), reverse=True)
-        #         matrix_file = open('matrix.txt', 'w', encoding='utf-8')
-        #         [matrix_file.write(f"{elem}\n") for elem in matrix]
-        #         matrix_file.close()
-        #         break
-        #     elif chose == '1':
-        #         matrix_file = open('matrix.txt', 'r', encoding='utf-8')
-        #         matrix = []
-        #         data = matrix_file.readlines()
-        #         [matrix.append([int(el) for el in elem[1:-2].split(', ')]) for elem in data]
-        #         # print(matrix)
-        #         matrix_file.close()
-        #         break
-        #     else:
-        #         print('Некорректный ввод!')
-        # repeat = int(
-        #     input(
-        #         Fore.MAGENTA + "Number of repetitions of GA cycles | Количество повторов цикла ГА > " + Style.RESET_ALL
-        #     )
-        # )
-        # is_create_way = input(
-        #     "Select all or a specific method of forming (partitioning) the initial generation | "
-        #     "Выбрать все или конкретный метод формирования (разбиения) начального поколения(1/any) > "
-        # )
-        # is_create_way = int(is_create_way) if is_create_way.isdigit() else is_create_way
-        # if is_create_way != 1:
-        #     create_way = int(
-        #         input(
-        #             "Way of forming the initial generation | Способ формирования начального поколения:\n"
-        #             "100% random species | 100% рандомных особей(0)\n"
-        #             "50% random + 50% determinate species | 50% рандомно + 50% детерминированных особей(1)\n"
-        #             "25% random + 75% determinate species | 25% рандомно + 75% детерминированных особей(2)\n"
-        #             "75% random + 25% determinate species | 75% рандомно + 25% детерминированных особей(3)\n"
-        #             "50% Plt-Zvr + 50% barrier species | 50% Плт-Зврв + 50% барьерных особей(4)\n"
-        #             "> "
-        #         )
-        #     )
-        # bounds = int(
-        #     input(
-        #         Fore.YELLOW +
-        #         "Ways to form genes | Способы формирования генов:\n"
-        #         "Clearly centered between two borders in the processor | Чётко по центру между двумя границами в процессоре(0)\n"
-        #         "Clearly on the left border in the processor | Чётко по левой границе в процессоре(1)\n"
-        #         "Clearly on the right border in the processor | Чётко по правой границе в процессоре(2)\n"
-        #         "Randomly between two boundaries in the processor | Рандомно между двумя границами в процессоре(3)\n"
-        #         "> "
-        #         + Style.RESET_ALL
-        #     )
-        # )
+        bounds = bounds_dict[data["bounds"]]
 
         # Метод минимальных элементов
         new_matrix, result = [], [0] * n
         for j in range(m):
             new_matrix.append([])
-            check = 0   # check - позволяет вычленять из двух одинаковых только первое левое значение
+            check = 0  # check - позволяет вычленять из двух одинаковых только первое левое значение
             for i in range(n):
                 if matrix[j][i] != min(matrix[j]) or matrix[j][i] == check:
                     new_matrix[j].append(matrix[j][i])
@@ -218,7 +157,6 @@ class signal_thread(QThread):
         min_elem_method = deepcopy(new_matrix)
         # Метод Плотникова-Зверева
         result_str = [0] * n
-        new_matrix2 = []
         plotnikov_zverev_method = deepcopy(matrix)
         for j in range(m):
             for i in range(n):
@@ -271,7 +209,9 @@ class signal_thread(QThread):
                 for i in range(n):
                     if i != min_index:
                         result_str2[i] -= matrix[j][i]
-                barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) for i in range(len(result_str2))])
+                barrier_method.append([Fore.RED + str(matrix[j][i]).ljust(
+                    2) + Style.RESET_ALL if min_index == i else str(matrix[j][i]).ljust(2) for i in
+                                       range(len(result_str2))])
 
         methods = [min_elem_method, plotnikov_zverev_method, barrier_method]
         methods_strs = ["minimum_elem_method", "Plotnikov_Zverev_method", "barrier_method"]
@@ -307,7 +247,9 @@ class signal_thread(QThread):
 
         repeat_str = Fore.LIGHTYELLOW_EX + str(repeat) + Style.RESET_ALL
         individuals = []
-        print(f"Performing a study based on {repeat_str} iterations | Выполняем исследование на основе {repeat_str} итераций")
+        print(
+            f"Performing a study based on {repeat_str} iterations | Выполняем исследование на основе {repeat_str} итераций"
+        )
         # Генерация особей и последующее выполнение ГА
         for way in way_of_forming_init.keys():
             self._signal_bound.emit(bound_progress)
@@ -317,7 +259,8 @@ class signal_thread(QThread):
             print(Fore.LIGHTCYAN_EX + way_of_forming_init[way][0] + Style.RESET_ALL)
             # Открываем файл для записи:
             result_file = open(
-                f'../diploma/experiments/experiment_results/{way_of_forming_genes[bounds]}/result_{way_of_forming_init[way][1]}.txt',
+                os.path.abspath(
+                    f'experiments/experiment_results/{way_of_forming_genes[bounds]}/result_{way_of_forming_init[way][1]}.txt'),
                 'w', encoding="utf-8")
             result_file.write(
                 f"Way of forming | Способ формирования:\n{way_of_forming_init[way][0]}\n{way_of_forming_genes[bounds]}\n")
@@ -335,21 +278,21 @@ class signal_thread(QThread):
                 if is_create_way != 1:
                     if create_way == 0:
                         method_str = "Random formation"
-                txt_file = f'../diploma/experiments/methods_data/{method_str}_analysis.txt'
+                txt_file = os.path.abspath(f'experiments/methods_data/{method_str}_analysis.txt')
                 f = open(txt_file, 'w', encoding="utf-8")
                 with tqdm(range(repeat), ncols=100, desc=f"{method_str}") as t:
                     for _ in t:
                         if way == 0:
                             [individuals.append(generate_individ(m, n, 1)) for _ in range(z)]
                         elif way == 1:
-                            individuals = [generate_individ(method, n, 0, bounds) for _ in range(z//2)]
-                            [individuals.append(generate_individ(m, n, 1)) for _ in range(z//2)]
+                            individuals = [generate_individ(method, n, 0, bounds) for _ in range(z // 2)]
+                            [individuals.append(generate_individ(m, n, 1)) for _ in range(z // 2)]
                         elif way == 2:
-                            individuals = [generate_individ(method, n, 0, bounds) for _ in range(z//4)]
-                            [individuals.append(generate_individ(m, n, 1)) for _ in range((z//4) * 3)]
+                            individuals = [generate_individ(method, n, 0, bounds) for _ in range(z // 4)]
+                            [individuals.append(generate_individ(m, n, 1)) for _ in range((z // 4) * 3)]
                         elif way == 3:
-                            individuals = [generate_individ(method, n, 0, bounds) for _ in range((z//4) * 3)]
-                            [individuals.append(generate_individ(m, n, 1)) for _ in range(z//4)]
+                            individuals = [generate_individ(method, n, 0, bounds) for _ in range((z // 4) * 3)]
+                            [individuals.append(generate_individ(m, n, 1)) for _ in range(z // 4)]
                         # Особи нулевого поколения (родители для будущего поколения):
                         listMax = []
                         newline = "\n"
@@ -428,7 +371,6 @@ class signal_thread(QThread):
                             for elem in best_index:
                                 individuals.append(check_matrix[elem])
 
-
                             # Если сквозь поколения была лучшая загрузка ждем когда она не повторится или улучшится:
                             if best_result < best_of_all_generations_result:
                                 best_of_all_generations_result = best_result
@@ -445,7 +387,8 @@ class signal_thread(QThread):
                     f.close()
                     with open(txt_file, 'r', encoding="utf-8") as f:
                         all_repeats_result = [int(elem) for elem in f.readline().split()]
-                        results.append(Fore.YELLOW + str(sum(all_repeats_result) / len(all_repeats_result)) + Style.RESET_ALL)
+                        results.append(
+                            Fore.YELLOW + str(sum(all_repeats_result) / len(all_repeats_result)) + Style.RESET_ALL)
                     work_time.append(Fore.GREEN + str(t.format_interval(t.format_dict['elapsed'])) + Style.RESET_ALL)
                     if way == 0:
                         break
@@ -455,7 +398,8 @@ class signal_thread(QThread):
                 if way == 0:
                     iter_method = "Random formation method | Метод рандомного формирования:"
                 print(f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time}\nResult | Результат: {result}")
-                result_file.write(f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time[5:-4]}\nResult | Результат: {result[5:-4]}\n")
+                result_file.write(
+                    f"\n{iter_method}\nElapsed time | Время работы: {elapsed_time[5:-4]}\nResult | Результат: {result[5:-4]}\n")
                 if way != 4:
                     for row in show_method:
                         print(*row)
@@ -475,4 +419,4 @@ class signal_thread(QThread):
                 result_file.write(f"\n")
             result_file.close()
 
-#signal_thread().start()
+# signal_thread().start()
