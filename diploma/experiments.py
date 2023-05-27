@@ -1,6 +1,5 @@
 import os
 import json
-import subprocess
 
 import numpy as np
 
@@ -8,10 +7,10 @@ from tqdm import tqdm
 from colorama import Fore, init, Style
 from PyQt5.Qt import QThread, pyqtSignal
 
-from diploma.algorithms.GA import genetic_algorithm
-from diploma.algorithms.utils import writing_in_files
-from diploma.algorithms.GA_utils import generate_individ, count_load, best_load
-from diploma.algorithms.optimization_methods import min_elem_method, plotnikov_zverev_method, barrier_method
+from diploma.utils.GA import genetic_algorithm
+from diploma.utils.utils import writing_in_files
+from diploma.utils.GA_utils import generate_individ, count_load, best_load
+from diploma.utils.optimization_methods import min_elem_method, plotnikov_zverev_method, barrier_method
 
 init(autoreset=True)
 
@@ -20,6 +19,7 @@ class signal_thread(QThread):
     _signal = pyqtSignal(int)
     _signal_method = pyqtSignal(str)
     _signal_bound = pyqtSignal(int)
+    finished_signal = pyqtSignal()
 
     def __init__(self):
         super(signal_thread, self).__init__()
@@ -187,7 +187,5 @@ class signal_thread(QThread):
                 results=results,
             )
             result_file.close()
-    # Делаем гистограммы
-    subprocess.call(['python', os.path.abspath('histogram.py')])
 
 # signal_thread().start()
