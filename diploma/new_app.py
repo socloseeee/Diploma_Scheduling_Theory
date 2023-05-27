@@ -1,5 +1,6 @@
 import sys
 import sqlite3
+import platform
 import itertools
 
 import numpy as np
@@ -284,6 +285,32 @@ class MainWindow(QtWidgets.QMainWindow):
         # Инициализируем поток
         self.thread = None
 
+        # Проверка ОС, для смены системного шрифта
+        if platform.system() == 'Windows':
+            font = QtGui.QFont()
+            font.setPointSize(7)
+            font.setBold(False)
+            font.setWeight(50)
+            self.start_window.label_17.setFont(font)
+            font = QtGui.QFont()
+            font.setPointSize(9)
+            font.setBold(False)
+            font.setWeight(50)
+            self.start_window.label_18.setFont(font)
+            font = QtGui.QFont()
+            font.setPointSize(14)
+            font.setWeight(50)
+            self.timer_canvas.setFont(font)
+            font = QtGui.QFont()
+            font.setPointSize(7)
+            font.setBold(True)
+            font.setWeight(50)
+            self.ga_window.label_29.setFont(font)
+            font = QtGui.QFont()
+            font.setPointSize(14)
+            font.setWeight(50)
+            self.ga_window.label_30.setFont(font)
+
     def forward(self):
         self.stacked.setCurrentIndex(
             self.stacked.currentIndex() + 1
@@ -526,14 +553,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     data["4method"] = self.combo_box4.currentText()
                     values = self.range_slider.value()
                     data["splitting_values"] = (
-                    values[0], values[1] - values[0], values[2] - values[1], 100 - values[2])
+                        values[0], values[1] - values[0], values[2] - values[1], 100 - values[2])
 
                     self.ga_window.label_29.setTextFormat(Qt.RichText)
-                    font = QtGui.QFont()
-                    font.setPointSize(9)
-                    font.setBold(True)
-                    font.setWeight(75)
-                    self.ga_window.label_29.setFont(font)
                     self.ga_window.label_29.setText(
                         f'{data["1method"][data["1method"].index(" ") + 1:].capitalize()}(<font color="blue">∎</font>): {data["splitting_values"][0]}% | '
                         f'{data["2method"][data["2method"].index(" ") + 1:].capitalize()}(<font color="red">∎</font>): {data["splitting_values"][1]}% | '

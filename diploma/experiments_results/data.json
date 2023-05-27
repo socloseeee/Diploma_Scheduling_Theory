@@ -14,15 +14,16 @@
     "methods_amount": 3,
     "ways_of_formation": 3,
     "1method": "Метод минимальных элементов",
-    "amount_of_methods": 1,
-    "2method": "Метод Плотникова-Зверева",
+    "amount_of_methods": 2,
+    "2method": "Метод минимальных элементов",
     "splitting_values": [
-        100
+        50,
+        50
     ],
-    "3method": "Метод Барьера",
+    "3method": "Метод минимальных элементов",
     "bound": "По всем",
     "is_create_way": "Все методы",
-    "4method": "Метод рандомного формирования",
+    "4method": "Метод минимальных элементов",
     "sorted_up": false,
     "sorted_down": true
 }
