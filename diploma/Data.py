@@ -4,7 +4,7 @@ import json
 class DataApp:
     json_data: dict = []
     try:
-        with open("experiments_results/data.json", 'r') as f:
+        with open("experiments_results/data.json", 'r', encoding='utf-8') as f:
             json_data = json.load(f)
     except Exception as e:
         print(e)

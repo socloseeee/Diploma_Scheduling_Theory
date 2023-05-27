@@ -28,16 +28,16 @@ def writing_in_files(
 
 def json_open(namefile: Optional[Union[str, Path]], write_method: str, data: dict = None) -> None:
     if write_method == 'r':
-        with open(namefile, 'r') as file:
+        with open(namefile, 'r', encoding='utf-8') as file:
             return json.load(file)
     new_data = deepcopy(data)
-    with open(namefile, 'r') as file:
+    with open(namefile, 'r', encoding='utf-8') as file:
         try:
             json_dict = json.load(file)
             json_dict.update(new_data)
         except Exception as e:
             print(e)
-    with open(namefile, write_method) as file:
+    with open(namefile, write_method, encoding='utf-8') as file:
         json.dump(json_dict, file, indent=4, ensure_ascii=False)
 
 

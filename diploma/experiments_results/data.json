@@ -14,10 +14,11 @@
     "methods_amount": 3,
     "ways_of_formation": 3,
     "1method": "Метод минимальных элементов",
-    "amount_of_methods": 1,
-    "2method": "Метод Плотникова-Зверева",
+    "amount_of_methods": 2,
+    "2method": "Метод минимальных элементов",
     "splitting_values": [
-        100
+        50,
+        50
     ],
     "3method": "Метод Барьера",
     "bound": "По всем",

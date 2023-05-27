@@ -1,5 +1,6 @@
 import sys
 import sqlite3
+import platform
 import itertools
 
 import numpy as np
@@ -144,8 +145,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Встроенный в pyqt5 ползунок с 1-м дескриптором
         self.horizontalSlider = self.start_window.horizontalSlider
-        self.horizontalSlider.setMinimum(-1)
-        self.horizontalSlider.setMaximum(101)
+        self.horizontalSlider.setMinimum(0)
+        self.horizontalSlider.setMaximum(100)
         self.horizontalSlider.setValue(50)
         self.horizontalSlider.sliderMoved.connect(self.changeValue1)
         self.start_window.verticalLayout_18.removeWidget(self.start_window.horizontalSlider)
@@ -283,6 +284,32 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Инициализируем поток
         self.thread = None
+
+        # Проверка ОС, для смены системного шрифта
+        if platform.system() == 'Windows':
+            font = QtGui.QFont()
+            font.setPointSize(7)
+            font.setBold(False)
+            font.setWeight(50)
+            self.start_window.label_17.setFont(font)
+            font = QtGui.QFont()
+            font.setPointSize(9)
+            font.setBold(False)
+            font.setWeight(50)
+            self.start_window.label_18.setFont(font)
+            font = QtGui.QFont()
+            font.setPointSize(14)
+            font.setWeight(50)
+            self.timer_canvas.setFont(font)
+            font = QtGui.QFont()
+            font.setPointSize(7)
+            font.setBold(True)
+            font.setWeight(50)
+            self.ga_window.label_29.setFont(font)
+            font = QtGui.QFont()
+            font.setPointSize(14)
+            font.setWeight(50)
+            self.ga_window.label_30.setFont(font)
 
     def forward(self):
         self.stacked.setCurrentIndex(
@@ -745,7 +772,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.start_window.label_13.setText(matrix)
 
     def change_method(self):
-        value = self.horizontalSlider.value()
         if self.start_window.comboBox.currentText() in "Один метод":
             self.start_window.label_17.setText(
                 "/\\ \n"
@@ -755,17 +781,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 "поколения"
             )
         if self.start_window.comboBox.currentText() in "Два метода":
+            value = self.start_window.horizontalSlider.value()
             self.start_window.label_17.setText(
                 f'{self.combo_box1.currentText()} {value}%\n'
                 f'{self.combo_box2.currentText()} {100 - value}%'
-            )
-        if self.start_window.comboBox.currentText() in "Три метода":
-            low_value = self.slider.low()
-            high_value = self.slider.high()
-            self.start_window.label_17.setText(
-                f'{self.combo_box1.currentText()} {low_value}%\n'
-                f'{self.combo_box2.currentText()} {high_value - low_value}%\n'
-                f'{self.combo_box3.currentText()} {100 - high_value}%'
             )
         if self.start_window.comboBox.currentText() in "Три метода":
             low_value = self.slider.low()
@@ -784,8 +803,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 f'{self.combo_box4.currentText()} {100 - values[2]}%'
             )
 
-    def changeValue1(self):
-        value = self.horizontalSlider.value()
+    def changeValue1(self, value):
+        # value = self.horizontalSlider.
         self.start_window.label_17.setText(
             f'{self.combo_box1.currentText()} {value}%\n'
             f'{self.combo_box2.currentText()} {100 - value}%'
@@ -844,14 +863,16 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.start_window.comboBox.currentText() in "Два метода" and (self.start_window.verticalLayout_29.indexOf(
                 self.combo_box1) == -1 or self.start_window.verticalLayout_29.indexOf(self.combo_box1) != -1):
             self.start_window.label_17.setText(
-                f'{self.combo_box1.currentText()} {0}%\n'
-                f'{self.combo_box2.currentText()} {100}%'
+                f'{self.combo_box1.currentText()} {50}%\n'
+                f'{self.combo_box2.currentText()} {50}%'
             )
             if self.start_window.verticalLayout_18.indexOf(self.range_slider) != -1:
                 self.start_window.verticalLayout_18.removeWidget(self.range_slider)
                 self.range_slider.setParent(None)
                 self.start_window.verticalLayout_29.removeWidget(self.combo_box4)
                 self.combo_box4.setParent(None)
+                self.start_window.verticalLayout_29.removeWidget(self.combo_box3)
+                self.combo_box3.setParent(None)
             self.start_window.verticalLayout_18.addWidget(self.start_window.horizontalSlider)
             if self.start_window.verticalLayout_18.indexOf(self.slider) != -1:
                 self.start_window.verticalLayout_18.removeWidget(self.slider)

@@ -1,0 +1,5 @@
+Way of forming | Способ формирования:
+left_bound
+
+Elapsed time | Время работы: 02:13
+Result | Результат: 48.19
