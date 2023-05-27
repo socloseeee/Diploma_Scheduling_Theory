@@ -553,14 +553,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     data["4method"] = self.combo_box4.currentText()
                     values = self.range_slider.value()
                     data["splitting_values"] = (
-                    values[0], values[1] - values[0], values[2] - values[1], 100 - values[2])
+                        values[0], values[1] - values[0], values[2] - values[1], 100 - values[2])
 
                     self.ga_window.label_29.setTextFormat(Qt.RichText)
-                    font = QtGui.QFont()
-                    font.setPointSize(9)
-                    font.setBold(True)
-                    font.setWeight(75)
-                    self.ga_window.label_29.setFont(font)
                     self.ga_window.label_29.setText(
                         f'{data["1method"][data["1method"].index(" ") + 1:].capitalize()}(<font color="blue">∎</font>): {data["splitting_values"][0]}% | '
                         f'{data["2method"][data["2method"].index(" ") + 1:].capitalize()}(<font color="red">∎</font>): {data["splitting_values"][1]}% | '
