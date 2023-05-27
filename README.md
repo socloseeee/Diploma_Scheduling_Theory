@@ -49,20 +49,14 @@ Before the barrier (-), we calculate by the method of minimal elements, and afte
 *Screen is from experiments.py*
 ![216846398-968f404b-8b61-423b-902b-14323f54bb0d](https://user-images.githubusercontent.com/65871712/216846824-0aa1f0d9-1c67-4031-b387-67a0bd255eb8.png)
 
-*Screens are from visualizing_histogram.py*
+*Screens are from app.py*
 
-![image](https://user-images.githubusercontent.com/65871712/218283100-528414bd-0ded-4d2d-b133-bf1970947cbb.png)
+![tmponigzmg9](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/111ce607-68cd-4bfb-9b76-fdb3cd15f47b)
 
-![image](https://user-images.githubusercontent.com/65871712/218254541-6d6d1ee9-418e-4949-a8d0-37e5cfcfc2ba.png)
+![tmp80ypndqj](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/1078471b-ed04-478a-af4e-a53707fd171b)
 
-![image](https://user-images.githubusercontent.com/65871712/218282253-48925756-8f1f-413f-9421-61a920cf8512.png)
+![tmpqqc8eu0_](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/546d37ef-71f1-4d24-80af-d07b7812b0a2)
 
-![image](https://user-images.githubusercontent.com/65871712/218282259-b20de175-5f61-4cf2-8bdf-990f91966572.png)
+![tmp2fjesezk](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/c8151188-a17b-4d6a-a2e2-65b3e31b5f9c)
 
-![image](https://user-images.githubusercontent.com/65871712/218282241-1d7a8fff-b064-4303-bbc0-d06b49975812.png)
-
-
-## Directories description
-Diploma_Scheduling_Theory/diploma/experiments - this is a directory in which, through multiple iterations, the results of the GA execution under different conditions are singled out for the purpose of their subsequent comparison.
-
-Diploma_Scheduling_Theory/diploma/methods_analysis - this is a directory in which we can carefully verify that all the given methods work correctly and check the results of their execution.
+![tmpvuhtdovy](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/d65eeeb5-da05-4f29-b17d-9adff167f14d)
