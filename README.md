@@ -1,19 +1,17 @@
 # Diploma_Scheduling_Theory
 
-<img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/1353a0d6-3248-4134-b8b6-6d5e5d7558cb">
-<img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/84e2d6d3-b622-4f87-bf37-a7dbd7c46e64">
-
 ## Navigation:
 
 ##### 1. [Problem](#problem)
 ##### 2. [Libraries](#libraries)
 ##### 3. [What programm do?](#wpd?)
-##### 4. [Results](#results)
+##### 4. [Programm](#programm)
+##### 5. [Results](#results)
 
-### 1. Problem <a name="problem"></a>:
+### 1. Problem <a name="problem"></a>
 The problem of scheduling theory is to efficiently allocate resources over time to achieve specific goals. This problem is important in a wide range of fields, including manufacturing, transportation, healthcare, and computer science. By developing effective scheduling algorithms, businesses and organizations can optimize their operations, reduce costs, and improve productivity. 
 
-### 2. Libraries <a name="libraries"></a>:
+### 2. Libraries <a name="libraries"></a>
 [![tqdm](https://img.shields.io/badge/tqdm-black?style=for-the-badge&logo=tqdm&logoColor=white)]("https://tqdm.github.io/")
 
 [![matplotlib](https://img.shields.io/badge/matplotlib-blue?style=for-the-badge&logo=anaconda&logoColor=white)]("https://matplotlib.org/stable/index.html")
@@ -24,7 +22,7 @@ The problem of scheduling theory is to efficiently allocate resources over time 
 
 [![sqlite3](https://img.shields.io/badge/sqlite3-gold?style=for-the-badge&logo=sqlite&logoColor=black)](https://www.sqlite.org/index.html)
 
-### 3. What programm do? <a name="wpd"></a>:
+### 3. What programm do? <a name="wpd"></a>
 The program facilitates the creation of an initial population through various partitioning techniques, which will be further elucidated. Moreover, it enables the generation of initial genes based on specific boundaries between two processors.
 
 #### Methods for the formation of the initial generation
@@ -48,8 +46,12 @@ Before the barrier (-), we calculate by the method of minimal elements, and afte
 
 ![Метод барьера](https://user-images.githubusercontent.com/65871712/216844878-f418f483-3b91-40f1-b7ef-3178f9afffa1.png)
 
+### 4. Programm <a name="programm"></a>
 
-### 4. The results <a name="results"></a>:
+<img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/1353a0d6-3248-4134-b8b6-6d5e5d7558cb">
+<img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/84e2d6d3-b622-4f87-bf37-a7dbd7c46e64">
+
+### 5. The results <a name="results"></a>
 *Screen is from experiments.py*
 ![216846398-968f404b-8b61-423b-902b-14323f54bb0d](https://user-images.githubusercontent.com/65871712/216846824-0aa1f0d9-1c67-4031-b387-67a0bd255eb8.png)
 
