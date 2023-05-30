@@ -1,7 +1,7 @@
 # Diploma_Scheduling_Theory
 
-<img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/8d9e7e06-78fd-434c-86dc-58ea214db03e" width="200" height="100"></a>
-<img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/c2f258c2-bc62-43fa-8383-2f01b4872232" width="200" height="100"></a>
+<img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/8d9e7e06-78fd-434c-86dc-58ea214db03e" width="600" height="300"></a>
+<img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/c2f258c2-bc62-43fa-8383-2f01b4872232" width="600" height="100"></a>
 
 ## Navigation:
 
@@ -10,17 +10,17 @@
 ##### 3. [What programm do?](#wpd?)
 ##### 4. [Results](#results)
 
-### 1. Problem (#problem)
+### 1. Problem <a name="problem"></a>:
 The problem of scheduling theory is to efficiently allocate resources over time to achieve specific goals. This problem is important in a wide range of fields, including manufacturing, transportation, healthcare, and computer science. By developing effective scheduling algorithms, businesses and organizations can optimize their operations, reduce costs, and improve productivity. 
 
-### 2. Libraries (#libraries):
+### 2. Libraries <a name="libraries"></a>:
 [![tqdm](https://img.shields.io/badge/tqdm-black?style=for-the-badge&logo=tqdm&logoColor=white)]("https://tqdm.github.io/")
 [![matplotlib](https://img.shields.io/badge/matplotlib-blue?style=for-the-badge&logo=anaconda&logoColor=white)]("https://matplotlib.org/stable/index.html")
 [![numpy](https://img.shields.io/badge/numpy-green?style=for-the-badge&logo=numpy)]("https://numpy.org/")
 [![pyqt5](https://img.shields.io/badge/pyqt5-red?style=for-the-badge&logo=qt&logoColor=white)]("https://pypi.org/project/PyQt5")
 [![sqlite3](https://img.shields.io/badge/sqlite3-gold?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/index.html)
 
-### 3. What programm do? (# wpd?):
+### 3. What programm do? <a name="wpd"</a>:
 The program facilitates the creation of an initial population through various partitioning techniques, which will be further elucidated. Moreover, it enables the generation of initial genes based on specific boundaries between two processors.
 
 #### Methods for the formation of the initial generation
@@ -45,7 +45,7 @@ Before the barrier (-), we calculate by the method of minimal elements, and afte
 ![Метод барьера](https://user-images.githubusercontent.com/65871712/216844878-f418f483-3b91-40f1-b7ef-3178f9afffa1.png)
 
 
-### 4. The results (#results)
+### 4. The results <a name="results"</a>:
 *Screen is from experiments.py*
 ![216846398-968f404b-8b61-423b-902b-14323f54bb0d](https://user-images.githubusercontent.com/65871712/216846824-0aa1f0d9-1c67-4031-b387-67a0bd255eb8.png)
 
