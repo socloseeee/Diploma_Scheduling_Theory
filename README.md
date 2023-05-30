@@ -1,7 +1,7 @@
 # Diploma_Scheduling_Theory
 
-<img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/8d9e7e06-78fd-434c-86dc-58ea214db03e" width="500" height="250"></a>
-<img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/c2f258c2-bc62-43fa-8383-2f01b4872232" width="500" height="250"></a>
+<img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/1353a0d6-3248-4134-b8b6-6d5e5d7558cb" width="500" height="250"></a>
+<img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/84e2d6d3-b622-4f87-bf37-a7dbd7c46e64" width="500" height="250"></a>
 
 ## Navigation:
 
