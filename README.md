@@ -18,7 +18,7 @@ The problem of scheduling theory is to efficiently allocate resources over time 
 
 [![matplotlib](https://img.shields.io/badge/matplotlib-blue?style=for-the-badge&logo=anaconda&logoColor=white)]("https://matplotlib.org/stable/index.html")
 
-[![numpy](https://img.shields.io/badge/numpy-green?style=for-the-badge&logo=numpy)]("https://numpy.org/")
+[![numpy](https://img.shields.io/badge/numpy-white?style=for-the-badge&logo=numpy&logoColor=black)]("https://numpy.org/")
 
 [![pyqt5](https://img.shields.io/badge/pyqt5-red?style=for-the-badge&logo=qt&logoColor=white)]("https://pypi.org/project/PyQt5")
 
