@@ -22,7 +22,7 @@ The problem of scheduling theory is to efficiently allocate resources over time 
 
 [![pyqt5](https://img.shields.io/badge/pyqt5-red?style=for-the-badge&logo=qt&logoColor=white)]("https://pypi.org/project/PyQt5")
 
-[![sqlite3](https://img.shields.io/badge/sqlite3-gold?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/index.html)
+[![sqlite3](https://img.shields.io/badge/sqlite3-gold?style=for-the-badge&logo=sqlite&logoColor=black)](https://www.sqlite.org/index.html)
 
 ### 3. What programm do? <a name="wpd"></a>:
 The program facilitates the creation of an initial population through various partitioning techniques, which will be further elucidated. Moreover, it enables the generation of initial genes based on specific boundaries between two processors.
