@@ -48,6 +48,8 @@ Before the barrier (-), we calculate by the method of minimal elements, and afte
 
 ### 4. Programm <a name="programm"></a>
 
+[![tqdm](https://img.shields.io/badge/EXE-black?style=for-the-badge&logo=windows&logoColor=white)](https://drive.google.com/drive/folders/1qjCbkFo78OHiZvgEPXYUV_7CmV3nCiJG?hl=ru)
+
 <img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/1353a0d6-3248-4134-b8b6-6d5e5d7558cb">
 <img src="https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/84e2d6d3-b622-4f87-bf37-a7dbd7c46e64">
 
