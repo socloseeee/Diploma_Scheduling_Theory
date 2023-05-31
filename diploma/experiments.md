@@ -6,12 +6,15 @@
 ##### 5. [Результаты разбиения относительно отсортированной по убыванию матрицы](#down)
 
 ### 1. Тестовые данные для ГА и матрицы. <a name="data"></a>
-![img_13.png](img_13.png)
+
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/6a62bb23-d2cf-4097-b87b-3767017398eb)
+
 
 ### 2. Всеобщий результат работы отсортированных по убыванию/возрастанию матриц. <a name="summary"></a>
 
 Количество опытов: 12. По 6 для каждого варианта сортировки (по возрастанию/убыванию).
-![img.png](img.png)
+
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/6df686cf-d188-490b-94a2-4f7677d48360)
 
 Средний результат сортировки по возрастанию лучше на 1.697%
 По времени сортировка по убыванию быстрее на 4.645%
@@ -29,20 +32,21 @@
 
 4. Метод рандомного формирования 86%
 
-![img_14.png](img_14.png)
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/497a08f6-c1ac-4ecf-a3ae-5ed915a96d17)
 
 ### 4. Более детальные результаты различных тестовых наборов разбиения для отсортированной по возрастанию матрицы <a name="up"></a>
-![img_1.png](img_1.png)
-![img_2.png](img_2.png)
-![img_3.png](img_3.png)
-![img_4.png](img_4.png)
-![img_5.png](img_5.png)
-![img_6.png](img_6.png)
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/0005992d-0561-4f69-9879-4a215407bc48)!
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/7f69ddba-bbc0-4be6-a990-aa84b66d9801)
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/8d7ae381-548c-4c5a-860b-cf4ffabc0120)
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/89e710b3-7667-48cf-84f5-5928e448b748)
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/385e4a8c-0637-4537-aa80-087baad2835b)
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/ae570d3d-cd80-464f-a13c-1635d7a6f046)
+
 
 ### 5. Более детальные результаты различных тестовых наборов разбиения для отсортированной по убыванию матрицы <a name="down"></a>
-![img_7.png](img_7.png)
-![img_8.png](img_8.png)
-![img_9.png](img_9.png)
-![img_10.png](img_10.png)
-![img_11.png](img_11.png)
-![img_12.png](img_12.png)
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/995a9eaf-5166-4150-a9a3-d13fe4330fee)
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/d964c4d3-85ef-4ecd-a61f-4ca6705dcff0)
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/a77c171a-5404-4d35-b198-b9cee32f257b)
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/0746d263-8555-4f58-8e77-a4a203abbbf6)
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/dde757b8-34b2-4cbe-82eb-27b2e6043a9d)
+![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/4bcb3416-bfee-4c6f-ab7d-d1348d07900f)
