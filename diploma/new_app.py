@@ -82,7 +82,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Data
         self.m = self.start_window.plainTextEdit
-        self.n = self.start_window.plainTextEdit_2
+        self.n = self.start_window.plainTextEdit_1
         self.T1 = self.start_window.plainTextEdit_3
         self.T2 = self.start_window.plainTextEdit_5
         self.z = self.start_window.plainTextEdit_7
@@ -194,6 +194,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ga_window.lpic15,
             self.ga_window.lpic16,
         ]
+        self.pics_container = []
 
         # Открытие гистограмм по нажатию
         self.ga_window.lpic1.mousePressEvent = self.openPic
@@ -271,7 +272,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.start_window.pushButton_2.clicked.connect(self.forward)
 
         # Заполнить QLabels картинками
-        fill_labels_with_pics_and_data(
+        self.pics_container = fill_labels_with_pics_and_data(
             self.sorted_up_pics,
             self.sorted_down_pics,
             [
@@ -281,6 +282,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ga_window.label_15,
             ]
         )
+
+        # Последняя гистограмма
+        self.last_img = None
 
         # Инициализируем поток
         self.thread = None
@@ -325,10 +329,11 @@ class MainWindow(QtWidgets.QMainWindow):
         QDesktopServices.openUrl(QUrl("https://github.com/socloseeee/Diploma_Scheduling_Theory/tree/master/diploma"))
 
     def filterHistograms(self, state):
+        self.pics_container = []
         sender = self.sender()
         result_up = None
         result_down = None
-        conn = sqlite3.connect('../diploma/db.sqlite3')
+        conn = sqlite3.connect('experiments_results/resultsdb.sqlite3')
         cursor = conn.cursor()
         for checkbox in self.checkboxes:
             checkbox.setChecked(False)
@@ -440,8 +445,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         pixmap.loadFromData(image.read())
                         pixmap_scaled = pixmap.scaled(145, 109)
                         label.setPixmap(pixmap_scaled)
+                        self.pics_container.append(pixmap_scaled)
                     else:
                         label.setPixmap(QPixmap())
+                        self.pics_container.append(pixmap_scaled)
             for label, filtered_img in itertools.zip_longest(self.sorted_down_pics, result_down):
                 if label:
                     if filtered_img:
@@ -450,8 +457,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         pixmap.loadFromData(image.read())
                         pixmap_scaled = pixmap.scaled(145, 109)
                         label.setPixmap(pixmap_scaled)
+                        self.pics_container.append(pixmap_scaled)
                     else:
                         label.setPixmap(QPixmap())
+                        self.pics_container.append(pixmap_scaled)
         conn.close()
 
     def timerEvent(self) -> None:
@@ -460,21 +469,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def start_histogram_and_db(self):
         if self.ga_window.progressBar.value() == self.ga_window.progressBar.maximum():
-            histogram.run()
+            self.last_img = histogram.run()
 
     def start_ga(self):
         if self.thread is None:
             if self.start_window.radioButton.isChecked() or self.start_window.radioButton_2.isChecked() or self.start_window.radioButton_3.isChecked() or self.start_window.radioButton_4.isChecked() or self.start_window.radioButton_5.isChecked():
                 data = {
-                    'm': int(self.m.toPlainText()),
-                    'n': int(self.n.toPlainText()),
-                    'T1': int(self.T1.toPlainText()),
-                    'T2': int(self.T2.toPlainText()),
-                    'z': int(self.z.toPlainText()),
-                    'k': int(self.k.toPlainText()),
-                    'Pk': int(self.Pk.toPlainText()),
-                    'Pm': int(self.Pm.toPlainText()),
-                    'repetitions': int(self.r.toPlainText()),
+                    'm': int(self.m.value()),
+                    'n': int(self.n.value()),
+                    'T1': int(self.T1.value()),
+                    'T2': int(self.T2.value()),
+                    'z': int(self.z.value()),
+                    'k': int(self.k.value()),
+                    'Pk': int(self.Pk.value()),
+                    'Pm': int(self.Pm.value()),
+                    'repetitions': int(self.r.value()),
                     '1method': self.combo_box1.currentText(),
                     'matrix': self.start_window.label_13.text(),
                 }
@@ -609,7 +618,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 OUTPUT_LOGGER_STDERR.emit_write.connect(self.append_log)
 
                 # Инициализация и проверка существования таблиц
-                db_init('../diploma/db.sqlite3')
+                db_init('experiments_results/resultsdb.sqlite3')
 
                 self.stacked.setCurrentIndex(1)
             else:
@@ -624,7 +633,7 @@ class MainWindow(QtWidgets.QMainWindow):
             msgBox.exec_()
 
     def add_images(self):
-        conn = sqlite3.connect('../diploma/db.sqlite3')
+        conn = sqlite3.connect('experiments_results/resultsdb.sqlite3')
         cursor = conn.cursor()
         cursor.execute('''
         SELECT result, elapsed_time FROM all_method WHERE sorted_on = 'Отсортированно по возрастанию';
@@ -649,26 +658,26 @@ class MainWindow(QtWidgets.QMainWindow):
                 str("{:.2f}".format(sum(map(sum, result_sorted_down)) / len(result_sorted_down) / 4)))
             self.ga_window.label_15.setText(
                 str("{:.2f}".format(sum(map(sum, time_sorted_down)) / len(time_sorted_down) / 4)))
-        cursor.execute(self.query[0])
-        images_sorted_up = cursor.fetchall()
-        cursor.execute(self.query[1])
-        images_sorted_down = cursor.fetchall()
+        # cursor.execute(self.query[0])
+        # images_sorted_up = cursor.fetchall()
+        # cursor.execute(self.query[1])
+        # images_sorted_down = cursor.fetchall()
+
+        if self.data.data["sorted_up"]:
+            self.pics_container.pop(5)
+            self.pics_container.insert(0, self.last_img)
+        else:
+            self.pics_container.pop()
+            self.pics_container.insert(6, self.last_img)
+
         for image_data, label in zip(
-                images_sorted_up, self.sorted_up_pics
+                self.pics_container[:6], self.sorted_up_pics
         ):
-            image = BytesIO(image_data[0])
-            pixmap = QPixmap()
-            pixmap.loadFromData(image.read())  # .scaled(width=107, height=109)
-            pixmap_scaled = pixmap.scaled(145, 109)
-            label.setPixmap(pixmap_scaled)
+            label.setPixmap(image_data)
         for image_data, label in zip(
-                images_sorted_down, self.sorted_down_pics
+                self.pics_container[6:], self.sorted_down_pics
         ):
-            image = BytesIO(image_data[0])
-            pixmap = QPixmap()
-            pixmap.loadFromData(image.read())
-            pixmap_scaled = pixmap.scaled(145, 109)
-            label.setPixmap(pixmap_scaled)
+            label.setPixmap(image_data)
         conn.close()
         self.thread.quit()
         self.thread.wait()
@@ -687,9 +696,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def progress_signal_accept(self, msg):
         self.ga_window.progressBar.setValue(int(msg))
         if self.start_window.radioButton_5.isChecked():
-            self.ga_window.progressBar.setMaximum(int(self.r.toPlainText()) * 4)
+            self.ga_window.progressBar.setMaximum(int(self.r.value()) * 4)
         else:
-            self.ga_window.progressBar.setMaximum(int(self.r.toPlainText()))
+            self.ga_window.progressBar.setMaximum(int(self.r.value()))
         if self.ga_window.progressBar.value() == self.ga_window.progressBar.maximum():
             print("ok")
 
@@ -717,8 +726,8 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
     def sort_up(self):
-        matrix = np.fromstring(self.matrix.text(), sep=' ', dtype=int).reshape(int(self.m.toPlainText()),
-                                                                               int(self.n.toPlainText()))
+        matrix = np.fromstring(self.matrix.text(), sep=' ', dtype=int).reshape(int(self.m.value()),
+                                                                               int(self.n.value()))
         # считаем суммы значений по строкам
         row_sums = matrix.sum(axis=1)
         # получаем индексы строк, отсортированные по возрастанию суммы значений
@@ -737,8 +746,8 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
     def sort_down(self):
-        matrix = np.fromstring(self.matrix.text(), sep=' ', dtype=int).reshape(int(self.m.toPlainText()),
-                                                                               int(self.n.toPlainText()))
+        matrix = np.fromstring(self.matrix.text(), sep=' ', dtype=int).reshape(int(self.m.value()),
+                                                                               int(self.n.value()))
         # считаем суммы значений по строкам
         row_sums = matrix.sum(axis=1)
         # получаем индексы строк, отсортированные по убыванию суммы значений
@@ -758,10 +767,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def generate(self):
         matrix = generate_matrix(
-            int(self.m.toPlainText()),
-            int(self.n.toPlainText()),
-            int(self.T1.toPlainText()),
-            int(self.T2.toPlainText())
+            int(self.m.value()),
+            int(self.n.value()),
+            int(self.T1.value()),
+            int(self.T2.value())
         )
         matrix = '\n'.join(' '.join(map(str, elem)) for elem in matrix)
         self.start_window.label_13.setText(matrix)
@@ -934,7 +943,7 @@ class MainWindow(QtWidgets.QMainWindow):
         choice: int = 0
         x = int(event.windowPos().x())
         y = int(event.windowPos().y())
-        conn = sqlite3.connect('../diploma/db.sqlite3')
+        conn = sqlite3.connect('experiments_results/resultsdb.sqlite3')
         try:
             if y <= 180:
                 for i, elem in enumerate(self.coords_top):
@@ -952,7 +961,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     if x < elem[0][1]:
                         choice = i
                         break
-                conn = sqlite3.connect('../diploma/db.sqlite3')
+                conn = sqlite3.connect('experiments_results/resultsdb.sqlite3')
                 cursor = conn.cursor()
                 cursor.execute(self.query[1])
                 images_sorted_down = cursor.fetchall()

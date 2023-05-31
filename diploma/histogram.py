@@ -7,7 +7,7 @@ from diploma.utils.db_utils import db_init, image2bytes_save
 
 def run():
     # инициализация бд
-    conn = db_init("../diploma/db.sqlite3")
+    conn = db_init("experiments_results/resultsdb.sqlite3")
 
     # отрисовка результатов
     with open(os.path.abspath('experiments_results/data.json'), 'r', encoding='UTF-8') as f:
@@ -126,7 +126,7 @@ def run():
     plt.savefig(img_path)
 
     # Сохранение картинки в БД
-    image2bytes_save(
+    img = image2bytes_save(
         fig=fig,
         ga_data=ga_data,
         elapsed_time=elapsed_time,
@@ -135,5 +135,6 @@ def run():
     )
     conn.close()
     # plt.show()
+    return img
 
 # run()

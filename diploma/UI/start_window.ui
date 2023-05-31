@@ -36,6 +36,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
 QPlainTextEdit
 {
 border: 4px solid red;
@@ -339,9 +340,9 @@ QDateTimeEdit
 {
 	background-color: #525251;
 	color: #ffffff;
-	border: 1px solid #051a39;
+	border:1px solid #051a39;
 	border-radius: 3px;
-	padding : 2px;
+	padding : 10px;
 
 }
 
@@ -1502,16 +1503,19 @@ QStatusBar
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>60</y>
+      <y>54</y>
       <width>71</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_13">
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit">
-       <property name="plainText">
-        <string>10</string>
+      <widget class="QSpinBox" name="plainTextEdit">
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+       <property name="value">
+        <number>10</number>
        </property>
       </widget>
      </item>
@@ -1521,16 +1525,19 @@ QStatusBar
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>110</y>
+      <y>104</y>
       <width>71</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_14">
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit_2">
-       <property name="plainText">
-        <string>5</string>
+      <widget class="QSpinBox" name="plainTextEdit_1">
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+       <property name="value">
+        <number>5</number>
        </property>
       </widget>
      </item>
@@ -1540,16 +1547,19 @@ QStatusBar
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>160</y>
+      <y>154</y>
       <width>71</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_15">
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit_3">
-       <property name="plainText">
-        <string>20</string>
+      <widget class="QSpinBox" name="plainTextEdit_3">
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+       <property name="value">
+        <number>20</number>
        </property>
       </widget>
      </item>
@@ -1559,16 +1569,19 @@ QStatusBar
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>210</y>
+      <y>204</y>
       <width>71</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_17">
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit_5">
-       <property name="plainText">
-        <string>50</string>
+      <widget class="QSpinBox" name="plainTextEdit_5">
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+       <property name="value">
+        <number>50</number>
        </property>
       </widget>
      </item>
@@ -1578,16 +1591,19 @@ QStatusBar
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>310</y>
+      <y>304</y>
       <width>71</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_19">
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit_7">
-       <property name="plainText">
-        <string>100</string>
+      <widget class="QSpinBox" name="plainTextEdit_7">
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+       <property name="value">
+        <number>100</number>
        </property>
       </widget>
      </item>
@@ -1597,16 +1613,19 @@ QStatusBar
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>360</y>
+      <y>354</y>
       <width>71</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_20">
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit_8">
-       <property name="plainText">
-        <string>30</string>
+      <widget class="QSpinBox" name="plainTextEdit_8">
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+       <property name="value">
+        <number>30</number>
        </property>
       </widget>
      </item>
@@ -1616,16 +1635,19 @@ QStatusBar
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>410</y>
+      <y>402</y>
       <width>71</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_21">
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit_9">
-       <property name="plainText">
-        <string>99</string>
+      <widget class="QSpinBox" name="plainTextEdit_9">
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+       <property name="value">
+        <number>99</number>
        </property>
       </widget>
      </item>
@@ -1635,16 +1657,19 @@ QStatusBar
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>460</y>
+      <y>452</y>
       <width>71</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_22">
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit_10">
-       <property name="plainText">
-        <string>99</string>
+      <widget class="QSpinBox" name="plainTextEdit_10">
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+       <property name="value">
+        <number>99</number>
        </property>
       </widget>
      </item>
@@ -1654,21 +1679,19 @@ QStatusBar
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>510</y>
+      <y>502</y>
       <width>71</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_23">
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit_11">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
+      <widget class="QSpinBox" name="plainTextEdit_11">
+       <property name="maximum">
+        <number>100000</number>
        </property>
-       <property name="plainText">
-        <string>100</string>
+       <property name="value">
+        <number>100</number>
        </property>
       </widget>
      </item>
@@ -1730,7 +1753,7 @@ QStatusBar
       <x>830</x>
       <y>100</y>
       <width>311</width>
-      <height>115</height>
+      <height>111</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_18">
