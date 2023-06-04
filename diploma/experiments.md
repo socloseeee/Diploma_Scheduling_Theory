@@ -11,7 +11,7 @@
 ### 2. Всеобщий результат работы отсортированных по убыванию/возрастанию матриц. <a name="summary"></a>
 
 Количество опытов: 12. По 6 для каждого варианта сортировки (по возрастанию/убыванию).
-![img.png](img.png)
+![img.png](assets/image_research/img.png)
 
 Средний результат сортировки по возрастанию лучше на 1.697%
 По времени сортировка по убыванию быстрее на 4.645%
@@ -32,15 +32,15 @@
 ![img_14.png](img_14.png)
 
 ### 4. Более детальные результаты различных тестовых наборов разбиения для отсортированной по возрастанию матрицы <a name="up"></a>
-![img_1.png](img_1.png)
-![img_2.png](img_2.png)
-![img_3.png](img_3.png)
-![img_4.png](img_4.png)
-![img_5.png](img_5.png)
-![img_6.png](img_6.png)
+![img_1.png](assets/image_research/img_1.png)
+![img_2.png](assets/image_research/img_2.png)
+![img_3.png](assets/image_research/img_3.png)
+![img_4.png](assets/image_research/img_4.png)
+![img_5.png](assets/image_research/img_5.png)
+![img_6.png](assets/image_research/img_6.png)
 
 ### 5. Более детальные результаты различных тестовых наборов разбиения для отсортированной по убыванию матрицы <a name="down"></a>
-![img_7.png](img_7.png)
+![img_7.png](assets/image_research/img_7.png)
 ![img_8.png](img_8.png)
 ![img_9.png](img_9.png)
 ![img_10.png](img_10.png)

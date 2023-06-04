@@ -30,10 +30,15 @@ def run():
 
     axes_data = []
     for bound in way_of_forming_genes.values():
-        with open(
-                os.path.abspath(
-                    f"experiments_results/bounds_data/{sorted_}/summary_results/result_{bound}.txt"
-                ), 'r', encoding="UTF-8") as file:
+        if data['sort_regenerate_matrix'] != "Без сортировки":
+            file_path = os.path.abspath(
+                        f"experiments_results/bounds_data/{sorted_}/summary_results/result_{bound}.txt"
+                    )
+        else:
+            file_path = os.path.abspath(
+                        f"experiments_results/bounds_data/no_sort/summary_results/result_{bound}.txt"
+                    )
+        with open(file_path, 'r', encoding="UTF-8") as file:
             file_data = file.readlines()
             all_way_of_forming = []
             ga_data, elapsed_time, way_of_forming = [], [], ''
@@ -115,13 +120,22 @@ def run():
     # Добавление диаграммы pie на новые оси
     ax1.add_artist(wedges[0])
     ax1.axis('off')
-    fig.suptitle(
-        f'Результаты при начальном формировании \n'
-        f'c отсортированной по {("убыванию", "возрастанию")[data["sorted_up"]]} матрицей'
-    )
-    img_path = os.path.abspath(
-        f"experiments_results/histograms/{sorted_}/result_{('sorted_down', 'sorted_up')[data['sorted_up']]}"
-    )
+    if data['sort_regenerate_matrix'] != 'Без сортировки':
+        fig.suptitle(
+            f'Результаты при начальном формировании \n'
+            f'c отсортированной по {("убыванию", "возрастанию")[data["sorted_up"]]} матрицей'
+        )
+        img_path = os.path.abspath(
+            f"experiments_results/histograms/{sorted_}/result_{('sorted_down', 'sorted_up')[data['sorted_up']]}"
+        )
+    else:
+        fig.suptitle(
+            f'Результаты при начальном формировании \n'
+            f'c неотсортированной матрицей'
+        )
+        img_path = os.path.abspath(
+            f"experiments_results/histograms/no_sort/result_{('sorted_down', 'sorted_up')[data['sorted_up']]}"
+        )
 
     plt.savefig(img_path)
 

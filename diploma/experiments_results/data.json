@@ -8,7 +8,7 @@
     "k": 30,
     "Pk": 99,
     "Pm": 99,
-    "matrix": "25 27 26 26 30\n24 28 29 29 22\n30 29 25 23 23\n23 24 30 27 24\n25 24 27 24 26\n21 24 29 20 28\n28 24 20 23 27\n25 22 26 24 21\n20 26 30 21 20\n23 22 21 26 23",
+    "matrix": "47 42 26 21 36\n44 37 40 22 48\n39 24 21 27 35\n29 48 24 50 20\n39 27 29 22 21\n44 23 40 47 34\n35 31 43 38 45\n31 31 44 32 41\n49 40 29 32 24\n28 37 23 35 39",
     "newline": "\n",
     "ui_matrix_size": 13,
     "methods_amount": 3,
@@ -17,15 +17,17 @@
     "amount_of_methods": 4,
     "2method": "Метод Плотникова-Зверева",
     "splitting_values": [
-        16,
-        27,
-        21,
-        36
+        26,
+        24,
+        25,
+        25
     ],
     "3method": "Метод Барьера",
     "bound": "По всем",
     "is_create_way": "Все методы",
     "4method": "Метод рандомного формирования",
-    "sorted_up": false,
-    "sorted_down": true
+    "sorted_up": true,
+    "sorted_down": false,
+    "regenerate_matrix": true,
+    "sort_regenerate_matrix": "Без сортировки"
 }

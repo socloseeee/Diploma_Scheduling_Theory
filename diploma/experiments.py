@@ -1,5 +1,7 @@
 import os
 import json
+import random
+import time
 
 import numpy as np
 
@@ -9,10 +11,12 @@ from PyQt5.Qt import QThread, pyqtSignal
 
 from diploma.utils.GA import genetic_algorithm
 from diploma.utils.utils import writing_in_files
-from diploma.utils.GA_utils import generate_individ, count_load, best_load
+from diploma.utils.GA_utils import generate_individ, count_load, best_load, generate_matrix
 from diploma.utils.optimization_methods import min_elem_method, plotnikov_zverev_method, barrier_method
 
 init(autoreset=True)
+
+random.seed(time.time() * 1000)
 
 
 class signal_thread(QThread):
@@ -39,6 +43,7 @@ class signal_thread(QThread):
         z, k, Pk, Pm = data['z'], data['k'], data["Pk"], data["Pm"]
         matrix = np.fromstring(data["matrix"], sep=' ', dtype=int).reshape(m, n).tolist()
         repeat = int(data["repetitions"])
+        regenerate_matrix = data["regenerate_matrix"]
         bounds_dict = {
             "Слева": 0,
             "Справа": 1,
@@ -65,30 +70,29 @@ class signal_thread(QThread):
         else:
             methods_chosen.append(data["1method"])
 
-        # Методы формирования
-        # Метод минимальных элементов
-        result_min, min_elem_idx = min_elem_method(matrix, m, n)
-        # Метод Плотникова-Зверева
-        result_pltzvr, plt_zvr_idx = plotnikov_zverev_method(matrix, m, n)
-        # Метод барьера
-        result_marrier, barrier_idx = barrier_method(matrix, m, n, result_min)
+        if not regenerate_matrix:
+            # Методы формирования
+            # Метод минимальных элементов
+            result_min, min_elem_idx = min_elem_method(matrix, m, n)
+            # Метод Плотникова-Зверева
+            result_pltzvr, plt_zvr_idx = plotnikov_zverev_method(matrix, m, n)
+            # Метод барьера
+            result_barrier, barrier_idx = barrier_method(matrix, m, n, result_min)
 
-        # Преднеобходимое (методы + коллекции для вывода)
-        methods = {
-            "Метод минимальных элементов": min_elem_idx,
-            "Метод Плотникова-Зверева": plt_zvr_idx,
-            "Метод Барьера": barrier_idx,
-            "Метод рандомного формирования": 1
-        }
-        str_methods = (
-            Fore.BLUE + "The method of minimal elements | Метод минмальных элементов:" + Style.RESET_ALL,
-            Fore.BLUE + "The Plotnikov-Zverev method | Метод Плотникова-Зверева:" + Style.RESET_ALL,
-            Fore.BLUE + "The barrier method | Метод барьера:" + Style.RESET_ALL
-        )
+            # Преднеобходимое (методы + коллекции для вывода)
+            methods = {
+                "Метод минимальных элементов": min_elem_idx,
+                "Метод Плотникова-Зверева": plt_zvr_idx,
+                "Метод Барьера": barrier_idx,
+                "Метод рандомного формирования": 1
+            }
+
         repeat_str = Fore.LIGHTYELLOW_EX + str(repeat) + Style.RESET_ALL
         print(
             f"Performing a study based on {repeat_str} iterations | Выполняем исследование на основе {repeat_str} итераций"
         )
+
+        print(regenerate_matrix)
 
         # Переводчик для вывода
         way_of_forming_genes = {
@@ -110,20 +114,61 @@ class signal_thread(QThread):
             work_time, results = [], []
             print(Fore.LIGHTCYAN_EX + way_of_forming_genes[bound] + Style.RESET_ALL)
 
-
             # Открываем файлы для записи:
-            txt_file = os.path.abspath(f'experiments_results/bounds_data/{sorted_}/repetitions_results/{way_of_forming_genes[bound]}_analysis.txt')
-            f = open(txt_file, 'w', encoding="utf-8")
-            result_file = open(
-                os.path.abspath(
-                    f'experiments_results/bounds_data/{sorted_}/summary_results/result_{way_of_forming_genes[bound]}.txt'),
-                'w', encoding="utf-8")
+            if data['sort_regenerate_matrix'] != 'Без сортировки':
+                txt_file = os.path.abspath(
+                    f'experiments_results/bounds_data/{sorted_}/repetitions_results/{way_of_forming_genes[bound]}_analysis.txt')
+                f = open(txt_file, 'w', encoding="utf-8")
+                result_file = open(
+                    os.path.abspath(
+                        f'experiments_results/bounds_data/{sorted_}/summary_results/result_{way_of_forming_genes[bound]}.txt'),
+                    'w', encoding="utf-8")
+            else:
+                txt_file = os.path.abspath(
+                    f'experiments_results/bounds_data/no_sort/repetitions_results/{way_of_forming_genes[bound]}_analysis.txt')
+                f = open(txt_file, 'w', encoding="utf-8")
+                result_file = open(
+                    os.path.abspath(
+                        f'experiments_results/bounds_data/no_sort/summary_results/result_{way_of_forming_genes[bound]}.txt'),
+                    'w', encoding="utf-8")
             result_file.write(
                 f"Way of forming | Способ формирования:\n{way_of_forming_genes[bound]}\n")
 
             with tqdm(range(repeat), ncols=100, desc=f"{way_of_forming_genes[bound]}") as t:
                 for _ in t:
                     individuals = []
+                    if regenerate_matrix:
+                        if data['sort_regenerate_matrix'] == "Отсортированно по возрастанию":
+                            matrix = np.array(generate_matrix(m, n, T1, T2), dtype=int)
+                            # считаем суммы значений по строкам
+                            row_sums = matrix.sum(axis=1)
+                            # получаем индексы строк, отсортированные по возрастанию суммы значений
+                            sorted_indexes = row_sums.argsort()
+                            # создаем новую матрицу, отсортированную по возрастанию суммы значений
+                            matrix = matrix[sorted_indexes].tolist()
+                        if data['sort_regenerate_matrix'] == "Отсортированно по убыванию":
+                            matrix = np.array(generate_matrix(m, n, T1, T2), dtype=int)
+                            row_sums = matrix.sum(axis=1)
+                            # получаем индексы строк, отсортированные по убыванию суммы значений
+                            sorted_indexes = row_sums.argsort()[::-1]
+                            # создаем новую матрицу, отсортированную по убыванию суммы значений
+                            matrix = matrix[sorted_indexes].tolist()
+
+                        # Метод минимальных элементов
+                        result_min, min_elem_idx = min_elem_method(matrix, m, n)
+                        # Метод Плотникова-Зверева
+                        result_pltzvr, plt_zvr_idx = plotnikov_zverev_method(matrix, m, n)
+                        # Метод барьера
+                        result_marrier, barrier_idx = barrier_method(matrix, m, n, result_min)
+
+                        # Преднеобходимое (методы + коллекции для вывода)
+                        methods = {
+                            "Метод минимальных элементов": min_elem_idx,
+                            "Метод Плотникова-Зверева": plt_zvr_idx,
+                            "Метод Барьера": barrier_idx,
+                            "Метод рандомного формирования": 1
+                        }
+
                     if amount_of_methods == 4:
                         for value, method in zip(splitting_values, methods_chosen):
                             for _ in range(value):

@@ -38,18 +38,12 @@ class Ui_MainWindow(object):
 "SOFTWARE.\n"
 "*/\n"
 "\n"
-"QPlainTextEdit\n"
-"{\n"
-"border: 4px solid red;\n"
-"}\n"
-"\n"
 "/*-----QWidget-----*/\n"
 "QWidget\n"
 "{\n"
 "    background-color: #121212;\n"
 "    color: #ffffff;\n"
 "    border-color: #051a39;\n"
-"\n"
 "}\n"
 "\n"
 "\n"
@@ -59,6 +53,7 @@ class Ui_MainWindow(object):
 "    background-color: transparent;\n"
 "    color: #ffffff;\n"
 "    border: 1px solid red;\n"
+"    border-radius: 5px;\n"
 "}\n"
 "\n"
 "\n"
@@ -176,7 +171,7 @@ class Ui_MainWindow(object):
 "    color: #ffffff;\n"
 "    border-style: solid;\n"
 "    border-width: 1px;\n"
-"    border-radius: 3px;\n"
+"    border-radius: 5px;\n"
 "    border-color: #051a39;\n"
 "    padding: 5px;\n"
 "\n"
@@ -341,10 +336,9 @@ class Ui_MainWindow(object):
 "{\n"
 "    background-color: #525251;\n"
 "    color: #ffffff;\n"
-"    border:1px solid #051a39;\n"
-"    border-radius: 3px;\n"
-"    padding : 10px;\n"
-"\n"
+"    border: 1px solid #051a39;\n"
+"    padding : 8px;\n"
+"    border-radius: 5px;\n"
 "}\n"
 "\n"
 "\n"
@@ -468,23 +462,7 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "\n"
-"/*-----QTextEdit-----*/\n"
-"QTextEdit\n"
-"{\n"
-"    background-color: #ffffff;\n"
-"    color: #010201;\n"
-"    border-color: #051a39;\n"
-"    border: 2px solid; border-color: red;\n"
-"}\n"
 "\n"
-"\n"
-"QTextEdit::disabled\n"
-"{\n"
-"    background-color: #404040;\n"
-"    color: #656565;\n"
-"    border-color: #051a39;\n"
-"\n"
-"}\n"
 "\n"
 "\n"
 "/*-----QGroupBox-----*/\n"
@@ -524,6 +502,12 @@ class Ui_MainWindow(object):
 "\n"
 "\n"
 "/*-----QCheckBox-----*/\n"
+"QCheckBox\n"
+"{\n"
+"    border: 1px solid red;\n"
+"    border-radius: 5px;\n"
+"}\n"
+"\n"
 "QCheckBox::indicator\n"
 "{\n"
 "    color: #b1b1b1;\n"
@@ -570,6 +554,7 @@ class Ui_MainWindow(object):
 "QRadioButton\n"
 "{\n"
 "        border: 1px solid red;\n"
+"        border-radius: 5px;\n"
 "}\n"
 "\n"
 "QRadioButton::indicator::unchecked\n"
@@ -1353,7 +1338,7 @@ class Ui_MainWindow(object):
         self.label_12.setObjectName("label_12")
         self.verticalLayout_12.addWidget(self.label_12)
         self.verticalLayoutWidget_13 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_13.setGeometry(QtCore.QRect(430, 54, 71, 51))
+        self.verticalLayoutWidget_13.setGeometry(QtCore.QRect(430, 60, 71, 41))
         self.verticalLayoutWidget_13.setObjectName("verticalLayoutWidget_13")
         self.verticalLayout_13 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_13)
         self.verticalLayout_13.setContentsMargins(0, 0, 0, 0)
@@ -1364,7 +1349,7 @@ class Ui_MainWindow(object):
         self.plainTextEdit.setObjectName("plainTextEdit")
         self.verticalLayout_13.addWidget(self.plainTextEdit)
         self.verticalLayoutWidget_14 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_14.setGeometry(QtCore.QRect(430, 104, 71, 51))
+        self.verticalLayoutWidget_14.setGeometry(QtCore.QRect(430, 110, 71, 41))
         self.verticalLayoutWidget_14.setObjectName("verticalLayoutWidget_14")
         self.verticalLayout_14 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_14)
         self.verticalLayout_14.setContentsMargins(0, 0, 0, 0)
@@ -1375,7 +1360,7 @@ class Ui_MainWindow(object):
         self.plainTextEdit_1.setObjectName("plainTextEdit_1")
         self.verticalLayout_14.addWidget(self.plainTextEdit_1)
         self.verticalLayoutWidget_15 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_15.setGeometry(QtCore.QRect(430, 154, 71, 51))
+        self.verticalLayoutWidget_15.setGeometry(QtCore.QRect(430, 160, 71, 41))
         self.verticalLayoutWidget_15.setObjectName("verticalLayoutWidget_15")
         self.verticalLayout_15 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_15)
         self.verticalLayout_15.setContentsMargins(0, 0, 0, 0)
@@ -1386,7 +1371,7 @@ class Ui_MainWindow(object):
         self.plainTextEdit_3.setObjectName("plainTextEdit_3")
         self.verticalLayout_15.addWidget(self.plainTextEdit_3)
         self.verticalLayoutWidget_16 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_16.setGeometry(QtCore.QRect(430, 204, 71, 51))
+        self.verticalLayoutWidget_16.setGeometry(QtCore.QRect(430, 210, 71, 41))
         self.verticalLayoutWidget_16.setObjectName("verticalLayoutWidget_16")
         self.verticalLayout_17 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_16)
         self.verticalLayout_17.setContentsMargins(0, 0, 0, 0)
@@ -1397,7 +1382,7 @@ class Ui_MainWindow(object):
         self.plainTextEdit_5.setObjectName("plainTextEdit_5")
         self.verticalLayout_17.addWidget(self.plainTextEdit_5)
         self.verticalLayoutWidget_18 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_18.setGeometry(QtCore.QRect(430, 304, 71, 51))
+        self.verticalLayoutWidget_18.setGeometry(QtCore.QRect(430, 310, 71, 41))
         self.verticalLayoutWidget_18.setObjectName("verticalLayoutWidget_18")
         self.verticalLayout_19 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_18)
         self.verticalLayout_19.setContentsMargins(0, 0, 0, 0)
@@ -1408,7 +1393,7 @@ class Ui_MainWindow(object):
         self.plainTextEdit_7.setObjectName("plainTextEdit_7")
         self.verticalLayout_19.addWidget(self.plainTextEdit_7)
         self.verticalLayoutWidget_19 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_19.setGeometry(QtCore.QRect(430, 354, 71, 51))
+        self.verticalLayoutWidget_19.setGeometry(QtCore.QRect(430, 362, 71, 41))
         self.verticalLayoutWidget_19.setObjectName("verticalLayoutWidget_19")
         self.verticalLayout_20 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_19)
         self.verticalLayout_20.setContentsMargins(0, 0, 0, 0)
@@ -1419,7 +1404,7 @@ class Ui_MainWindow(object):
         self.plainTextEdit_8.setObjectName("plainTextEdit_8")
         self.verticalLayout_20.addWidget(self.plainTextEdit_8)
         self.verticalLayoutWidget_20 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_20.setGeometry(QtCore.QRect(430, 402, 71, 51))
+        self.verticalLayoutWidget_20.setGeometry(QtCore.QRect(430, 410, 71, 41))
         self.verticalLayoutWidget_20.setObjectName("verticalLayoutWidget_20")
         self.verticalLayout_21 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_20)
         self.verticalLayout_21.setContentsMargins(0, 0, 0, 0)
@@ -1430,7 +1415,7 @@ class Ui_MainWindow(object):
         self.plainTextEdit_9.setObjectName("plainTextEdit_9")
         self.verticalLayout_21.addWidget(self.plainTextEdit_9)
         self.verticalLayoutWidget_21 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_21.setGeometry(QtCore.QRect(430, 452, 71, 51))
+        self.verticalLayoutWidget_21.setGeometry(QtCore.QRect(430, 460, 71, 41))
         self.verticalLayoutWidget_21.setObjectName("verticalLayoutWidget_21")
         self.verticalLayout_22 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_21)
         self.verticalLayout_22.setContentsMargins(0, 0, 0, 0)
@@ -1441,7 +1426,7 @@ class Ui_MainWindow(object):
         self.plainTextEdit_10.setObjectName("plainTextEdit_10")
         self.verticalLayout_22.addWidget(self.plainTextEdit_10)
         self.verticalLayoutWidget_22 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_22.setGeometry(QtCore.QRect(430, 502, 71, 51))
+        self.verticalLayoutWidget_22.setGeometry(QtCore.QRect(430, 510, 71, 41))
         self.verticalLayoutWidget_22.setObjectName("verticalLayoutWidget_22")
         self.verticalLayout_23 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_22)
         self.verticalLayout_23.setContentsMargins(0, 0, 0, 0)
@@ -1452,7 +1437,7 @@ class Ui_MainWindow(object):
         self.plainTextEdit_11.setObjectName("plainTextEdit_11")
         self.verticalLayout_23.addWidget(self.plainTextEdit_11)
         self.verticalLayoutWidget_23 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_23.setGeometry(QtCore.QRect(510, 60, 311, 351))
+        self.verticalLayoutWidget_23.setGeometry(QtCore.QRect(510, 60, 311, 251))
         self.verticalLayoutWidget_23.setObjectName("verticalLayoutWidget_23")
         self.verticalLayout_24 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_23)
         self.verticalLayout_24.setContentsMargins(0, 0, 0, 0)
@@ -1547,6 +1532,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_28.setObjectName("verticalLayout_28")
         self.label_15 = QtWidgets.QLabel(self.verticalLayoutWidget_27)
         font = QtGui.QFont()
+        font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
         self.label_15.setFont(font)
@@ -1569,18 +1555,11 @@ class Ui_MainWindow(object):
         self.radioButton_5.setObjectName("radioButton_5")
         self.verticalLayout_28.addWidget(self.radioButton_5)
         self.verticalLayoutWidget_29 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_29.setGeometry(QtCore.QRect(510, 420, 311, 131))
+        self.verticalLayoutWidget_29.setGeometry(QtCore.QRect(510, 321, 311, 231))
         self.verticalLayoutWidget_29.setObjectName("verticalLayoutWidget_29")
         self.verticalLayout_30 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_29)
         self.verticalLayout_30.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_30.setObjectName("verticalLayout_30")
-        self.label_16 = QtWidgets.QLabel(self.verticalLayoutWidget_29)
-        font = QtGui.QFont()
-        font.setPointSize(13)
-        self.label_16.setFont(font)
-        self.label_16.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_16.setObjectName("label_16")
-        self.verticalLayout_30.addWidget(self.label_16)
         self.pushButton_5 = QtWidgets.QPushButton(self.verticalLayoutWidget_29)
         self.pushButton_5.setObjectName("pushButton_5")
         self.verticalLayout_30.addWidget(self.pushButton_5)
@@ -1590,6 +1569,22 @@ class Ui_MainWindow(object):
         self.pushButton_3 = QtWidgets.QPushButton(self.verticalLayoutWidget_29)
         self.pushButton_3.setObjectName("pushButton_3")
         self.verticalLayout_30.addWidget(self.pushButton_3)
+        self.checkBox = QtWidgets.QCheckBox(self.verticalLayoutWidget_29)
+        self.checkBox.setObjectName("checkBox")
+        self.verticalLayout_30.addWidget(self.checkBox)
+        self.comboBox_2 = QtWidgets.QComboBox(self.verticalLayoutWidget_29)
+        self.comboBox_2.setObjectName("comboBox_2")
+        self.comboBox_2.addItem("")
+        self.comboBox_2.addItem("")
+        self.comboBox_2.addItem("")
+        self.verticalLayout_30.addWidget(self.comboBox_2)
+        self.label_16 = QtWidgets.QLabel(self.verticalLayoutWidget_29)
+        font = QtGui.QFont()
+        font.setPointSize(13)
+        self.label_16.setFont(font)
+        self.label_16.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_16.setObjectName("label_16")
+        self.verticalLayout_30.addWidget(self.label_16)
         self.verticalLayoutWidget_30 = QtWidgets.QWidget(self.centralwidget)
         self.verticalLayoutWidget_30.setGeometry(QtCore.QRect(830, 60, 311, 31))
         self.verticalLayoutWidget_30.setObjectName("verticalLayoutWidget_30")
@@ -1664,10 +1659,15 @@ class Ui_MainWindow(object):
         self.radioButton_3.setText(_translate("MainWindow", "По центральной границе"))
         self.radioButton_4.setText(_translate("MainWindow", "По рандомной границе"))
         self.radioButton_5.setText(_translate("MainWindow", "По всем границам"))
-        self.label_16.setText(_translate("MainWindow", "Рябоконь Б.И. ©"))
         self.pushButton_5.setText(_translate("MainWindow", "Отсортировать по возрастанию"))
         self.pushButton_6.setText(_translate("MainWindow", "Отсортировать по убыванию"))
         self.pushButton_3.setText(_translate("MainWindow", "Сгенерировать новую матрицу"))
+        self.checkBox.setText(_translate("MainWindow", "Генерировать матрицу случайно при\n"
+"каждом повторе"))
+        self.comboBox_2.setItemText(0, _translate("MainWindow", "Без сортировки"))
+        self.comboBox_2.setItemText(1, _translate("MainWindow", "Отсортированно по возрастанию"))
+        self.comboBox_2.setItemText(2, _translate("MainWindow", "Отсортированно по убыванию"))
+        self.label_16.setText(_translate("MainWindow", "Рябоконь Б.И. ©"))
         self.label_19.setText(_translate("MainWindow", "Методы разбиения"))
         self.label_20.setText(_translate("MainWindow", "Методы формирования"))
         self.pushButton_2.setText(_translate("MainWindow", ">"))

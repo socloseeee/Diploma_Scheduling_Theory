@@ -1,7 +1,10 @@
+import random
+import time
 from copy import deepcopy
 from random import randint as r, choice as c
 from typing import Any
 
+random.seed(time.time() * 1000)
 
 def generate_matrix(
         m: int,

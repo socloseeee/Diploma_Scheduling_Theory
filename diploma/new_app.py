@@ -1,18 +1,21 @@
+import random
 import sys
 import sqlite3
 import platform
 import itertools
+import time
 
 import numpy as np
 
 from PIL import Image
 from io import BytesIO
 from superqt import QRangeSlider
-from PyQt5.QtGui import QPixmap, QIcon, QDesktopServices
+from qt_material import apply_stylesheet, QtStyleTools
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QComboBox, QMessageBox
-from PyQt5.QtCore import QObject, pyqtSignal, Qt, QTime, QTimer, QUrl
+from PyQt5.QtGui import QPixmap, QIcon, QDesktopServices
+from PyQt5.QtCore import QObject, pyqtSignal, Qt, QTime, QTimer, QUrl, QSize
 
 from diploma import histogram
 from diploma.Data import DataApp
@@ -23,6 +26,8 @@ from diploma.utils.GA_utils import generate_matrix
 from diploma.utils.Qt import RangeSlider, LabelStretcher
 from diploma.UI.genetic_algorithm import Ui_Genetic_window
 from diploma.utils.db_utils import fill_labels_with_pics_and_data, db_init
+
+random.seed(time.time() * 1000)
 
 
 class OutputLogger(QObject):
@@ -174,8 +179,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ga_window.label_32.setStyleSheet("color: lightgreen")
 
         # Координаты окон с гистограммами
-        self.coords_top = [((int(11 + (152 * i)), int(155 + (152 * i))), (70, 180)) for i in range(8)]
-        self.coords_center = [((int(11 + (152 * i)), int(155 + (152 * i))), (250, 360)) for i in range(8)]
+        self.coords_top = [((int(11 + (166 * i)), int(169 + (166 * i))), (40, 140)) for i in range(6)]
+        self.coords_center = [((int(11 + (166 * i)), int(169 + (166 * i))), (180, 280)) for i in range(6)]
+        self.coords_bottom = [((int(11 + (166 * i)), int(169 + (166 * i))), (320, 420)) for i in range(6)]
 
         # Окна с гистограммами
         self.sorted_up_pics = [
@@ -186,7 +192,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ga_window.lpic5,
             self.ga_window.lpic6,
         ]
-        self.sorted_down_pics = [
+        self.sorted_center_pics = [
             self.ga_window.lpic11,
             self.ga_window.lpic12,
             self.ga_window.lpic13,
@@ -194,6 +200,32 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ga_window.lpic15,
             self.ga_window.lpic16,
         ]
+        self.sorted_down_pics = [
+            self.ga_window.lpic11_3,
+            self.ga_window.lpic12_3,
+            self.ga_window.lpic13_3,
+            self.ga_window.lpic14_3,
+            self.ga_window.lpic15_3,
+            self.ga_window.lpic16_3,
+        ]
+        self.ga_window.lpic1.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic2.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic3.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic4.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic5.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic6.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic11.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic12.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic13.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic14.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic15.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic16.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic11_3.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic12_3.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic13_3.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic14_3.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic15_3.setStyleSheet("border-radius: 0px;")
+        self.ga_window.lpic16_3.setStyleSheet("border-radius: 0px;")
         self.pics_container = []
 
         # Открытие гистограмм по нажатию
@@ -209,6 +241,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ga_window.lpic14.mousePressEvent = self.openPic
         self.ga_window.lpic15.mousePressEvent = self.openPic
         self.ga_window.lpic16.mousePressEvent = self.openPic
+        self.ga_window.lpic11_3.mousePressEvent = self.openPic
+        self.ga_window.lpic12_3.mousePressEvent = self.openPic
+        self.ga_window.lpic13_3.mousePressEvent = self.openPic
+        self.ga_window.lpic14_3.mousePressEvent = self.openPic
+        self.ga_window.lpic15_3.mousePressEvent = self.openPic
+        self.ga_window.lpic16_3.mousePressEvent = self.openPic
 
         # Секундомер в левом нижнем углу
         self.time = QTime(0, 0, 0)
@@ -247,6 +285,9 @@ class MainWindow(QtWidgets.QMainWindow):
             ''',
             '''
             SELECT data FROM all_method WHERE sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC LIMIT 8;
+            ''',
+            '''
+            SELECT data FROM all_method WHERE sorted_on = 'Без сортировки' ORDER BY id DESC LIMIT 8;
             '''
         ]
 
@@ -262,7 +303,7 @@ class MainWindow(QtWidgets.QMainWindow):
         github_pic = QIcon(githib_pic)
         self.ga_window.pushButton_2.setIcon(github_pic)
         self.ga_window.pushButton_2.setIconSize(self.ga_window.pushButton_2.size())
-        self.ga_window.pushButton_2.clicked.connect(self.openLink)
+        self.ga_window.pushButton_2.clicked.connect(self.GithubLink)
 
         # Картинка для кнопки "вперёд"
         forward_pic = QPixmap("assets/forward.png")
@@ -271,9 +312,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self.start_window.pushButton_2.setIconSize(self.start_window.pushButton_2.size())
         self.start_window.pushButton_2.clicked.connect(self.forward)
 
+        # Картинка для кнопки "ДГТУ"
+        forward_pic = QPixmap("assets/DSTU.png")
+        forward_pic = QIcon(forward_pic)
+        self.ga_window.pushButton_3.setIcon(forward_pic)
+        self.ga_window.pushButton_3.setIconSize(
+            QSize(
+                self.start_window.pushButton_2.size().width() + 5,
+                self.start_window.pushButton_2.size().height() + 40
+            )
+        )
+        self.ga_window.pushButton_3.clicked.connect(self.DSTULink)
+
         # Заполнить QLabels картинками
-        self.pics_container = fill_labels_with_pics_and_data(
+        fill_labels_with_pics_and_data(
             self.sorted_up_pics,
+            self.sorted_center_pics,
             self.sorted_down_pics,
             [
                 self.ga_window.label_12,
@@ -288,6 +342,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Инициализируем поток
         self.thread = None
+
+        # Запускался ли таймер?
+        self.timer_r = None
+
+        # Комбо-бокс если был сделан выбор генерировать матрциу при каждом повторе
+        self.start_window.checkBox.stateChanged.connect(self.regenerate)
+        self.start_window.verticalLayout_30.removeWidget(self.start_window.comboBox_2)
+        self.start_window.comboBox_2.setParent(None)
 
         # Проверка ОС, для смены системного шрифта
         if platform.system() == 'Windows':
@@ -315,6 +377,15 @@ class MainWindow(QtWidgets.QMainWindow):
             font.setWeight(50)
             self.ga_window.label_30.setFont(font)
 
+    def regenerate(self):
+        if self.start_window.checkBox.isChecked():
+            if self.start_window.verticalLayout_30.indexOf(self.start_window.comboBox_2) == -1:
+                self.start_window.verticalLayout_30.insertWidget(4, self.start_window.comboBox_2)
+                self.combo_box1.setVisible(True)
+        else:
+            self.start_window.verticalLayout_30.removeWidget(self.start_window.comboBox_2)
+            self.start_window.comboBox_2.setParent(None)
+
     def forward(self):
         self.stacked.setCurrentIndex(
             self.stacked.currentIndex() + 1
@@ -325,14 +396,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.stacked.currentIndex() - 1
         )
 
-    def openLink(self):
-        QDesktopServices.openUrl(QUrl("https://github.com/socloseeee/Diploma_Scheduling_Theory/tree/master/diploma"))
+    def GithubLink(self):
+        QDesktopServices.openUrl(QUrl("https://github.com/socloseeee/Diploma_Scheduling_Theory/tree/master"))
+
+    def DSTULink(self):
+        QDesktopServices.openUrl(QUrl("https://donstu.ru/"))
 
     def filterHistograms(self, state):
         self.pics_container = []
         sender = self.sender()
         result_up = None
         result_down = None
+        result_no_sort = None
         conn = sqlite3.connect('experiments_results/resultsdb.sqlite3')
         cursor = conn.cursor()
         for checkbox in self.checkboxes:
@@ -345,12 +420,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 ''',
                 '''
                 SELECT data FROM all_method WHERE amount_of_methods = '1' AND sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC;
+                ''',
+                '''
+                SELECT data FROM all_method WHERE amount_of_methods = '1' AND sorted_on = 'Без сортировки' ORDER BY id DESC;
                 '''
             ]
             cursor.execute(self.query[0])
             result_up = cursor.fetchall()
             cursor.execute(self.query[1])
             result_down = cursor.fetchall()
+            cursor.execute(self.query[2])
+            result_no_sort = cursor.fetchall()
         if self.twoMethod == sender:
             self.query = [
                 '''
@@ -358,12 +438,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 ''',
                 '''
                 SELECT data FROM all_method WHERE amount_of_methods = '2' AND sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC;
+                ''',
+                '''
+                SELECT data FROM all_method WHERE amount_of_methods = '2' AND sorted_on = 'Без сортировки' ORDER BY id DESC;
                 '''
             ]
             cursor.execute(self.query[0])
             result_up = cursor.fetchall()
             cursor.execute(self.query[1])
             result_down = cursor.fetchall()
+            cursor.execute(self.query[2])
+            result_no_sort = cursor.fetchall()
         if self.threeMethod == sender:
             self.query = [
                 '''
@@ -371,12 +456,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 ''',
                 '''
                 SELECT data FROM all_method WHERE amount_of_methods = '3' AND sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC;
+                ''',
+                '''
+                SELECT data FROM all_method WHERE amount_of_methods = '3' AND sorted_on = 'Без сортировки' ORDER BY id DESC;
                 '''
             ]
             cursor.execute(self.query[0])
             result_up = cursor.fetchall()
             cursor.execute(self.query[1])
             result_down = cursor.fetchall()
+            cursor.execute(self.query[2])
+            result_no_sort = cursor.fetchall()
         if self.fourMethod == sender:
             self.query = [
                 '''
@@ -384,12 +474,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 ''',
                 '''
                 SELECT data FROM all_method WHERE amount_of_methods = '4' AND sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC;
+                ''',
+                '''
+                SELECT data FROM all_method WHERE amount_of_methods = '4' AND sorted_on = 'Без сортировки' ORDER BY id DESC;
                 '''
             ]
             cursor.execute(self.query[0])
             result_up = cursor.fetchall()
             cursor.execute(self.query[1])
             result_down = cursor.fetchall()
+            cursor.execute(self.query[2])
+            result_no_sort = cursor.fetchall()
         if self.bestResult == sender:
             self.query = [
                 '''
@@ -407,12 +502,22 @@ class MainWindow(QtWidgets.QMainWindow):
                 WHERE sorted_on = 'Отсортированно по убыванию'
                 GROUP BY result
                 ORDER BY sum;
+                ''',
+                '''
+                SELECT data, result, SUM(CAST(value AS INTEGER)) AS sum
+                FROM all_method, 
+                     json_each('[' || REPLACE(result, ' ', ',') || ']')
+                WHERE sorted_on = 'Без сортировки'
+                GROUP BY result
+                ORDER BY sum;
                 '''
             ]
             cursor.execute(self.query[0])
             result_up = list(map(lambda x: (x[0],), cursor.fetchall()))
             cursor.execute(self.query[1])
             result_down = list(map(lambda x: (x[0],), cursor.fetchall()))
+            cursor.execute(self.query[2])
+            result_no_sort = list(map(lambda x: (x[0],), cursor.fetchall()))
         if self.bestTime == sender:
             self.query = [
                 '''
@@ -430,12 +535,22 @@ class MainWindow(QtWidgets.QMainWindow):
                 WHERE sorted_on = 'Отсортированно по убыванию'
                 GROUP BY elapsed_time
                 ORDER BY sum; 
+                ''',
+                '''
+                SELECT data, elapsed_time, SUM(CAST(value AS INTEGER)) AS sum
+                FROM all_method, 
+                     json_each('[' || REPLACE(elapsed_time, ' ', ',') || ']')
+                WHERE sorted_on = 'Без сортировки'
+                GROUP BY elapsed_time
+                ORDER BY sum; 
                 '''
             ]
             cursor.execute(self.query[0])
             result_up = list(map(lambda x: (x[0],), cursor.fetchall()))
             cursor.execute(self.query[1])
             result_down = list(map(lambda x: (x[0],), cursor.fetchall()))
+            cursor.execute(self.query[2])
+            result_no_sort = list(map(lambda x: (x[0],), cursor.fetchall()))
         if result_up is not None or result_down is not None:
             for label, filtered_img in itertools.zip_longest(self.sorted_up_pics, result_up):
                 if label:
@@ -443,28 +558,41 @@ class MainWindow(QtWidgets.QMainWindow):
                         image = BytesIO(filtered_img[0])
                         pixmap = QPixmap()
                         pixmap.loadFromData(image.read())
-                        pixmap_scaled = pixmap.scaled(145, 109)
+                        pixmap_scaled = pixmap.scaled(159, 99)
                         label.setPixmap(pixmap_scaled)
                         self.pics_container.append(pixmap_scaled)
                     else:
                         label.setPixmap(QPixmap())
-                        self.pics_container.append(pixmap_scaled)
-            for label, filtered_img in itertools.zip_longest(self.sorted_down_pics, result_down):
+                        self.pics_container.append(QPixmap())
+            for label, filtered_img in itertools.zip_longest(self.sorted_center_pics, result_down):
                 if label:
                     if filtered_img:
                         image = BytesIO(filtered_img[0])
                         pixmap = QPixmap()
                         pixmap.loadFromData(image.read())
-                        pixmap_scaled = pixmap.scaled(145, 109)
+                        pixmap_scaled = pixmap.scaled(159, 99)
                         label.setPixmap(pixmap_scaled)
                         self.pics_container.append(pixmap_scaled)
                     else:
                         label.setPixmap(QPixmap())
+                        self.pics_container.append(QPixmap())
+            for label, filtered_img in itertools.zip_longest(self.sorted_down_pics, result_no_sort):
+                if label:
+                    if filtered_img:
+                        image = BytesIO(filtered_img[0])
+                        pixmap = QPixmap()
+                        pixmap.loadFromData(image.read())
+                        pixmap_scaled = pixmap.scaled(159, 99)
+                        label.setPixmap(pixmap_scaled)
                         self.pics_container.append(pixmap_scaled)
+                    else:
+                        label.setPixmap(QPixmap())
+                        self.pics_container.append(QPixmap())
         conn.close()
 
     def timerEvent(self) -> None:
-        self.time = self.time.addSecs(1)
+        if not self.timer_r:
+            self.time = self.time.addSecs(1)
         self.timer_canvas.setText(self.time.toString())
 
     def start_histogram_and_db(self):
@@ -486,7 +614,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     'repetitions': int(self.r.value()),
                     '1method': self.combo_box1.currentText(),
                     'matrix': self.start_window.label_13.text(),
+                    'regenerate_matrix': self.start_window.checkBox.isChecked()
                 }
+
+                if self.start_window.checkBox.isChecked():
+                    data['sort_regenerate_matrix'] = self.start_window.comboBox_2.currentText()
 
                 if self.start_window.comboBox.currentText() == 'Один метод':
                     data["amount_of_methods"] = 1
@@ -546,8 +678,8 @@ class MainWindow(QtWidgets.QMainWindow):
                         QtCore.Qt.AlignJustify | QtCore.Qt.AlignVCenter  # !!!
                     )
                     self.ga_window.label_29.setStyleSheet("""
-                                                                    padding-top: 10px;
-                                                                """)
+                        padding-top: 10px;
+                    """)
                     val1 = data["splitting_values"][0] * '|'
                     val2 = data["splitting_values"][1] * '|'
                     val3 = data["splitting_values"][2] * '|'
@@ -608,6 +740,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 # Запускаем ГА и Секундомер
                 self.time = QTime(0, 0, 0)
                 self.timer.timeout.connect(self.timerEvent)
+                if self.timer_r:
+                    self.time.setInterval(0)
                 self.timer.start(1000)
                 self.thread = signal_thread()
                 self.thread._signal.connect(self.progress_signal_accept)
@@ -643,6 +777,10 @@ class MainWindow(QtWidgets.QMainWindow):
         SELECT result, elapsed_time FROM all_method WHERE sorted_on = 'Отсортированно по убыванию';
         ''')
         data_sorted_down = cursor.fetchall()
+        cursor.execute('''
+                SELECT result, elapsed_time FROM all_method WHERE sorted_on = 'Без сортировки';
+                ''')
+        data_no_sort = cursor.fetchall()
         if data_sorted_up:
             result_sorted_up = list(map(lambda x: list(map(float, x[0].split())), data_sorted_up))
             time_sorted_up = list(map(lambda x: list(map(float, x[1].split())), data_sorted_up))
@@ -658,26 +796,44 @@ class MainWindow(QtWidgets.QMainWindow):
                 str("{:.2f}".format(sum(map(sum, result_sorted_down)) / len(result_sorted_down) / 4)))
             self.ga_window.label_15.setText(
                 str("{:.2f}".format(sum(map(sum, time_sorted_down)) / len(time_sorted_down) / 4)))
-        # cursor.execute(self.query[0])
-        # images_sorted_up = cursor.fetchall()
-        # cursor.execute(self.query[1])
-        # images_sorted_down = cursor.fetchall()
-
-        if self.data.data["sorted_up"]:
-            self.pics_container.pop(5)
-            self.pics_container.insert(0, self.last_img)
-        else:
-            self.pics_container.pop()
-            self.pics_container.insert(6, self.last_img)
-
+        if data_no_sort:
+            result_no_sort = list(map(lambda x: list(map(float, x[0].split())), data_no_sort))
+            time_no_sort = list(map(lambda x: list(map(float, x[1].split())), data_no_sort))
+            # print(sum(result_sorted_down) / len(result_sorted_down))
+            self.ga_window.label_23.setText(
+                str("{:.2f}".format(sum(map(sum, result_no_sort)) / len(result_no_sort) / 4)))
+            self.ga_window.label_27.setText(
+                str("{:.2f}".format(sum(map(sum, time_no_sort)) / len(time_no_sort) / 4)))
+        cursor.execute(self.query[0])
+        images_sorted_up = cursor.fetchall()
+        cursor.execute(self.query[1])
+        images_sorted_down = cursor.fetchall()
+        cursor.execute(self.query[2])
+        images_no_sort = cursor.fetchall()
         for image_data, label in zip(
-                self.pics_container[:6], self.sorted_up_pics
+                images_sorted_up, self.sorted_up_pics
         ):
-            label.setPixmap(image_data)
+            image = BytesIO(image_data[0])
+            pixmap = QPixmap()
+            pixmap.loadFromData(image.read())  # .scaled(width=107, height=109)
+            pixmap_scaled = pixmap.scaled(159, 99)
+            label.setPixmap(pixmap_scaled)
         for image_data, label in zip(
-                self.pics_container[6:], self.sorted_down_pics
+                images_sorted_down, self.sorted_center_pics
         ):
-            label.setPixmap(image_data)
+            image = BytesIO(image_data[0])
+            pixmap = QPixmap()
+            pixmap.loadFromData(image.read())
+            pixmap_scaled = pixmap.scaled(159, 99)
+            label.setPixmap(pixmap_scaled)
+        for image_data, label in zip(
+                images_no_sort, self.sorted_down_pics
+        ):
+            image = BytesIO(image_data[0])
+            pixmap = QPixmap()
+            pixmap.loadFromData(image.read())
+            pixmap_scaled = pixmap.scaled(159, 99)
+            label.setPixmap(pixmap_scaled)
         conn.close()
         self.thread.quit()
         self.thread.wait()
@@ -944,8 +1100,9 @@ class MainWindow(QtWidgets.QMainWindow):
         x = int(event.windowPos().x())
         y = int(event.windowPos().y())
         conn = sqlite3.connect('experiments_results/resultsdb.sqlite3')
+        print(event.windowPos())
         try:
-            if y <= 180:
+            if 40 <= y <= 140:
                 for i, elem in enumerate(self.coords_top):
                     if x < elem[0][1]:
                         choice = i
@@ -956,14 +1113,24 @@ class MainWindow(QtWidgets.QMainWindow):
                 img = images_sorted_up[choice]
                 img = Image.open(BytesIO(img[0]))
                 img.show()
-            elif y <= 360:
+            elif 180 <= y <= 280:
                 for i, elem in enumerate(self.coords_center):
                     if x < elem[0][1]:
                         choice = i
                         break
-                conn = sqlite3.connect('experiments_results/resultsdb.sqlite3')
                 cursor = conn.cursor()
                 cursor.execute(self.query[1])
+                images_sorted_down = cursor.fetchall()
+                img = images_sorted_down[choice]
+                img = Image.open(BytesIO(img[0]))
+                img.show()
+            elif 320 <= y <= 420:
+                for i, elem in enumerate(self.coords_bottom):
+                    if x < elem[0][1]:
+                        choice = i
+                        break
+                cursor = conn.cursor()
+                cursor.execute(self.query[2])
                 images_sorted_down = cursor.fetchall()
                 img = images_sorted_down[choice]
                 img = Image.open(BytesIO(img[0]))
@@ -990,6 +1157,7 @@ if __name__ == '__main__':
     except ImportError:
         pass
     app = QtWidgets.QApplication(sys.argv)
+    # apply_stylesheet(app, theme='dark_amber.xml')
     app.setWindowIcon(QtGui.QIcon('assets/icon2.png'))
     window = MainWindow()
     window.setFixedSize(1150, 594)
