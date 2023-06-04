@@ -334,6 +334,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ga_window.label_13,
                 self.ga_window.label_14,
                 self.ga_window.label_15,
+                self.ga_window.label_23,
+                self.ga_window.label_27,
             ]
         )
 

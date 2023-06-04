@@ -1253,7 +1253,7 @@ class Ui_Genetic_window(object):
         self.label_32.setObjectName("label_32")
         self.verticalLayout_5.addWidget(self.label_32)
         self.verticalLayoutWidget_6 = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget_6.setGeometry(QtCore.QRect(10, 566, 1131, 31))
+        self.verticalLayoutWidget_6.setGeometry(QtCore.QRect(10, 566, 1131, 21))
         self.verticalLayoutWidget_6.setObjectName("verticalLayoutWidget_6")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_6)
         self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)

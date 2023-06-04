@@ -1298,7 +1298,7 @@ QStatusBar
       <x>10</x>
       <y>566</y>
       <width>1131</width>
-      <height>31</height>
+      <height>21</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_6">

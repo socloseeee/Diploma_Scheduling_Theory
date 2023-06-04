@@ -149,6 +149,10 @@ def fill_labels_with_pics_and_data(sorted_up_pics, sorted_center_pics, sorted_do
     SELECT result, elapsed_time FROM all_method WHERE sorted_on = 'Отсортированно по убыванию';
     ''')
     data_sorted_down = cursor.fetchall()
+    cursor.execute('''
+        SELECT result, elapsed_time FROM all_method WHERE sorted_on = 'Без сортировки';
+        ''')
+    data_no_sort = cursor.fetchall()
     if data_sorted_up:
         result_sorted_up = list(map(lambda x: list(map(float, x[0].split())), data_sorted_up))
         time_sorted_up = list(map(lambda x: list(map(float, x[1].split())), data_sorted_up))
@@ -163,4 +167,11 @@ def fill_labels_with_pics_and_data(sorted_up_pics, sorted_center_pics, sorted_do
             str("{:.2f}".format(sum(map(sum, result_sorted_down)) / len(result_sorted_down) / 4)))
         data_labels[3].setText(
             str("{:.2f}".format(sum(map(sum, time_sorted_down)) / len(time_sorted_down) / 4)))
+    if data_no_sort:
+        result_no_sort = list(map(lambda x: list(map(float, x[0].split())), data_no_sort))
+        time_no_sort = list(map(lambda x: list(map(float, x[1].split())), data_no_sort))
+        data_labels[4].setText(
+            str("{:.2f}".format(sum(map(sum, result_no_sort)) / len(result_no_sort) / 4)))
+        data_labels[5].setText(
+            str("{:.2f}".format(sum(map(sum, time_no_sort)) / len(time_no_sort) / 4)))
     #return pics_container
