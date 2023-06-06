@@ -2,4 +2,4 @@ Way of forming | Способ формирования:
 random_bound
 
 Elapsed time | Время работы: 00:02
-Result | Результат: 69.5
+Result | Результат: 82.0

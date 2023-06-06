@@ -2,4 +2,4 @@ Way of forming | Способ формирования:
 central_bound
 
 Elapsed time | Время работы: 00:02
-Result | Результат: 114.5
+Result | Результат: 83.5

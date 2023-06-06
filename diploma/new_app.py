@@ -1,3 +1,5 @@
+import json
+import os
 import random
 import sys
 import sqlite3
@@ -10,7 +12,8 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 from superqt import QRangeSlider
-from qt_material import apply_stylesheet, QtStyleTools
+
+from qt_material import apply_stylesheet
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QComboBox, QMessageBox
@@ -23,7 +26,7 @@ from diploma.utils.utils import json_open
 from diploma.experiments import signal_thread
 from diploma.UI.start_window import Ui_MainWindow
 from diploma.utils.GA_utils import generate_matrix
-from diploma.utils.Qt import RangeSlider, LabelStretcher
+from diploma.utils.Qt import LabelStretcher
 from diploma.UI.genetic_algorithm import Ui_Genetic_window
 from diploma.utils.db_utils import fill_labels_with_pics_and_data, db_init
 
@@ -86,22 +89,34 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stacked.addWidget(self.ga_window)
 
         # Data
+        with open(os.path.abspath('experiments_results/data.json'), 'r', encoding='UTF-8') as f:
+            data = json.load(f)
         self.m = self.start_window.plainTextEdit
+        self.m.setValue(data["m"])
         self.n = self.start_window.plainTextEdit_1
+        self.n.setValue(data["n"])
         self.T1 = self.start_window.plainTextEdit_3
+        self.T1.setValue(data["T1"])
         self.T2 = self.start_window.plainTextEdit_5
+        self.T2.setValue(data["T2"])
         self.z = self.start_window.plainTextEdit_7
+        self.z.setValue(data["z"])
         self.k = self.start_window.plainTextEdit_8
+        self.k.setValue(data["k"])
         self.Pk = self.start_window.plainTextEdit_9
+        self.Pk.setValue(data["Pk"])
         self.Pm = self.start_window.plainTextEdit_10
+        self.Pm.setValue(data["Pm"])
         self.r = self.start_window.plainTextEdit_11
+        self.r.setValue(data["repetitions"])
+
         self.generate_matrix = self.start_window.pushButton_3
-        self.sort_up_matrix = self.start_window.pushButton_5
-        self.sort_down_matrix = self.start_window.pushButton_6
+        #self.sort_up_matrix = self.start_window.pushButton_5
+        #self.sort_down_matrix = self.start_window.pushButton_6
         self.matrix = self.start_window.label_13
 
-        self.sort_up_matrix.clicked.connect(self.sort_up)
-        self.sort_down_matrix.clicked.connect(self.sort_down)
+        #self.sort_up_matrix.clicked.connect(self.sort_up)
+        #self.sort_down_matrix.clicked.connect(self.sort_down)
         self.generate_matrix.clicked.connect(self.generate)
 
         self.start_window.comboBox.currentIndexChanged.connect(self.choose_methods)
@@ -132,13 +147,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.combo_box4.currentIndexChanged.connect(self.change_method)
 
         # Кастомный ползунок с двумя дескрипторами
-        self.slider = RangeSlider(QtCore.Qt.Horizontal)
-        self.slider.setMinimumHeight(30)
-        self.slider.setMinimum(0)
-        self.slider.setMaximum(100)
-        self.slider.setLow(33)
-        self.slider.setHigh(66)
-        self.slider.setVisible(False)
+        # self.slider = RangeSlider(QtCore.Qt.Horizontal)
+        # self.slider.setMinimumHeight(30)
+        # self.slider.setMinimum(0)
+        # self.slider.setMaximum(100)
+        # self.slider.setLow(33)
+        # self.slider.setHigh(66)
+        # self.slider.setVisible(False)
+        # self.slider.sliderMoved.connect(self.changeValue2)
+        self.slider = QRangeSlider()
+        self.slider.setValue((33, 66))
+        self.slider.setOrientation(QtCore.Qt.Horizontal)
+        self.slider.setStyleSheet("background-color: transparent;")
         self.slider.sliderMoved.connect(self.changeValue2)
 
         # Кастомный ползунок с n количеством дескрипторов
@@ -257,18 +277,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ga_window.progressBar.valueChanged.connect(self.start_histogram_and_db)
 
         # Чекбоксы для фильтрации
-        self.oneMethod = self.ga_window.checkBox_2
-        self.twoMethod = self.ga_window.checkBox_4
-        self.threeMethod = self.ga_window.checkBox_3
-        self.fourMethod = self.ga_window.checkBox
-        self.bestResult = self.ga_window.checkBox_5
-        self.bestTime = self.ga_window.checkBox_6
-        self.oneMethod.stateChanged.connect(self.filterHistograms)
-        self.twoMethod.stateChanged.connect(self.filterHistograms)
-        self.threeMethod.stateChanged.connect(self.filterHistograms)
-        self.fourMethod.stateChanged.connect(self.filterHistograms)
-        self.bestResult.stateChanged.connect(self.filterHistograms)
-        self.bestTime.stateChanged.connect(self.filterHistograms)
+        self.oneMethod = self.ga_window.radioButton_3
+        self.twoMethod = self.ga_window.radioButton_4
+        self.threeMethod = self.ga_window.radioButton_5
+        self.fourMethod = self.ga_window.radioButton_6
+        self.bestResult = self.ga_window.radioButton
+        self.bestTime = self.ga_window.radioButton_2
+        self.oneMethod.toggled.connect(self.filterHistograms)
+        self.twoMethod.toggled.connect(self.filterHistograms)
+        self.threeMethod.toggled.connect(self.filterHistograms)
+        self.fourMethod.toggled.connect(self.filterHistograms)
+        self.bestResult.toggled.connect(self.filterHistograms)
+        self.bestTime.toggled.connect(self.filterHistograms)
         self.checkboxes = [
             self.oneMethod,
             self.twoMethod,
@@ -349,9 +369,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timer_r = None
 
         # Комбо-бокс если был сделан выбор генерировать матрциу при каждом повторе
-        self.start_window.checkBox.stateChanged.connect(self.regenerate)
-        self.start_window.verticalLayout_30.removeWidget(self.start_window.comboBox_2)
-        self.start_window.comboBox_2.setParent(None)
+        # self.start_window.checkBox.stateChanged.connect(self.regenerate)
+        # self.start_window.verticalLayout_30.removeWidget(self.start_window.comboBox_2)
+        # self.start_window.comboBox_2.setParent(None)
+
+        self.matrix_container = []
 
         # Проверка ОС, для смены системного шрифта
         if platform.system() == 'Windows':
@@ -379,14 +401,14 @@ class MainWindow(QtWidgets.QMainWindow):
             font.setWeight(50)
             self.ga_window.label_30.setFont(font)
 
-    def regenerate(self):
-        if self.start_window.checkBox.isChecked():
-            if self.start_window.verticalLayout_30.indexOf(self.start_window.comboBox_2) == -1:
-                self.start_window.verticalLayout_30.insertWidget(4, self.start_window.comboBox_2)
-                self.combo_box1.setVisible(True)
-        else:
-            self.start_window.verticalLayout_30.removeWidget(self.start_window.comboBox_2)
-            self.start_window.comboBox_2.setParent(None)
+    # def regenerate(self):
+    #     if self.start_window.checkBox.isChecked():
+    #         if self.start_window.verticalLayout_30.indexOf(self.start_window.comboBox_2) == -1:
+    #             self.start_window.verticalLayout_30.insertWidget(4, self.start_window.comboBox_2)
+    #             self.combo_box1.setVisible(True)
+    #     else:
+    #         self.start_window.verticalLayout_30.removeWidget(self.start_window.comboBox_2)
+    #         self.start_window.comboBox_2.setParent(None)
 
     def forward(self):
         self.stacked.setCurrentIndex(
@@ -412,147 +434,222 @@ class MainWindow(QtWidgets.QMainWindow):
         result_no_sort = None
         conn = sqlite3.connect('experiments_results/resultsdb.sqlite3')
         cursor = conn.cursor()
-        for checkbox in self.checkboxes:
-            checkbox.setChecked(False)
 
-        if self.oneMethod == sender:
-            self.query = [
-                '''
-                SELECT data FROM all_method WHERE amount_of_methods = '1' AND sorted_on = 'Отсортированно по возрастанию' ORDER BY id DESC;
-                ''',
-                '''
-                SELECT data FROM all_method WHERE amount_of_methods = '1' AND sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC;
-                ''',
-                '''
-                SELECT data FROM all_method WHERE amount_of_methods = '1' AND sorted_on = 'Без сортировки' ORDER BY id DESC;
-                '''
-            ]
-            cursor.execute(self.query[0])
-            result_up = cursor.fetchall()
-            cursor.execute(self.query[1])
-            result_down = cursor.fetchall()
-            cursor.execute(self.query[2])
-            result_no_sort = cursor.fetchall()
-        if self.twoMethod == sender:
-            self.query = [
-                '''
-                SELECT data FROM all_method WHERE amount_of_methods = '2' AND sorted_on = 'Отсортированно по возрастанию' ORDER BY id DESC;
-                ''',
-                '''
-                SELECT data FROM all_method WHERE amount_of_methods = '2' AND sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC;
-                ''',
-                '''
-                SELECT data FROM all_method WHERE amount_of_methods = '2' AND sorted_on = 'Без сортировки' ORDER BY id DESC;
-                '''
-            ]
-            cursor.execute(self.query[0])
-            result_up = cursor.fetchall()
-            cursor.execute(self.query[1])
-            result_down = cursor.fetchall()
-            cursor.execute(self.query[2])
-            result_no_sort = cursor.fetchall()
-        if self.threeMethod == sender:
-            self.query = [
-                '''
-                SELECT data FROM all_method WHERE amount_of_methods = '3' AND sorted_on = 'Отсортированно по возрастанию' ORDER BY id DESC;
-                ''',
-                '''
-                SELECT data FROM all_method WHERE amount_of_methods = '3' AND sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC;
-                ''',
-                '''
-                SELECT data FROM all_method WHERE amount_of_methods = '3' AND sorted_on = 'Без сортировки' ORDER BY id DESC;
-                '''
-            ]
-            cursor.execute(self.query[0])
-            result_up = cursor.fetchall()
-            cursor.execute(self.query[1])
-            result_down = cursor.fetchall()
-            cursor.execute(self.query[2])
-            result_no_sort = cursor.fetchall()
-        if self.fourMethod == sender:
-            self.query = [
-                '''
-                SELECT data FROM all_method WHERE amount_of_methods = '4' AND sorted_on = 'Отсортированно по возрастанию' ORDER BY id DESC;
-                ''',
-                '''
-                SELECT data FROM all_method WHERE amount_of_methods = '4' AND sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC;
-                ''',
-                '''
-                SELECT data FROM all_method WHERE amount_of_methods = '4' AND sorted_on = 'Без сортировки' ORDER BY id DESC;
-                '''
-            ]
-            cursor.execute(self.query[0])
-            result_up = cursor.fetchall()
-            cursor.execute(self.query[1])
-            result_down = cursor.fetchall()
-            cursor.execute(self.query[2])
-            result_no_sort = cursor.fetchall()
-        if self.bestResult == sender:
-            self.query = [
-                '''
-                SELECT data, result, SUM(CAST(value AS INTEGER)) AS sum
-                FROM all_method, 
-                     json_each('[' || REPLACE(result, ' ', ',') || ']')
-                WHERE sorted_on = 'Отсортированно по возрастанию'
-                GROUP BY result
-                ORDER BY sum;
-                ''',
-                '''
-                SELECT data, result, SUM(CAST(value AS INTEGER)) AS sum
-                FROM all_method, 
-                     json_each('[' || REPLACE(result, ' ', ',') || ']')
-                WHERE sorted_on = 'Отсортированно по убыванию'
-                GROUP BY result
-                ORDER BY sum;
-                ''',
-                '''
-                SELECT data, result, SUM(CAST(value AS INTEGER)) AS sum
-                FROM all_method, 
-                     json_each('[' || REPLACE(result, ' ', ',') || ']')
-                WHERE sorted_on = 'Без сортировки'
-                GROUP BY result
-                ORDER BY sum;
-                '''
-            ]
-            cursor.execute(self.query[0])
-            result_up = list(map(lambda x: (x[0],), cursor.fetchall()))
-            cursor.execute(self.query[1])
-            result_down = list(map(lambda x: (x[0],), cursor.fetchall()))
-            cursor.execute(self.query[2])
-            result_no_sort = list(map(lambda x: (x[0],), cursor.fetchall()))
-        if self.bestTime == sender:
-            self.query = [
-                '''
-                SELECT data, elapsed_time, SUM(CAST(value AS INTEGER)) AS sum
-                FROM all_method, 
-                     json_each('[' || REPLACE(elapsed_time, ' ', ',') || ']')
-                WHERE sorted_on = 'Отсортированно по возрастанию'
-                GROUP BY elapsed_time
-                ORDER BY sum; 
-                ''',
-                '''
-                SELECT data, elapsed_time, SUM(CAST(value AS INTEGER)) AS sum
-                FROM all_method, 
-                     json_each('[' || REPLACE(elapsed_time, ' ', ',') || ']')
-                WHERE sorted_on = 'Отсортированно по убыванию'
-                GROUP BY elapsed_time
-                ORDER BY sum; 
-                ''',
-                '''
-                SELECT data, elapsed_time, SUM(CAST(value AS INTEGER)) AS sum
-                FROM all_method, 
-                     json_each('[' || REPLACE(elapsed_time, ' ', ',') || ']')
-                WHERE sorted_on = 'Без сортировки'
-                GROUP BY elapsed_time
-                ORDER BY sum; 
-                '''
-            ]
-            cursor.execute(self.query[0])
-            result_up = list(map(lambda x: (x[0],), cursor.fetchall()))
-            cursor.execute(self.query[1])
-            result_down = list(map(lambda x: (x[0],), cursor.fetchall()))
-            cursor.execute(self.query[2])
-            result_no_sort = list(map(lambda x: (x[0],), cursor.fetchall()))
+        if sum(map(lambda x: x.isChecked(), self.checkboxes)) != 2:
+            if self.oneMethod.isChecked():
+                self.query = [
+                    '''
+                    SELECT data FROM all_method WHERE amount_of_methods = '1' AND sorted_on = 'Отсортированно по возрастанию' ORDER BY id DESC;
+                    ''',
+                    '''
+                    SELECT data FROM all_method WHERE amount_of_methods = '1' AND sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC;
+                    ''',
+                    '''
+                    SELECT data FROM all_method WHERE amount_of_methods = '1' AND sorted_on = 'Без сортировки' ORDER BY id DESC;
+                    '''
+                ]
+                cursor.execute(self.query[0])
+                result_up = cursor.fetchall()
+                cursor.execute(self.query[1])
+                result_down = cursor.fetchall()
+                cursor.execute(self.query[2])
+                result_no_sort = cursor.fetchall()
+            if self.twoMethod.isChecked():
+                self.query = [
+                    '''
+                    SELECT data FROM all_method WHERE amount_of_methods = '2' AND sorted_on = 'Отсортированно по возрастанию' ORDER BY id DESC;
+                    ''',
+                    '''
+                    SELECT data FROM all_method WHERE amount_of_methods = '2' AND sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC;
+                    ''',
+                    '''
+                    SELECT data FROM all_method WHERE amount_of_methods = '2' AND sorted_on = 'Без сортировки' ORDER BY id DESC;
+                    '''
+                ]
+                cursor.execute(self.query[0])
+                result_up = cursor.fetchall()
+                cursor.execute(self.query[1])
+                result_down = cursor.fetchall()
+                cursor.execute(self.query[2])
+                result_no_sort = cursor.fetchall()
+            if self.threeMethod.isChecked():
+                self.query = [
+                    '''
+                    SELECT data FROM all_method WHERE amount_of_methods = '3' AND sorted_on = 'Отсортированно по возрастанию' ORDER BY id DESC;
+                    ''',
+                    '''
+                    SELECT data FROM all_method WHERE amount_of_methods = '3' AND sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC;
+                    ''',
+                    '''
+                    SELECT data FROM all_method WHERE amount_of_methods = '3' AND sorted_on = 'Без сортировки' ORDER BY id DESC;
+                    '''
+                ]
+                cursor.execute(self.query[0])
+                result_up = cursor.fetchall()
+                cursor.execute(self.query[1])
+                result_down = cursor.fetchall()
+                cursor.execute(self.query[2])
+                result_no_sort = cursor.fetchall()
+            if self.fourMethod.isChecked():
+                self.query = [
+                    '''
+                    SELECT data FROM all_method WHERE amount_of_methods = '4' AND sorted_on = 'Отсортированно по возрастанию' ORDER BY id DESC;
+                    ''',
+                    '''
+                    SELECT data FROM all_method WHERE amount_of_methods = '4' AND sorted_on = 'Отсортированно по убыванию' ORDER BY id DESC;
+                    ''',
+                    '''
+                    SELECT data FROM all_method WHERE amount_of_methods = '4' AND sorted_on = 'Без сортировки' ORDER BY id DESC;
+                    '''
+                ]
+                cursor.execute(self.query[0])
+                result_up = cursor.fetchall()
+                cursor.execute(self.query[1])
+                result_down = cursor.fetchall()
+                cursor.execute(self.query[2])
+                result_no_sort = cursor.fetchall()
+            if self.bestResult.isChecked():
+                self.query = [
+                    '''
+                    SELECT data, result, SUM(CAST(value AS INTEGER)) AS sum
+                    FROM all_method, 
+                         json_each('[' || REPLACE(result, ' ', ',') || ']')
+                    WHERE sorted_on = 'Отсортированно по возрастанию'
+                    GROUP BY result
+                    ORDER BY sum;
+                    ''',
+                    '''
+                    SELECT data, result, SUM(CAST(value AS INTEGER)) AS sum
+                    FROM all_method, 
+                         json_each('[' || REPLACE(result, ' ', ',') || ']')
+                    WHERE sorted_on = 'Отсортированно по убыванию'
+                    GROUP BY result
+                    ORDER BY sum;
+                    ''',
+                    '''
+                    SELECT data, result, SUM(CAST(value AS INTEGER)) AS sum
+                    FROM all_method, 
+                         json_each('[' || REPLACE(result, ' ', ',') || ']')
+                    WHERE sorted_on = 'Без сортировки'
+                    GROUP BY result
+                    ORDER BY sum;
+                    '''
+                ]
+                cursor.execute(self.query[0])
+                result_up = list(map(lambda x: (x[0],), cursor.fetchall()))
+                cursor.execute(self.query[1])
+                result_down = list(map(lambda x: (x[0],), cursor.fetchall()))
+                cursor.execute(self.query[2])
+                result_no_sort = list(map(lambda x: (x[0],), cursor.fetchall()))
+            if self.bestTime.isChecked():
+                self.query = [
+                    '''
+                    SELECT data, elapsed_time, SUM(CAST(value AS INTEGER)) AS sum
+                    FROM all_method, 
+                         json_each('[' || REPLACE(elapsed_time, ' ', ',') || ']')
+                    WHERE sorted_on = 'Отсортированно по возрастанию'
+                    GROUP BY elapsed_time
+                    ORDER BY sum; 
+                    ''',
+                    '''
+                    SELECT data, elapsed_time, SUM(CAST(value AS INTEGER)) AS sum
+                    FROM all_method, 
+                         json_each('[' || REPLACE(elapsed_time, ' ', ',') || ']')
+                    WHERE sorted_on = 'Отсортированно по убыванию'
+                    GROUP BY elapsed_time
+                    ORDER BY sum; 
+                    ''',
+                    '''
+                    SELECT data, elapsed_time, SUM(CAST(value AS INTEGER)) AS sum
+                    FROM all_method, 
+                         json_each('[' || REPLACE(elapsed_time, ' ', ',') || ']')
+                    WHERE sorted_on = 'Без сортировки'
+                    GROUP BY elapsed_time
+                    ORDER BY sum; 
+                    '''
+                ]
+                cursor.execute(self.query[0])
+                result_up = list(map(lambda x: (x[0],), cursor.fetchall()))
+                cursor.execute(self.query[1])
+                result_down = list(map(lambda x: (x[0],), cursor.fetchall()))
+                cursor.execute(self.query[2])
+                result_no_sort = list(map(lambda x: (x[0],), cursor.fetchall()))
+        else:
+            amount_of_methods = 0
+            if self.oneMethod.isChecked():
+                amount_of_methods = 1
+            if self.twoMethod.isChecked():
+                amount_of_methods = 2
+            if self.threeMethod.isChecked():
+                amount_of_methods = 3
+            if self.fourMethod.isChecked():
+                amount_of_methods = 4
+            if self.bestResult.isChecked():
+                self.query = [
+                    '''
+                    SELECT data, result, SUM(CAST(value AS INTEGER)) AS sum
+                    FROM all_method, 
+                         json_each('[' || REPLACE(result, ' ', ',') || ']')
+                    WHERE sorted_on = 'Отсортированно по возрастанию' AND amount_of_methods = ?
+                    GROUP BY result
+                    ORDER BY sum;
+                    ''',
+                    '''
+                    SELECT data, result, SUM(CAST(value AS INTEGER)) AS sum
+                    FROM all_method, 
+                         json_each('[' || REPLACE(result, ' ', ',') || ']')
+                    WHERE sorted_on = 'Отсортированно по убыванию' AND amount_of_methods = ?
+                    GROUP BY result
+                    ORDER BY sum;
+                    ''',
+                    '''
+                    SELECT data, result, SUM(CAST(value AS INTEGER)) AS sum
+                    FROM all_method, 
+                         json_each('[' || REPLACE(result, ' ', ',') || ']')
+                    WHERE sorted_on = 'Без сортировки' AND amount_of_methods = ?
+                    GROUP BY result
+                    ORDER BY sum;
+                    '''
+                ]
+                cursor.execute(self.query[0], (amount_of_methods,))
+                result_up = list(map(lambda x: (x[0],), cursor.fetchall()))
+                cursor.execute(self.query[1], (amount_of_methods,))
+                result_down = list(map(lambda x: (x[0],), cursor.fetchall()))
+                cursor.execute(self.query[2], (amount_of_methods,))
+                result_no_sort = list(map(lambda x: (x[0],), cursor.fetchall()))
+            if self.bestTime.isChecked():
+                self.query = [
+                    '''
+                    SELECT data, elapsed_time, SUM(CAST(value AS INTEGER)) AS sum
+                    FROM all_method, 
+                         json_each('[' || REPLACE(elapsed_time, ' ', ',') || ']')
+                    WHERE sorted_on = 'Отсортированно по возрастанию' AND amount_of_methods = ?
+                    GROUP BY elapsed_time
+                    ORDER BY sum; 
+                    ''',
+                    '''
+                    SELECT data, elapsed_time, SUM(CAST(value AS INTEGER)) AS sum
+                    FROM all_method, 
+                         json_each('[' || REPLACE(elapsed_time, ' ', ',') || ']')
+                    WHERE sorted_on = 'Отсортированно по убыванию' AND amount_of_methods = ?
+                    GROUP BY elapsed_time
+                    ORDER BY sum; 
+                    ''',
+                    '''
+                    SELECT data, elapsed_time, SUM(CAST(value AS INTEGER)) AS sum
+                    FROM all_method, 
+                         json_each('[' || REPLACE(elapsed_time, ' ', ',') || ']')
+                    WHERE sorted_on = 'Без сортировки' AND amount_of_methods = ?
+                    GROUP BY elapsed_time
+                    ORDER BY sum; 
+                    '''
+                ]
+                cursor.execute(self.query[0], (amount_of_methods,))
+                result_up = list(map(lambda x: (x[0],), cursor.fetchall()))
+                cursor.execute(self.query[1], (amount_of_methods,))
+                result_down = list(map(lambda x: (x[0],), cursor.fetchall()))
+                cursor.execute(self.query[2], (amount_of_methods,))
+                result_no_sort = list(map(lambda x: (x[0],), cursor.fetchall()))
         if result_up is not None or result_down is not None:
             for label, filtered_img in itertools.zip_longest(self.sorted_up_pics, result_up):
                 if label:
@@ -619,6 +716,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     'regenerate_matrix': self.start_window.checkBox.isChecked()
                 }
 
+                if len(self.matrix_container) > 0:
+                    data['matrix_container'] = self.matrix_container
+
                 if self.start_window.checkBox.isChecked():
                     data['sort_regenerate_matrix'] = self.start_window.comboBox_2.currentText()
 
@@ -629,7 +729,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.ga_window.label_29.setText(
                         f'{data["1method"]}(<font color="blue">∎</font>): 100% '
                     )
-                    val = 100 * '|'
+                    val = int(100 * 0.92) * '▉'
                     self.ga_window.label_30.setText(
                         f'<font color="blue">{val}</font>'
                     )
@@ -654,8 +754,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.ga_window.label_29.setStyleSheet("""
                                                     padding-top: 10px;
                                                 """)
-                    val1 = data["splitting_values"][0] * '|'
-                    val2 = data["splitting_values"][1] * '|'
+                    val1 = int(data["splitting_values"][0] * 0.92) * '▉'
+                    val2 = int(data["splitting_values"][1] * 0.92) * '▉'
                     self.ga_window.label_30.setText(
                         f'<font color="blue">{val1}</font><font color="red">{val2}</font>'
                     )
@@ -664,8 +764,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     data["2method"] = self.combo_box2.currentText()
                     data["3method"] = self.combo_box3.currentText()
                     data["amount_of_methods"] = 3
-                    high_val = self.slider.high()
-                    low_val = self.slider.low()
+                    low_val, high_val = self.slider.value()
                     data["splitting_values"] = (low_val, high_val - low_val, 100 - high_val)
 
                     self.ga_window.label_29.setTextFormat(Qt.RichText)
@@ -682,9 +781,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.ga_window.label_29.setStyleSheet("""
                         padding-top: 10px;
                     """)
-                    val1 = data["splitting_values"][0] * '|'
-                    val2 = data["splitting_values"][1] * '|'
-                    val3 = data["splitting_values"][2] * '|'
+                    val1 = int(data["splitting_values"][0] * 0.95) * '▉'
+                    val2 = int(data["splitting_values"][1] * 0.95) * '▉'
+                    val3 = int(data["splitting_values"][2] * 0.95) * '▉'
                     self.ga_window.label_30.setText(
                         f'<font color="blue">{val1}</font><font color="red">{val2}</font><font color="green">{val3}</font>'
                     )
@@ -711,10 +810,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         QtCore.Qt.AlignJustify | QtCore.Qt.AlignVCenter  # !!!
                     )
                     self.ga_window.label_29.setStyleSheet("""padding-top: 10px;""")
-                    val1 = data["splitting_values"][0] * '|'
-                    val2 = data["splitting_values"][1] * '|'
-                    val3 = data["splitting_values"][2] * '|'
-                    val4 = data["splitting_values"][3] * '|'
+                    val1 = int(data["splitting_values"][0] * 0.95) * '▉'
+                    val2 = int(data["splitting_values"][1] * 0.95) * '▉'
+                    val3 = int(data["splitting_values"][2] * 0.95) * '▉'
+                    val4 = int(data["splitting_values"][3] * 0.95) * '▉'
                     self.ga_window.label_30.setText(
                         f'<font color="blue">{val1}</font>'
                         f'<font color="red">{val2}</font>'
@@ -924,14 +1023,61 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
     def generate(self):
-        matrix = generate_matrix(
-            int(self.m.value()),
-            int(self.n.value()),
-            int(self.T1.value()),
-            int(self.T2.value())
-        )
-        matrix = '\n'.join(' '.join(map(str, elem)) for elem in matrix)
-        self.start_window.label_13.setText(matrix)
+        matrix_static = None
+        if not self.start_window.checkBox.isChecked():
+            matrix_static = generate_matrix(
+                    int(self.m.value()),
+                    int(self.n.value()),
+                    int(self.T1.value()),
+                    int(self.T2.value())
+                )
+            for _ in range(self.r.value()):
+                self.matrix_container.append(matrix_static)
+        else:
+            for _ in range(self.r.value()):
+                matrix = generate_matrix(
+                    int(self.m.value()),
+                    int(self.n.value()),
+                    int(self.T1.value()),
+                    int(self.T2.value())
+                )
+                self.matrix_container.append(matrix)
+        # matrix = '\n'.join(' '.join(map(str, elem)) for elem in matrix)
+        try:
+            self.start_window.label_13.setText('\n'.join(' '.join(map(str, elem)) for elem in matrix))
+        except Exception as e:
+            self.start_window.label_13.setText('\n'.join(' '.join(map(str, elem)) for elem in matrix_static))
+        # Newton method
+        def dSize(inner, outer):
+            dy = inner.height() - outer.height()
+            dx = inner.width() - outer.width()
+            return max(dx, dy)
+
+        def f(fontSize, label):
+            font = label.font()
+            font.setPointSizeF(fontSize)
+            label.setFont(font)
+            d = dSize(label.sizeHint(), label.size())
+            print("f:", fontSize, "d", d)
+            return d
+
+        def df(fontSize, label):
+            if fontSize < 1.0:
+                fontSize = 1.0
+            return f(fontSize + 0.5, label) - f(fontSize - 0.5, label)
+
+        font = self.start_window.label_13.font()
+        fontSize = font.pointSizeF()
+        for i in range(5):
+            d = df(fontSize, self.start_window.label_13)
+            print("d:", d)
+            if d < 0.1:
+                break
+            fontSize -= f(fontSize, self.start_window.label_13) / d
+        font.setPointSizeF(fontSize)
+        self.start_window.label_13.setFont(font)
+        print("post:", i, self.start_window.label_13.minimumSizeHint(), self.start_window.label_13.sizeHint(), self.start_window.label_13.size())
+        print(len(self.matrix_container))
 
     def change_method(self):
         if self.start_window.comboBox.currentText() in "Один метод":
@@ -949,8 +1095,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 f'{self.combo_box2.currentText()} {100 - value}%'
             )
         if self.start_window.comboBox.currentText() in "Три метода":
-            low_value = self.slider.low()
-            high_value = self.slider.high()
+            low_value, high_value = self.slider.value()
             self.start_window.label_17.setText(
                 f'{self.combo_box1.currentText()} {low_value}%\n'
                 f'{self.combo_box2.currentText()} {high_value - low_value}%\n'
@@ -972,7 +1117,8 @@ class MainWindow(QtWidgets.QMainWindow):
             f'{self.combo_box2.currentText()} {100 - value}%'
         )
 
-    def changeValue2(self, low_value, high_value):
+    def changeValue2(self):
+        low_value, high_value = self.slider.value()
         # Обновляем значение метки при изменении ползунка
         self.start_window.label_17.setText(
             f'{self.combo_box1.currentText()} {low_value}%\n'
@@ -1161,8 +1307,9 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     # apply_stylesheet(app, theme='dark_amber.xml')
     app.setWindowIcon(QtGui.QIcon('assets/icon2.png'))
+    apply_stylesheet(app, theme='dark_amber.xml')
     window = MainWindow()
-    window.setFixedSize(1150, 594)
+    window.setFixedSize(1150, 600)
     window.setWindowTitle('Генетический алгоритм')
     window.setWindowIcon(QtGui.QIcon('assets/icon2.png'))
     window.show()

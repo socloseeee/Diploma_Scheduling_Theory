@@ -1,5 +1,5 @@
 Way of forming | Способ формирования:
 central_bound
 
-Elapsed time | Время работы: 01:27
-Result | Результат: 61.22
+Elapsed time | Время работы: 01:40
+Result | Результат: 90.49

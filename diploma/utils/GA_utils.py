@@ -6,6 +6,7 @@ from typing import Any
 
 random.seed(time.time() * 1000)
 
+
 def generate_matrix(
         m: int,
         n: int,

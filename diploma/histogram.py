@@ -26,7 +26,11 @@ def run():
         "random_bound": 'purple'
     }
 
-    sorted_ = "sorted_up" if data["sorted_up"] else "sorted_down"
+    sorted_ = None
+    if data["sort_regenerate_matrix"] == "Отсортированно по возрастанию":
+        sorted_ = "sorted_up"
+    if data["sort_regenerate_matrix"] == "Отсортированно по убыванию":
+        sorted_ = "sorted_down"
 
     axes_data = []
     for bound in way_of_forming_genes.values():
@@ -123,7 +127,7 @@ def run():
     if data['sort_regenerate_matrix'] != 'Без сортировки':
         fig.suptitle(
             f'Результаты при начальном формировании \n'
-            f'c отсортированной по {("убыванию", "возрастанию")[data["sorted_up"]]} матрицей'
+            f'Матрица {data["sort_regenerate_matrix"].lower()}'
         )
         img_path = os.path.abspath(
             f"experiments_results/histograms/{sorted_}/result_{('sorted_down', 'sorted_up')[data['sorted_up']]}"

@@ -44,6 +44,7 @@ class signal_thread(QThread):
         matrix = np.fromstring(data["matrix"], sep=' ', dtype=int).reshape(m, n).tolist()
         repeat = int(data["repetitions"])
         regenerate_matrix = data["regenerate_matrix"]
+        matrix_container = data["matrix_container"]
         bounds_dict = {
             "Слева": 0,
             "Справа": 1,
@@ -104,7 +105,11 @@ class signal_thread(QThread):
         if bounds in range(4):
             way_of_forming_genes = {bounds: way_of_forming_genes[bounds]}
 
-        sorted_ = "sorted_up" if data["sorted_up"] else "sorted_down"
+        sorted_ = None
+        if data["sort_regenerate_matrix"] == "Отсортированно по возрастанию":
+            sorted_ = "sorted_up"
+        if data["sort_regenerate_matrix"] == "Отсортированно по убыванию":
+            sorted_ = "sorted_down"
 
         # Генерация особей и последующее выполнение ГА
         for bound in way_of_forming_genes.keys():
@@ -139,7 +144,10 @@ class signal_thread(QThread):
                     individuals = []
                     if regenerate_matrix:
                         if data['sort_regenerate_matrix'] == "Отсортированно по возрастанию":
-                            matrix = np.array(generate_matrix(m, n, T1, T2), dtype=int)
+                            # matrix = np.array(generate_matrix(m, n, T1, T2), dtype=int)
+                            matrix = matrix_container[_]
+                            matrix = np.array(matrix)
+
                             # считаем суммы значений по строкам
                             row_sums = matrix.sum(axis=1)
                             # получаем индексы строк, отсортированные по возрастанию суммы значений
@@ -147,13 +155,18 @@ class signal_thread(QThread):
                             # создаем новую матрицу, отсортированную по возрастанию суммы значений
                             matrix = matrix[sorted_indexes].tolist()
                         if data['sort_regenerate_matrix'] == "Отсортированно по убыванию":
-                            matrix = np.array(generate_matrix(m, n, T1, T2), dtype=int)
+                            # matrix = np.array(generate_matrix(m, n, T1, T2), dtype=int)
+                            matrix = matrix_container[_]
+                            matrix = np.array(matrix)
                             row_sums = matrix.sum(axis=1)
                             # получаем индексы строк, отсортированные по убыванию суммы значений
                             sorted_indexes = row_sums.argsort()[::-1]
                             # создаем новую матрицу, отсортированную по убыванию суммы значений
                             matrix = matrix[sorted_indexes].tolist()
 
+                        if data['sort_regenerate_matrix'] == "Без сортировки":
+                            matrix = matrix_container[_]
+                        print(matrix)
                         # Метод минимальных элементов
                         result_min, min_elem_idx = min_elem_method(matrix, m, n)
                         # Метод Плотникова-Зверева

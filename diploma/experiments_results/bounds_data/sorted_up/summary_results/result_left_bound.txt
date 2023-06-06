@@ -2,4 +2,4 @@ Way of forming | Способ формирования:
 left_bound
 
 Elapsed time | Время работы: 00:02
-Result | Результат: 93.5
+Result | Результат: 84.5
