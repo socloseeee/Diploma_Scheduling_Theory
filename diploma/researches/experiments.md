@@ -7,6 +7,7 @@
 
 ### 1. Тестовые данные для ГА и матрицы. <a name="data"></a>
 
+
 ![image](https://github.com/socloseeee/Diploma_Scheduling_Theory/assets/65871712/6a62bb23-d2cf-4097-b87b-3767017398eb)
 
 

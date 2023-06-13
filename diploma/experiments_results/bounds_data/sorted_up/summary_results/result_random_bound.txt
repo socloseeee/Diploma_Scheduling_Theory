@@ -1,5 +1,5 @@
 Way of forming | Способ формирования:
 random_bound
 
-Elapsed time | Время работы: 00:02
-Result | Результат: 82.0
+Elapsed time | Время работы: 02:55
+Result | Результат: 85.77

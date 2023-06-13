@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/bogdan/PycharmProjects/Diploma_Scheduling_Theory/diploma/UI/genetic_algorithm.ui'
+# Form implementation generated from reading ui file 'genetic_algorithm.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -650,7 +650,7 @@ class Ui_Genetic_window(object):
         self.label_16.setObjectName("label_16")
         self.verticalLayout_14.addWidget(self.label_16)
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(220, 460, 927, 103))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(220, 460, 921, 101))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -717,4 +717,4 @@ class Ui_Genetic_window(object):
         self.radioButton.setText(_translate("Genetic_window", "Результат"))
         self.radioButton_2.setText(_translate("Genetic_window", "Время"))
         self.label_16.setText(_translate("Genetic_window", "00:00:00"))
-        self.label_30.setText(_translate("Genetic_window", "▉" * 92))
+        self.label_30.setText(_translate("Genetic_window", "▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉"))

@@ -7,6 +7,7 @@ import platform
 import itertools
 import time
 
+import PyQt5
 import numpy as np
 
 from PIL import Image
@@ -16,19 +17,21 @@ from superqt import QRangeSlider
 from qt_material import apply_stylesheet
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtWidgets import QComboBox, QMessageBox
+from PyQt5.QtWidgets import QComboBox, QMessageBox, QTableWidgetItem, QSizePolicy, QHeaderView
 from PyQt5.QtGui import QPixmap, QIcon, QDesktopServices
 from PyQt5.QtCore import QObject, pyqtSignal, Qt, QTime, QTimer, QUrl, QSize
 
 from diploma import histogram
 from diploma.Data import DataApp
 from diploma.utils.utils import json_open
+from diploma.utils.utils import save_all_tables_to_xlsx
 from diploma.experiments import signal_thread
 from diploma.UI.start_window import Ui_MainWindow
 from diploma.utils.GA_utils import generate_matrix
 from diploma.utils.Qt import LabelStretcher
 from diploma.UI.genetic_algorithm import Ui_Genetic_window
-from diploma.utils.db_utils import fill_labels_with_pics_and_data, db_init
+from diploma.UI.scientific_results import Ui_scientific_results
+from diploma.utils.db_utils import fill_labels_with_pics_and_data, db_init, collect_methods_bound_res
 
 random.seed(time.time() * 1000)
 
@@ -72,6 +75,11 @@ class genetic_window(QtWidgets.QMainWindow, Ui_Genetic_window):
         super(genetic_window, self).__init__(parent)
         self.setupUi(self)
 
+class results_window(QtWidgets.QMainWindow, Ui_scientific_results):
+    def __init__(self, parent=None):
+        super(results_window, self).__init__(parent)
+        self.setupUi(self)
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -84,9 +92,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.start_window = start_window(self)
         self.ga_window = genetic_window(self)
+        self.result_window = results_window(self)
 
         self.stacked.addWidget(self.start_window)
         self.stacked.addWidget(self.ga_window)
+        self.stacked.addWidget(self.result_window)
 
         # Data
         with open(os.path.abspath('experiments_results/data.json'), 'r', encoding='UTF-8') as f:
@@ -109,15 +119,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.Pm.setValue(data["Pm"])
         self.r = self.start_window.plainTextEdit_11
         self.r.setValue(data["repetitions"])
-
-        self.generate_matrix = self.start_window.pushButton_3
-        #self.sort_up_matrix = self.start_window.pushButton_5
-        #self.sort_down_matrix = self.start_window.pushButton_6
-        self.matrix = self.start_window.label_13
-
-        #self.sort_up_matrix.clicked.connect(self.sort_up)
-        #self.sort_down_matrix.clicked.connect(self.sort_down)
-        self.generate_matrix.clicked.connect(self.generate)
 
         self.start_window.comboBox.currentIndexChanged.connect(self.choose_methods)
 
@@ -177,13 +178,47 @@ class MainWindow(QtWidgets.QMainWindow):
         self.start_window.verticalLayout_18.removeWidget(self.start_window.horizontalSlider)
         self.horizontalSlider.setParent(None)
 
+        self.matrix_container = []
+
         # Заполнение матрицей
-        self.start_window.label_13.setText(
-            ''.join([elem + ' ' + '&nbsp;' * 80 + '\n' for elem in self.data.data["matrix"].split('\n')])
-        )
-        # Алгоритм расстояния Ньютона для сохранения текста внутри QLabel
-        LabelStretcher(self.start_window.label_13)
-        self.start_window.label_13.setText(self.data.data["matrix"])
+        self.scrollArea2 = self.start_window.scrollArea_2
+        layout = PyQt5.QtWidgets.QVBoxLayout()
+        widget = PyQt5.QtWidgets.QWidget()
+        self.scrollArea2.setWidget(widget)
+        widget.setLayout(layout)
+
+        self.result_window.scrollArea_2.takeWidget()
+        layout2 = PyQt5.QtWidgets.QVBoxLayout()
+        widget2 = PyQt5.QtWidgets.QWidget()
+        self.result_window.scrollArea_2.setWidget(widget2)
+        widget2.setLayout(layout2)
+
+        for matrix in self.data.data["matrix_container"]:
+            label = QtWidgets.QLabel(''.join([' '.join([str(e) for e in elem]) + '\n' for elem in matrix]))
+            label.setAlignment(QtCore.Qt.AlignCenter)
+            label2 = QtWidgets.QLabel(''.join([' '.join([str(e) for e in elem]) + '\n' for elem in matrix]))
+            label2.setAlignment(QtCore.Qt.AlignCenter)
+            # LabelStretcher(label)
+            layout.addWidget(label)
+            layout2.addWidget(label2)
+            self.matrix_container.append(matrix)
+        # self.start_window.scrollArea.setLayout(self.start_window.verticalLayout_26)
+
+        self.generate_matrix = self.start_window.pushButton_3
+        # self.sort_up_matrix = self.start_window.pushButton_5
+        # self.sort_down_matrix = self.start_window.pushButton_6
+        # self.matrix = self.start_window.label_13
+
+        # self.sort_up_matrix.clicked.connect(self.sort_up)
+        # self.sort_down_matrix.clicked.connect(self.sort_down)
+        self.generate_matrix.clicked.connect(self.generate)
+
+        # self.start_window.label_13.setText(
+        #     ''.join([elem + ' ' + '&nbsp;' * 80 + '\n' for elem in self.data.data["matrix"].split('\n')])
+        # )
+        # # Алгоритм расстояния Ньютона для сохранения текста внутри QLabel
+        # LabelStretcher(self.start_window.label_13)
+        # self.start_window.label_13.setText(self.data.data["matrix"])
 
         # Инициализация ГА
         self.start_window.pushButton.clicked.connect(self.start_ga)
@@ -317,6 +352,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ga_window.pushButton.setIcon(back_pic)
         self.ga_window.pushButton.setIconSize(self.ga_window.pushButton_2.size())
         self.ga_window.pushButton.clicked.connect(self.back)
+        # self.result_window.pushButton.setIcon(back_pic)
+        # self.result_window.pushButton.setIconSize(QSize(int(self.result_window.pushButton.size().width() * 0.9), int(self.result_window.pushButton.size().height() * 0.9)))
 
         # Картинка для кнопки "GitHub"
         githib_pic = QPixmap("assets/github2.png")
@@ -373,7 +410,247 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.start_window.verticalLayout_30.removeWidget(self.start_window.comboBox_2)
         # self.start_window.comboBox_2.setParent(None)
 
-        self.matrix_container = []
+        # Таблицы
+        self.scrollArea = self.start_window.scrollArea
+        layout = PyQt5.QtWidgets.QVBoxLayout()
+        widget = PyQt5.QtWidgets.QWidget()
+        self.scrollArea.setWidget(widget)
+        widget.setLayout(layout)
+
+        self.table1 = PyQt5.QtWidgets.QTableWidget()
+        self.table1.setRowCount(10)
+        self.table1.setColumnCount(6)
+        self.table1.setHorizontalHeaderLabels(
+            ["Разбиение", "Левая", "Правая", "Центральная", "Рандомная", "Средний\nрезультат"])
+        self.table1.setSizeAdjustPolicy(PyQt5.QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.table1.resizeColumnsToContents()
+        # self.table1.resizeRowsToContents()
+        self.table2 = PyQt5.QtWidgets.QTableWidget()
+        self.table2.setRowCount(10)
+        self.table2.setColumnCount(6)
+        self.table2.setHorizontalHeaderLabels(
+            ["Разбиение", "Левая", "Правая", "Центральная", "Рандомная", "Средний\nрезультат"])
+        self.table2.setSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
+        self.table3 = PyQt5.QtWidgets.QTableWidget()
+        self.table3.setRowCount(10)
+        self.table3.setColumnCount(6)
+        self.table3.setHorizontalHeaderLabels(
+            ["Разбиение", "Левая", "Правая", "Центральная", "Рандомная", "Средний\nрезультат"])
+        self.table3.setSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
+        self.table4 = PyQt5.QtWidgets.QTableWidget()
+        self.table4.setRowCount(10)
+        self.table4.setColumnCount(5)
+        self.table4.setHorizontalHeaderLabels(
+            ["Разбиение", "Средний \nпо возрастанию", "Средний \nпо убыванию", "Средний \nбез сортировки",
+             "Средний\nрезультат"])
+        self.table4.setSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
+        self.table5 = PyQt5.QtWidgets.QTableWidget()
+        self.table5.setRowCount(4)
+        self.table5.setColumnCount(5)
+        self.table5.setHorizontalHeaderLabels(
+            ["Границы", "Средний \nпо возрастанию", "Средний \nпо убыванию", "Средний \n без сортировки",
+             "Средний\nрезультат"])
+        self.table5.setSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
+        self.table6 = PyQt5.QtWidgets.QTableWidget()
+        self.table6.setRowCount(3)
+        self.table6.setColumnCount(2)
+        self.table6.setHorizontalHeaderLabels(["Сортировка", "Средний\nрезультат"])
+        self.table6.setSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
+
+        # Сбор результатов по методам и границам
+        top_methods_rise = collect_methods_bound_res('Отсортированно по возрастанию')
+        top_methods_down = collect_methods_bound_res('Отсортированно по убыванию')
+        top_methods_unsort = collect_methods_bound_res('Без сортировки')
+
+        # Результаты по методам и сортировке + заполнение таблиц
+        top_split_result = {}
+        sort_bound_result = []
+        for table, top_lst in zip(
+                [self.table1, self.table2, self.table3],
+                [top_methods_rise, top_methods_down, top_methods_unsort]
+        ):
+            value = 0
+            top_bound_result = [0, 0, 0, 0]
+            for i, row in enumerate(top_lst):
+                top_bound_result = list(
+                    map(lambda x, y: round(x + y, 2), top_bound_result, (row[1], row[2], row[3], row[4])))
+                value += sum((row[1], row[2], row[3], row[4]))
+                if row[0] not in top_split_result:
+                    top_split_result[row[0]] = [round(value / 4, 2)]
+                else:
+                    top_split_result[row[0]].append(round(value / 4, 2))
+                for j, elem in enumerate(row):
+                    table.setItem(i, j, QTableWidgetItem(str(elem)))
+                value = 0
+            sort_bound_result.append(list(map(lambda x: round(x / 10, 2), top_bound_result)))
+        for key, value in top_split_result.items():
+            top_split_result[key] = [*value, round(sum(value) / 3, 2)]
+        top_split_result = dict(sorted(top_split_result.items(), key=lambda x: x[1][3]))
+
+        for i, (key, value) in enumerate(top_split_result.items()):
+            self.table4.setItem(i, 0, QTableWidgetItem(key))
+            for j, elem in enumerate(value):
+                self.table4.setItem(i, j + 1, QTableWidgetItem(str(elem)))
+
+        sort_bound_result.insert(-1, [
+            round(sum(list(map(lambda x: x[0], sort_bound_result))) / 3, 2),
+            round(sum(list(map(lambda x: x[1], sort_bound_result))) / 3, 2),
+            round(sum(list(map(lambda x: x[2], sort_bound_result))) / 3, 2),
+            round(sum(list(map(lambda x: x[3], sort_bound_result))) / 3, 2)
+        ])
+
+        sort_final_results = [
+            ('По возрастанию', round(sum(sort_bound_result[0]) / 4, 2)),
+            ('По убыванию', round(sum(sort_bound_result[1]) / 4, 2)),
+            ('Без сортировки', round(sum(sort_bound_result[2]) / 4, 2))
+        ]
+
+        sort_final_results = sorted(sort_final_results, key=lambda x: x[1])
+
+        sort_bound_result.insert(0, ['Левая', 'Правая', 'Центральная', 'Рандомная'])
+        # print(sort_bound_result)
+        sort_bound_result = list(zip(*sort_bound_result))[::-1]
+        sort_bound_result = sorted(sort_bound_result, key=lambda x: x[-1])
+        # print(sort_bound_result)
+        for i, row in enumerate(sort_bound_result):
+            for j, elem in enumerate(row):
+                self.table5.setItem(i, j, QTableWidgetItem(str(elem)))
+
+        for i, row in enumerate(sort_final_results):
+            for j, elem in enumerate(row):
+                self.table6.setItem(i, j, QTableWidgetItem(str(elem)))
+
+        layout.addWidget(self.table1)
+        layout.addWidget(self.table2)
+        layout.addWidget(self.table3)
+        layout.addWidget(self.table4)
+        layout.addWidget(self.table5)
+        layout.addWidget(self.table6)
+
+        self.scrollArea3 = self.result_window.scrollArea_3
+        layout3 = PyQt5.QtWidgets.QVBoxLayout()
+        widget3 = PyQt5.QtWidgets.QWidget()
+        self.scrollArea3.setWidget(widget3)
+        widget3.setLayout(layout3)
+
+        self.table1_2 = QtWidgets.QTableWidget()
+        self.table1_2.setColumnCount(self.table1.columnCount())
+        self.table1_2.setRowCount(self.table1.rowCount())
+        self.table1_2.setHorizontalHeaderLabels(["Разбиение", "Левая", "Правая", "Центральная", "Рандомная", "Средний\nрезультат"])
+        self.table2_2 = QtWidgets.QTableWidget()
+        self.table2_2.setColumnCount(self.table2.columnCount())
+        self.table2_2.setRowCount(self.table2.rowCount())
+        self.table2_2.setHorizontalHeaderLabels(["Разбиение", "Левая", "Правая", "Центральная", "Рандомная", "Средний\nрезультат"])
+        self.table3_2 = QtWidgets.QTableWidget()
+        self.table3_2.setColumnCount(self.table3.columnCount())
+        self.table3_2.setRowCount(self.table3.rowCount())
+        self.table3_2.setHorizontalHeaderLabels(["Разбиение", "Левая", "Правая", "Центральная", "Рандомная", "Средний\nрезультат"])
+        self.table4_2 = QtWidgets.QTableWidget()
+        self.table4_2.setColumnCount(self.table4.columnCount())
+        self.table4_2.setRowCount(self.table4.rowCount())
+        self.table4_2.setHorizontalHeaderLabels(["Разбиение", "Средний \nпо возрастанию", "Средний \nпо убыванию", "Средний \nбез сортировки",
+             "Средний\nрезультат"])
+        self.table5_2 = QtWidgets.QTableWidget()
+        self.table5_2.setColumnCount(self.table5.columnCount())
+        self.table5_2.setRowCount(self.table5.rowCount())
+        self.table5_2.setHorizontalHeaderLabels(["Границы", "Средний \nпо возрастанию", "Средний \nпо убыванию", "Средний \n без сортировки",
+             "Средний\nрезультат"])
+        self.table6_2 = QtWidgets.QTableWidget()
+        self.table6_2.setColumnCount(self.table6.columnCount())
+        self.table6_2.setRowCount(self.table6.rowCount())
+        self.table6_2.setHorizontalHeaderLabels(["Сортировка", "Средний\nрезультат"])
+
+        for table, top_lst in zip(
+                [self.table1_2, self.table2_2, self.table3_2],
+                [top_methods_rise, top_methods_down, top_methods_unsort]
+        ):
+            for i, row in enumerate(top_lst):
+                for j, elem in enumerate(row):
+                    table.setItem(i, j, QTableWidgetItem(str(elem)))
+
+        for i, (key, value) in enumerate(top_split_result.items()):
+            self.table4_2.setItem(i, 0, QTableWidgetItem(key))
+            for j, elem in enumerate(value):
+                self.table4_2.setItem(i, j + 1, QTableWidgetItem(str(elem)))
+
+        for i, row in enumerate(sort_bound_result):
+            for j, elem in enumerate(row):
+                self.table5_2.setItem(i, j, QTableWidgetItem(str(elem)))
+
+        for i, row in enumerate(sort_final_results):
+            for j, elem in enumerate(row):
+                self.table6_2.setItem(i, j, QTableWidgetItem(str(elem)))
+
+        self.table1.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.table2.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.table3.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.table4.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.table5.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.table6.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+
+        self.table1_2.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.table2_2.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.table3_2.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.table4_2.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.table5_2.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.table6_2.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        #[self.table1_2.resizeColumnToContents(i) for i in range(-1, self.table1_2.columnCount() - 1, -1)]
+        self.table1_2.setMinimumHeight((self.table1_2.rowCount() + 1) * (self.table1_2.rowHeight(0) + 1))
+        self.table1_2.setColumnWidth(0, 245)
+        self.table1_2.setColumnWidth(1, 100)
+        self.table1_2.setColumnWidth(2, 100)
+        self.table1_2.setColumnWidth(3, 120)
+        self.table1_2.setColumnWidth(4, 100)
+        self.table1_2.setColumnWidth(5, 100)
+        self.table1_2.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.table2_2.setMinimumHeight((self.table2_2.rowCount() + 1) * (self.table2_2.rowHeight(0) + 1))
+        self.table2_2.setColumnWidth(0, 245)
+        self.table2_2.setColumnWidth(1, 100)
+        self.table2_2.setColumnWidth(2, 100)
+        self.table2_2.setColumnWidth(3, 120)
+        self.table2_2.setColumnWidth(4, 100)
+        self.table2_2.setColumnWidth(5, 100)
+        self.table2_2.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.table3_2.setMinimumHeight((self.table3_2.rowCount() + 1) * (self.table3_2.rowHeight(0) + 1))
+        self.table3_2.setColumnWidth(0, 245)
+        self.table3_2.setColumnWidth(1, 100)
+        self.table3_2.setColumnWidth(2, 100)
+        self.table3_2.setColumnWidth(3, 120)
+        self.table3_2.setColumnWidth(4, 100)
+        self.table3_2.setColumnWidth(5, 100)
+        self.table3_2.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.table4_2.setMinimumHeight((self.table4_2.rowCount() + 1) * (self.table4_2.rowHeight(0) + 1))
+        self.table4_2.setColumnWidth(0, 245)
+        self.table4_2.setColumnWidth(1, 130)
+        self.table4_2.setColumnWidth(2, 130)
+        self.table4_2.setColumnWidth(3, 130)
+        self.table4_2.setColumnWidth(4, 130)
+        self.table4_2.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        #self.table5_2.setMinimumHeight(self.table1_2.rowCount() * self.table1_2.rowHeight(0))
+        self.table5_2.setColumnWidth(0, 190)
+        self.table5_2.setColumnWidth(1, 130)
+        self.table5_2.setColumnWidth(2, 130)
+        self.table5_2.setColumnWidth(3, 130)
+        self.table4_2.setColumnWidth(4, 130)
+        self.table5_2.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        #self.table6_2.setMinimumHeight(self.table6_2.rowCount() * self.table6_2.rowHeight(0))
+        self.table6_2.setColumnWidth(0, 450)
+        self.table6_2.setColumnWidth(1, 450)
+        self.table6_2.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+
+        layout3.addWidget(self.table1_2)
+        layout3.addWidget(self.table2_2)
+        layout3.addWidget(self.table3_2)
+        layout3.addWidget(self.table4_2)
+        layout3.addWidget(self.table5_2)
+        layout3.addWidget(self.table6_2)
+
+        self.start_window.pushButton_4.clicked.connect(self.to_results)
+        self.result_window.pushButton.clicked.connect(self.back_to_start)
+
+        # to xlsx
+        self.tables = [self.table1_2, self.table2_2, self.table3_2, self.table4_2, self.table5_2, self.table6_2]
+        self.result_window.pushButton_2.clicked.connect(self.to_xlsx)
 
         # Проверка ОС, для смены системного шрифта
         if platform.system() == 'Windows':
@@ -409,6 +686,19 @@ class MainWindow(QtWidgets.QMainWindow):
     #     else:
     #         self.start_window.verticalLayout_30.removeWidget(self.start_window.comboBox_2)
     #         self.start_window.comboBox_2.setParent(None)
+
+    def to_xlsx(self):
+        save_all_tables_to_xlsx(self.tables, 'tables')
+
+    def to_results(self):
+        self.stacked.setCurrentIndex(
+            2
+        )
+
+    def back_to_start(self):
+        self.stacked.setCurrentIndex(
+            0
+        )
 
     def forward(self):
         self.stacked.setCurrentIndex(
@@ -993,14 +1283,6 @@ class MainWindow(QtWidgets.QMainWindow):
         sorted_matrix = matrix[sorted_indexes]
         sorted_matrix = '\n'.join(' '.join(map(str, elem)) for elem in sorted_matrix)
         self.start_window.label_13.setText(sorted_matrix)
-        json_open(
-            namefile="../diploma/experiments_results/data.json",
-            write_method='w',
-            data={
-                "sorted_up": True,
-                "sorted_down": False
-            }
-        )
 
     def sort_down(self):
         matrix = np.fromstring(self.matrix.text(), sep=' ', dtype=int).reshape(int(self.m.value()),
@@ -1023,15 +1305,34 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
     def generate(self):
-        matrix_static = None
+        self.scrollArea2.takeWidget()
+        layout = PyQt5.QtWidgets.QVBoxLayout()
+        widget = PyQt5.QtWidgets.QWidget()
+        self.scrollArea2.setWidget(widget)
+        widget.setLayout(layout)
+
+        self.result_window.scrollArea_2.takeWidget()
+        layout2 = PyQt5.QtWidgets.QVBoxLayout()
+        widget2 = PyQt5.QtWidgets.QWidget()
+        self.result_window.scrollArea_2.setWidget(widget2)
+        widget2.setLayout(layout2)
+
         if not self.start_window.checkBox.isChecked():
             matrix_static = generate_matrix(
-                    int(self.m.value()),
-                    int(self.n.value()),
-                    int(self.T1.value()),
-                    int(self.T2.value())
-                )
+                int(self.m.value()),
+                int(self.n.value()),
+                int(self.T1.value()),
+                int(self.T2.value())
+            )
             for _ in range(self.r.value()):
+                label = QtWidgets.QLabel('\n'.join(' '.join(map(str, elem)) for elem in matrix_static))
+                label.setAlignment(QtCore.Qt.AlignCenter)
+                # LabelStretcher(label)
+                label2 = QtWidgets.QLabel(''.join([' '.join([str(e) for e in elem]) + '\n' for elem in matrix_static]))
+                label2.setAlignment(QtCore.Qt.AlignCenter)
+                # LabelStretcher(label)
+                layout.addWidget(label)
+                layout2.addWidget(label2)
                 self.matrix_container.append(matrix_static)
         else:
             for _ in range(self.r.value()):
@@ -1041,43 +1342,14 @@ class MainWindow(QtWidgets.QMainWindow):
                     int(self.T1.value()),
                     int(self.T2.value())
                 )
+                label = QtWidgets.QLabel('\n'.join(' '.join(map(str, elem)) for elem in matrix))
+                label.setAlignment(QtCore.Qt.AlignCenter)
+                label2 = QtWidgets.QLabel(''.join([' '.join([str(e) for e in elem]) + '\n' for elem in matrix]))
+                label2.setAlignment(QtCore.Qt.AlignCenter)
+                # LabelStretcher(label)
+                layout.addWidget(label)
+                layout2.addWidget(label2)
                 self.matrix_container.append(matrix)
-        # matrix = '\n'.join(' '.join(map(str, elem)) for elem in matrix)
-        try:
-            self.start_window.label_13.setText('\n'.join(' '.join(map(str, elem)) for elem in matrix))
-        except Exception as e:
-            self.start_window.label_13.setText('\n'.join(' '.join(map(str, elem)) for elem in matrix_static))
-        # Newton method
-        def dSize(inner, outer):
-            dy = inner.height() - outer.height()
-            dx = inner.width() - outer.width()
-            return max(dx, dy)
-
-        def f(fontSize, label):
-            font = label.font()
-            font.setPointSizeF(fontSize)
-            label.setFont(font)
-            d = dSize(label.sizeHint(), label.size())
-            print("f:", fontSize, "d", d)
-            return d
-
-        def df(fontSize, label):
-            if fontSize < 1.0:
-                fontSize = 1.0
-            return f(fontSize + 0.5, label) - f(fontSize - 0.5, label)
-
-        font = self.start_window.label_13.font()
-        fontSize = font.pointSizeF()
-        for i in range(5):
-            d = df(fontSize, self.start_window.label_13)
-            print("d:", d)
-            if d < 0.1:
-                break
-            fontSize -= f(fontSize, self.start_window.label_13) / d
-        font.setPointSizeF(fontSize)
-        self.start_window.label_13.setFont(font)
-        print("post:", i, self.start_window.label_13.minimumSizeHint(), self.start_window.label_13.sizeHint(), self.start_window.label_13.size())
-        print(len(self.matrix_container))
 
     def change_method(self):
         if self.start_window.comboBox.currentText() in "Один метод":

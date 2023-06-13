@@ -130,7 +130,7 @@ def run():
             f'Матрица {data["sort_regenerate_matrix"].lower()}'
         )
         img_path = os.path.abspath(
-            f"experiments_results/histograms/{sorted_}/result_{('sorted_down', 'sorted_up')[data['sorted_up']]}"
+            f"experiments_results/histograms/{sorted_}/result_{('sorted_down', 'sorted_up')[data['sort_regenerate_matrix'] == 'Отсортированно по убыванию']}"
         )
     else:
         fig.suptitle(
@@ -138,7 +138,7 @@ def run():
             f'c неотсортированной матрицей'
         )
         img_path = os.path.abspath(
-            f"experiments_results/histograms/no_sort/result_{('sorted_down', 'sorted_up')[data['sorted_up']]}"
+            f"experiments_results/histograms/no_sort/result_no_sort"
         )
 
     plt.savefig(img_path)

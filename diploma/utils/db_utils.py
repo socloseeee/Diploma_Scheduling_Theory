@@ -41,7 +41,8 @@ def image2bytes_save(fig, ga_data, elapsed_time, data_dict, conn):
     buf.seek(0)
     image_converted = buf.read()
     if data_dict["sort_regenerate_matrix"] != "Без сортировки":
-        sort_ = ('Отсортированно по убыванию', 'Отсортированно по возрастанию')[data_dict["sorted_up"]]
+        sort_ = ('Отсортированно по убыванию', 'Отсортированно по возрастанию')[
+            data_dict['sort_regenerate_matrix'] == 'Отсортированно по возрастанию']
     else:
         sort_ = "Без сортировки"
     cursor.execute(
@@ -120,7 +121,7 @@ def fill_labels_with_pics_and_data(sorted_up_pics, sorted_center_pics, sorted_do
         pixmap.loadFromData(image.read())  # .scaled(width=107, height=109)
         pixmap_scaled = pixmap.scaled(159, 99)
         label.setPixmap(pixmap_scaled)
-        #pics_container.append(pixmap_scaled)
+        # pics_container.append(pixmap_scaled)
     for image_data, label in zip(
             images_sorted_center, sorted_center_pics
     ):
@@ -129,7 +130,7 @@ def fill_labels_with_pics_and_data(sorted_up_pics, sorted_center_pics, sorted_do
         pixmap.loadFromData(image.read())
         pixmap_scaled = pixmap.scaled(159, 99)
         label.setPixmap(pixmap_scaled)
-        #pics_container.append(pixmap_scaled)
+        # pics_container.append(pixmap_scaled)
     for image_data, label in zip(
             images_sorted_down, sorted_down_pics
     ):
@@ -174,4 +175,116 @@ def fill_labels_with_pics_and_data(sorted_up_pics, sorted_center_pics, sorted_do
             str("{:.2f}".format(sum(map(sum, result_no_sort)) / len(result_no_sort) / 4)))
         data_labels[5].setText(
             str("{:.2f}".format(sum(map(sum, time_no_sort)) / len(time_no_sort) / 4)))
-    #return pics_container
+    # return pics_container
+
+
+def collect_methods_bound_res(sort: str):
+    conn = db_init("experiments_results/resultsdb.sqlite3")
+    cursor = conn.cursor()
+
+    # left_rise
+    cursor.execute('''SELECT CAST(word AS REAL) AS word_float, splitting_values, result FROM (
+                                  WITH split(word, str, splitting_values, result) AS (
+                                      SELECT '', result||' ', splitting_values, result FROM all_method
+                                      WHERE sorted_on = ?
+                                      UNION ALL SELECT
+                                      substr(str, 0, instr(str, ' ')),
+                                      substr(str, instr(str, ' ') + 1),
+                                      splitting_values,
+                                      result
+                                      FROM split WHERE str!=''
+                                  ) SELECT word, splitting_values, result FROM split WHERE word!=''
+                                  LIMIT 0, 
+                                  (SELECT COUNT(*) FROM all_method WHERE sorted_on = ?)
+                              )
+                              ORDER BY word_float; ''',
+                   (sort, sort))
+    left_rise = list(map(lambda x: (x[0], ''.join(
+        [word[0].upper() if word.isalpha() else word for word in x[1].replace('-', ' ').split(' ')]), x[2]),
+                         cursor.fetchall()))
+
+    # right_rise
+    cursor.execute('''SELECT CAST(word AS REAL) AS word_float, splitting_values, result FROM (
+                                  WITH split(word, str, splitting_values, result) AS (
+                                      SELECT '', result||' ', splitting_values, result FROM all_method
+                                      WHERE sorted_on = ?
+                                      UNION ALL SELECT
+                                      substr(str, 0, instr(str, ' ')),
+                                      substr(str, instr(str, ' ') + 1),
+                                      splitting_values,
+                                      result
+                                      FROM split WHERE str!=''
+                                  ) SELECT word, splitting_values, result FROM split WHERE word!=''
+                                  LIMIT (SELECT COUNT(*) FROM all_method WHERE sorted_on = ?), 
+                                  (SELECT COUNT(*) FROM all_method WHERE sorted_on = ?)
+                              )
+                              ORDER BY word_float; ''',
+                   (sort, sort, sort))
+    right_rise = list(map(lambda x: (x[0], ''.join(
+        [word[0].upper() if word.isalpha() else word for word in x[1].replace('-', ' ').split(' ')]), x[2]),
+                         cursor.fetchall()))
+
+    # center_rise
+    cursor.execute('''SELECT CAST(word AS REAL) AS word_float, splitting_values, result FROM (
+                                  WITH split(word, str, splitting_values, result) AS (
+                                      SELECT '', result||' ', splitting_values, result FROM all_method
+                                      WHERE sorted_on = ?
+                                      UNION ALL SELECT
+                                      substr(str, 0, instr(str, ' ')),
+                                      substr(str, instr(str, ' ') + 1),
+                                      splitting_values,
+                                      result
+                                      FROM split WHERE str!=''
+                                  ) SELECT word, splitting_values, result FROM split WHERE word!=''
+                                  LIMIT (SELECT COUNT(*) FROM all_method WHERE sorted_on = ?) * 2, 
+                                  (SELECT COUNT(*) FROM all_method WHERE sorted_on = ?)
+                              )
+                              ORDER BY word_float; ''',
+                   (sort, sort, sort))
+    center_rise = list(map(lambda x: (x[0], ''.join(
+        [word[0].upper() if word.isalpha() else word for word in x[1].replace('-', ' ').split(' ')]), x[2]),
+                         cursor.fetchall()))
+
+    # random_rise
+    cursor.execute('''SELECT CAST(word AS REAL) AS word_float, splitting_values, result FROM (
+                                  WITH split(word, str, splitting_values, result) AS (
+                                      SELECT '', result||' ', splitting_values, result FROM all_method
+                                      WHERE sorted_on = ?
+                                      UNION ALL SELECT
+                                      substr(str, 0, instr(str, ' ')),
+                                      substr(str, instr(str, ' ') + 1),
+                                      splitting_values,
+                                      result
+                                      FROM split WHERE str!=''
+                                  ) SELECT word, splitting_values, result FROM split WHERE word!=''
+                                  LIMIT (SELECT COUNT(*) FROM all_method WHERE sorted_on = ?) * 3, 
+                                  (SELECT COUNT(*) FROM all_method WHERE sorted_on = ?)
+                              )
+                              ORDER BY word_float; ''',
+                   (sort, sort, sort))
+    random_rise = list(map(lambda x: (x[0], ''.join(
+        [word[0].upper() if word.isalpha() else word for word in x[1].replace('-', ' ').split(' ')]), x[2]),
+                         cursor.fetchall()))
+
+    top_methods = []
+    for result, method in zip(
+            list(map(lambda x: x[0], left_rise)),
+            list(map(lambda x: x[1], left_rise))
+    ):
+        value = [result, method]
+        value[0] += right_rise[list(map(lambda x: x[1], right_rise)).index(method)][0]
+        value[0] += center_rise[list(map(lambda x: x[1], center_rise)).index(method)][0]
+        value[0] += random_rise[list(map(lambda x: x[1], random_rise)).index(method)][0]
+        top_methods.append(
+            (value[1],
+             result,
+             right_rise[list(map(lambda x: x[1], right_rise)).index(method)][0],
+             center_rise[list(map(lambda x: x[1], center_rise)).index(method)][0],
+             random_rise[list(map(lambda x: x[1], random_rise)).index(method)][0],
+             value[0] / 4)
+        )
+
+    top_methods = sorted(list(map(lambda x: (x[0], x[1], x[2], x[3], x[4], round(x[-1], 2)), top_methods)),
+                         key=lambda x: x[-1])
+
+    return top_methods

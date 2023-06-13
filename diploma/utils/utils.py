@@ -3,6 +3,7 @@ import numpy as np
 
 from pathlib import Path
 from copy import deepcopy
+from openpyxl import Workbook
 from matplotlib import pyplot as plt
 from PyQt5.QtGui import QPixmap, QImage
 from typing import TextIO, Optional, Union
@@ -74,3 +75,34 @@ def qpixmap_matrix(label, data):
     qimage = QImage(buf, buf.shape[1], buf.shape[0], QImage.Format_RGBA8888)
     pixmap = QPixmap(qimage)
     return pixmap
+
+
+def save_table_to_xlsx(table, file_path):
+    wb = Workbook()
+    ws = wb.active
+
+    # Запись заголовков
+    for col in range(table.columnCount()):
+        header = table.horizontalHeaderItem(col).text()
+        style = None
+        if header in ('Разбиение', 'Границы', 'Сортировка'):
+            style = 'Accent1'
+        if style is not None:
+            ws.cell(row=1, column=col + 1, value=header).style = style
+        else:
+            ws.cell(row=1, column=col + 1, value=header)
+
+    # Запись данных
+    for row in range(1, table.rowCount() + 1):
+        for col in range(table.columnCount()):
+            item = table.item(row - 1, col)
+            if item is not None:
+                ws.cell(row=row + 1, column=col + 1, value=item.text())
+
+    wb.save(file_path)
+
+
+def save_all_tables_to_xlsx(tables, file_prefix):
+    for i, table in enumerate(tables):
+        file_path = f"xlsx/{file_prefix}_{i + 1}.xlsx"
+        save_table_to_xlsx(table, file_path)

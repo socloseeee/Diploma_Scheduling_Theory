@@ -156,6 +156,7 @@ class signal_thread(QThread):
                             matrix = matrix[sorted_indexes].tolist()
                         if data['sort_regenerate_matrix'] == "Отсортированно по убыванию":
                             # matrix = np.array(generate_matrix(m, n, T1, T2), dtype=int)
+                            print(matrix_container)
                             matrix = matrix_container[_]
                             matrix = np.array(matrix)
                             row_sums = matrix.sum(axis=1)
@@ -166,7 +167,7 @@ class signal_thread(QThread):
 
                         if data['sort_regenerate_matrix'] == "Без сортировки":
                             matrix = matrix_container[_]
-                        print(matrix)
+                        # print(matrix)
                         # Метод минимальных элементов
                         result_min, min_elem_idx = min_elem_method(matrix, m, n)
                         # Метод Плотникова-Зверева
