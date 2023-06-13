@@ -1,5 +1,5 @@
 {
-    "repetitions": 100,
+    "repetitions": 2,
     "m": 33,
     "n": 5,
     "T1": 10,
@@ -14,10 +14,13 @@
     "methods_amount": 3,
     "ways_of_formation": 3,
     "1method": "Метод минимальных элементов",
-    "amount_of_methods": 1,
-    "2method": "Метод рандомного формирования",
+    "amount_of_methods": 4,
+    "2method": "Метод Плотникова-Зверева",
     "splitting_values": [
-        100
+        25,
+        25,
+        25,
+        25
     ],
     "3method": "Метод Барьера",
     "bound": "По всем",

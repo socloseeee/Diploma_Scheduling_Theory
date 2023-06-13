@@ -1002,7 +1002,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     'Pm': int(self.Pm.value()),
                     'repetitions': int(self.r.value()),
                     '1method': self.combo_box1.currentText(),
-                    'matrix': self.start_window.label_13.text(),
                     'regenerate_matrix': self.start_window.checkBox.isChecked()
                 }
 
