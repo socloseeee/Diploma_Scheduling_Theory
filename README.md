@@ -1,3 +1,11 @@
+```SQL
+SELECT
+	*
+FROM
+	sbx_core.A AS a
+JOIN sbx_core.B AS b ON a.id = b.a_id;
+```
+
 # Diploma_Scheduling_Theory
 
 ## Navigation:
